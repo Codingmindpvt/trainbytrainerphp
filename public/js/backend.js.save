@@ -1,0 +1,550 @@
+ /********************************/
+
+    /* No Space Validation */
+
+ /********************************/
+  jQuery.validator.addMethod("noSpace", function(value, element) {
+    return value == '' || value.trim().length != 0;
+  }, "No space please and don't leave it empty");
+
+
+
+
+
+ /********************************/
+
+    /* LOGIN: Form Validation */
+
+ /********************************/
+$("#loginForm").validate({
+  rules: {
+    email: {
+      required: true,
+      email: true,
+    },
+    password : {
+      required: true,
+        // minlength : 8,
+        noSpace: true
+    }
+  }
+});
+
+
+
+
+ /********************************/
+
+    /* SIGNUP: Form Validation */
+
+ /********************************/
+$("#signupForm").validate({
+  rules: {
+    user_type: {
+      required: true
+    },
+    email: {
+      required: true,
+      email: true,
+      noSpace: true
+    },
+    password : {
+    	required: true,
+        minlength : 3,
+        noSpace: true
+    },
+     confirm_password : {
+     	  required: true,
+         //minlength : 8,
+         noSpace: true,
+         equalTo : "#password"
+     },
+    agree_terms :{
+    	required: true,
+    }
+
+  }
+});
+
+
+
+
+/********************************/
+
+    /* SIGNUP: Role Type & User Type Validation */
+
+ /********************************/
+
+ $(".role_type").change(function(){
+ 	var role_type = $(".role_type").val();
+
+ 	if(role_type=='U'){
+	 	$("#user_type").rules('add', {
+	   		 required: true,
+	 	});
+	}else{
+		$("#user_type").rules('remove');
+	}
+ });
+
+
+
+
+
+/****************************************************/
+
+    /* CREATE PROFILE: preview image before upload */
+
+/***************************************************/
+$("#image-holder").click(function(){
+  $("#fileUpload").trigger('click');
+});
+	$("#fileUpload").on('change', function () {
+
+        if (typeof (FileReader) != "undefined") {
+
+            var image_holder = $("#image-holder");
+            image_holder.empty();
+
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $("<img />", {
+                    "src": e.target.result,
+                    "class": "thumb-image",
+                    "name": "profile_image"
+                }).appendTo(image_holder);
+
+            }
+            image_holder.show();
+            reader.readAsDataURL($(this)[0].files[0]);
+        } else {
+            alert("This browser does not support FileReader.");
+        }
+    });
+
+
+
+
+
+	/****************************************************/
+
+    /* CREATE PROFILE: Form Validation */
+
+/***************************************************/
+$("#createProfileForm").validate({
+  rules: {
+    first_name: {
+      required: true,
+      noSpace: true,
+      maxlength:15,
+    },
+    last_name: {
+      required: true,
+      noSpace: true,
+      maxlength:15,
+    },
+    address: {
+      required: true,
+      noSpace: true,
+    },
+    contact_no : {
+      required: true,
+      minlength : 7,
+      maxlength : 14,
+      noSpace: true,
+      number: true
+
+    },
+    postal_code : {
+    	required: true,
+      maxlength : 6,
+      noSpace: true
+    },
+    city_id : {
+    	required: true,
+        noSpace: true,
+    },
+    country : {
+      required: true,
+      noSpace: true,
+    },
+    state : {
+      required: true,
+      noSpace: true,
+    }
+
+  }
+});
+
+
+
+
+
+/****************************************************/
+
+    /*  UPDATE PROFILE: Preview Image  */
+
+/***************************************************/
+function profileurl(input) {
+  var filePath = input.value;
+  var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+
+  if (!allowedExtensions.exec(filePath)) {
+
+    $('.select_profile_errors').text('Only JPEG and PNG format images are acceptable.');
+    input.value = '';
+    return false;
+  } else {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        $('.profile_picture').attr('src', e.target.result);
+      }
+
+      reader.readAsDataURL(input.files[0]);
+      $('.select_profile_errors').text('');
+    }
+  }
+}
+
+
+
+
+
+/****************************************************/
+
+    /* UPDATE PROFILE: Form Validation */
+
+/***************************************************/
+$("#updateAccountForm").validate({
+  rules: {
+    first_name: {
+      required: true,
+      noSpace: true,
+      maxlength:15,
+    },
+    last_name: {
+      required: true,
+      noSpace: true,
+      maxlength:15,
+    },
+    email: {
+      required: true,
+      email: true,
+      noSpace: true,
+
+    },
+    address: {
+      required: true,
+      noSpace: true,
+    },
+    contact_no : {
+      required: true,
+      minlength:7,
+      maxlength:14,
+      noSpace: true,
+      number: true
+    },
+    postal_code : {
+      required: true,
+      maxlength :6,
+      noSpace: true,
+    },
+    country : {
+      required: true,
+      noSpace: true,
+    },
+    state_id : {
+      required: true,
+      noSpace: true,
+    }
+  }
+});
+
+
+
+
+/****************************************************/
+
+    /*  Change Password */
+
+/***************************************************/
+$("#changePasswordForm").validate({
+ rules : {
+      old_password : {
+        required : true,
+        minlength : 3,
+        maxlength : 15,
+        noSpace: true,
+      },
+      new_password : {
+        required : true,
+        minlength : 3,
+        maxlength : 15,
+        noSpace: true,
+      },
+      confirm_password : {
+        required : true,
+        minlength : 3,
+        maxlength : 15,
+        noSpace: true,
+        equalTo : '#new_password'
+      }
+    },
+    messages : {
+      old_password: "Enter your Old Password.",
+      new_password: "Enter your New Password.",
+      confirm_password: {
+        required: "Enter your Confirm Password.",
+        equalTo: "Confirm Password does not match with New Password."
+      }
+    }
+});
+
+
+/****************************************************/
+
+    /*  autocomplete lat long  */
+
+/***************************************************/
+var address_1 = document.getElementById('address');
+        var autocomplete_address_1 = new google.maps.places.Autocomplete(address_1);
+        // alert(autocomplete_address_1);
+        google.maps.event.addListener(autocomplete_address_1, 'place_changed', function () {
+
+            var address_1 = autocomplete_address_1.getPlace();
+            document.getElementById('address_lat').value  = address_1.geometry.location.lat();
+            document.getElementById('address_long').value = address_1.geometry.location.lng();
+
+            var address_components = address_1.address_components;
+
+            // console.log(address_components);
+
+            $('#place_id').val(address_1.place_id);
+
+            $.each(address_components, function(index, component){
+              var types = component.types;
+              $.each(types, function(index, type){
+                if(type == 'locality') {
+                  city = component.long_name;
+                  $('#get-city').val(city);
+                }
+
+                if(type == 'postal_code'){
+                  $('#postal_code').val(component.short_name);
+                }
+              });
+            });
+        });
+
+
+/****************************************************/
+
+    /* CoachDeatilForm: Form Validation */
+
+/***************************************************/
+$("#coachDetailForm").validate({
+  rules: {
+    image_file: {
+      required: true,
+    },
+    city: {
+      required: true,
+      noSpace: true,
+    },
+    timezone: {
+      required: true,
+    },
+    price_range: {
+      required: true,
+    },
+    gender: {
+      required: true,
+    },
+    title: {
+      required: true,
+      noSpace: true,
+    },
+    bio: {
+      required: true,
+      noSpace: true,
+    },
+    categories : {
+      required: true
+    },
+    personality_and_training: {
+      required: true
+    },
+    languages : {
+      required: true,
+      noSpace: true,
+    },
+    education_title: {
+        required: true,
+        noSpace: true,
+      },
+      completion_year: {
+        required: true,
+        noSpace: true,
+      },
+      institute: {
+        required: true,
+        noSpace: true,
+      },
+      result_title: {
+        required: true,
+        noSpace: true,
+      },
+      star: {
+        required: true,
+      },
+      result_description: {
+        required: true,
+        noSpace: true,
+      },
+      completion_year: {
+        required: true,
+        noSpace: true,
+      }
+  }
+});
+
+/****************************************************/
+
+    /* Multi select Dropdown */
+
+/***************************************************/
+
+$(document).ready(function() {
+  $('.multiSelectDropDown').multiselect({
+    nonSelectedText: '--Select--',
+    numberDisplayed: 5,
+    includeSelectAllOption: true,
+    dropRight: true
+  });
+});
+
+
+
+
+/****************************************************/
+
+    /* Multi image select */
+
+/***************************************************/
+
+$(document).ready(function() {
+ $(function () {
+     $('.input-images-1').imageUploader();
+    });
+  });
+
+
+
+/****************************************************/
+
+    /* Year Picker */
+
+/***************************************************/
+
+$(".yearpicker1").datepicker({
+    format: "yyyy",
+    changeYear: true,
+    viewMode: "years",
+    minViewMode: "years",
+});
+
+
+/****************************************************/
+
+    /* coach Program */
+
+/***************************************************/
+$("#coachProgramForm").validate({
+    rules: {
+    image_file: {
+    required: true,
+        },
+    categories: {
+        required: true,
+      },
+      program_name: {
+        required: true,
+        noSpace: true,
+      },
+      description: {
+        required: true,
+        noSpace: true,
+
+      },
+      short_description: {
+        required: true,
+        noSpace: true,
+      },
+      price: {
+        required: true,
+        digits: true,
+        noSpace: true,
+      },
+      stock : {
+        required: true,
+        noSpace: true,
+      },
+      tax_class: {
+        required: true,
+        noSpace: true,
+      },
+      result_title_1: {
+        required: true,
+        noSpace: true,
+      },
+      result_description_1: {
+        required: true,
+        noSpace: true,
+      },
+      inside_title_1:{
+          required:true,
+          nospace:true,
+      },
+      inside_description_1:{
+        required:true,
+        nospace:true,
+      }
+    }
+  });
+
+
+
+/****************************************************/
+
+    /* coach Verification Form */
+
+/***************************************************/
+$("#coachVerificationForm").validate({
+    rules: {
+    qualified_fitness_coach: {
+        required: true,
+      },
+      qualifications: {
+        required: true,
+      },
+      country: {
+        required: true,
+      },
+      currently_insured: {
+        required: true,
+      },
+      insured_with: {
+        required: true,
+      },
+      insurance_type: {
+        required: true,
+      },
+      insurance_expire_date: {
+        required: true,
+      },
+      agree_as_a_coach: {
+        required: true,
+      }
+     }
+  });

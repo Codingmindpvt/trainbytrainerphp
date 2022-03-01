@@ -1,0 +1,20 @@
+{
+  "name": "lalit-chat",
+  "version": "1.0.0",
+  "description": "Socket chat by Lalit kumar",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js",
+    "start": "node server.js"
+  },
+  "author": "Lalit Kumar",
+  "license": "ISC",
+  "dependencies": {
+    "date-and-time": "^0.14.2",
+    "dotenv": "^8.6.0",
+    "express": "^4.17.1",
+    "mysql": "^2.18.1",
+    "request": "^2.88.2",
+    "socket.io": "^2.4.1"
+  }
+}

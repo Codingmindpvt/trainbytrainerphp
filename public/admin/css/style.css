@@ -1,0 +1,1127 @@
+*{margin:0;padding:0;}
+aside,section,article,p,div,span,figure,figcaption,img,input,form,html, footer, header,nav, p, ul, li{margin:0;padding:0;}
+ul{list-style:none;}
+.clear{clear:both;height:0;}
+:focus, .btn:focus, .btn:active:focus{outline:none;}
+ul:after{clear:both;display:block;content:"";}
+html{font-smooth:always;}
+img{max-width:100%;border:none;vertical-align:bottom;user-select:none;-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;  -o-user-select:none;}
+button, input[type="submit"]{-webkit-appearance:none;}
+body{background:#eeeef3;color: #242424;font-size:16px;line-height:21px;font-family: 'Oswald', sans-serif; font-weight:400; overflow-x:hidden;}
+body, html
+{
+    height:100%;
+}
+a
+{
+    color:#002395;
+}
+h1, h2, h3, h4, h5
+{
+    font-weight:400;
+}
+.error{
+    color: #E94235 !important;
+    font-family: 'Raleway' !important;
+    text-transform: none !important;
+}
+.account-text:hover{
+    color: #b5bbcb !important;
+}
+.label.label-danger {
+    background-color: #ff5f5a !important;
+}
+.label.label-success {
+    background-color: #62c23b !important;
+}
+.label.label-warning {
+    background-color: #737a81 !important;
+}
+.label.label-default {
+  background-color: #E9FAF7;
+  color: #1ACBAA;
+  padding: 2px 17px !important;
+  border-radius: 30px;
+}
+.no-record{
+    background: #fff;
+    margin: 0 auto;
+    text-align: center;
+    padding: 25px;
+    position: relative;
+    border-radius: 5px;
+    box-shadow: 0px 8px 28px rgba(0,0,0,.12);
+    height: 600px;
+}
+.main-img {
+    display: flex;
+    align-items: center;
+    min-height: calc(100vh - 186px);
+}
+.active-pending-box {
+    padding: 29px;
+}
+.nav-tabs{
+    border: none !important;
+}
+.action_td_box li{
+    display: inline-block;
+}
+.nav-link {
+    background: #eeeef3;
+    padding: 9px 20px;
+    border-radius: 5px;
+    color: #000;
+}
+.nav-item.active .nav-link {
+    background: #002395 !important;
+}
+.profile-image{
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    box-shadow: 0 0 2px 2px #d5f5ee;
+}
+.profile_image_small {
+    margin: 20px 0;
+    width: 50px;
+    height: 50px;
+}
+.profile_image_file_small {
+    margin: 9px 0;
+    width: 200px;
+    height: 200px;
+}
+.logo_header
+{
+    border-bottom:1px solid #d6d6da;
+    padding: 20px 0;
+}
+.login_form_outer
+{
+    max-width: 430px;
+    margin:120px auto 0;
+}
+.login_form
+{
+    background: #fff;
+    border-radius: 5px;
+    padding:30px;
+}
+.shadow
+{
+    vertical-align: top;
+}
+.login_form h2
+{
+    border-bottom:1px solid #e5e5e5;
+    color:#002395;
+    font-weight: 400;
+    margin:0;
+    padding-bottom: 20px;
+}
+.login_form label
+{
+    font-size: 18px;
+    color: #b5bbcb;
+    font-weight: 400;
+}
+.login_form .form-control
+{
+    box-shadow: none;
+    height: auto;
+    padding: 8px 15px;
+}
+.forgot_password a
+{
+    color: #1ACBAA;
+    //text-decoration: underline;
+    font-size: 14px;
+}
+.forgot_password a:hover
+{
+    color:#002395;
+    text-decoration: none;
+}
+.login_form .form-group
+{
+    margin-top: 20px;
+    margin-bottom: 0;
+}
+.blue_btn
+{
+    background: #002395;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 18px;
+    border: none;
+    padding: 7px 30px;
+    display: inline-block;
+    line-height: 26px;
+    margin-top: 20px;
+}
+.blue_btn:hover
+{
+    background: #1f2d57;
+}
+.login_form h2 + p
+{
+    margin-top: 20px;
+}
+
+/*** dashboard page css here ***/
+.header
+{
+    background: #fff;
+    box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    height: 78px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    -webkit-transform: translateZ(0);
+    z-index: 10;
+    min-width: 700px;
+}
+.logo_header img {
+    height: 40px;
+}
+.dashboard_logoarea
+{
+    background: #eeeef3;
+    float: left;
+    width:270px;
+    height: 78px;
+    padding: 13px 0px;
+}
+.dashboard_logoarea img
+{
+    height: 37px;
+    margin-top: 10px;
+}
+.right_loggedarea
+{
+    float: right;
+    margin-right: 15px;
+    margin-top: 18px;
+}
+.right_loggedarea ul li
+{
+    display: inline-block;
+    margin-left: 25px;
+    font-size: 14px;
+    vertical-align: middle;
+}
+.right_loggedarea ul li a
+{
+    color: #b5bbcb;
+    display: flex;
+    align-items: center;
+}
+.right_loggedarea ul li a i, .right_loggedarea ul li a:hover {
+    color: #999999;
+}
+.notification_count
+{
+    display: inline-block;
+    min-width: 22px;
+    min-height: 22px;
+    background: #1ACBAA;
+    text-align: center;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 100%;
+    margin-left: 5px;
+}
+.right_loggedarea ul li img
+{
+    vertical-align: middle;
+    margin-right: 10px;
+}
+.right_loggedarea ul li a i
+{
+    vertical-align: text-top;
+}
+.main-page
+{
+    padding-top: 78px;
+    padding-left: 270px;
+    height: 100%;
+    min-width:700px;
+}
+.left_sidebar
+{
+    position: fixed;
+    overflow: auto;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: #002395;
+    width: 270px;
+    padding-top: 85px;
+    z-index: 1;
+    -webkit-transform: translateZ(0);
+    transition:0.3s all ease-in;
+    -moz-transition:0.3s all ease-in;
+    -webkit-transition:0.3s all ease-in;
+    -ms-transition:0.3s all ease-in;
+    -o-transition:0.3s all ease-in;
+}
+.left_sidebar ul li
+{
+    border-bottom: 1px solid #123493;
+}
+.left_sidebar ul li:last-child
+{
+    border-bottom: none;
+}
+.left_sidebar ul li a
+{
+    position: relative;
+    color: #fff;
+    display: block;
+    padding: 12px;
+    cursor: pointer;
+}
+.left_sidebar ul li .page-title:after {
+    content: "\f078";
+    position: absolute;
+    font-family: 'FontAwesome';
+    top: 14px;
+    right: 12px;
+}
+.left_sidebar ul li .page-title.collapsed:after {
+    content: "\f054";
+}
+.right-icon {
+    position: absolute;
+    right: 0px;
+    top: 15px;
+}
+.sub {
+    padding-left: 22px;
+}
+.left_sidebar ul li a i
+{
+    min-width: 30px;
+}
+.left_sidebar ul li.active a, .left_sidebar ul li:hover a
+{
+    color: #1ACBAA;
+}
+.left_sidebar ul li.active a span, .left_sidebar ul li:hover a span
+{
+    //text-decoration: underline;
+}
+.content_area
+{
+    padding: 15px 15px 35px 15px;
+    min-height: 100%;
+    position: relative;
+}
+.dropdown img {
+    width: 40px;
+    height: 40px;
+    border-radius: 40px;
+    object-fit: cover;
+    min-width: 40px;
+}
+.top3_area
+{
+    padding: 10px 0 45px;
+}
+.white_three
+{
+    background: #fff;
+    margin: 20px 0 0 29px;
+    text-align: center;
+    padding: 25px;
+    position: relative;
+    border-radius: 2px;
+    box-shadow: 0px 8px 28px rgba(0,0,0,.12);
+}
+.white_three p
+{
+    color: #b5bbcb;
+}
+.white_three span
+{
+    position: absolute;
+    left: -29px;
+    width: 58px;
+    height: 58px;
+    font-size: 30px;
+    color: #fff;
+    line-height: 55px;
+    border-radius: 2px;
+    top: 15px;
+}
+.white_three h3
+{
+    margin-top: 0;
+}
+.main-page h2 {
+    margin: 17px 134px;
+    font-size: 28px;
+}
+.white_box {
+    background: #fff;
+    padding: 65px 2px;
+    border-radius: 2px;
+    font-family: 'Raleway';
+    margin: 14px 136px;
+}
+.user-details {
+    margin: 21px 0;
+}
+.user-main-box {
+    margin: 20px 0;
+}
+.total_sold h4
+{
+    font-weight:700;
+    color:#333333;
+    margin-bottom: 35px;
+}
+.insurance-text {
+    margin-top: 18px !important;
+}
+#commission_percent-error {
+    width: 100%;
+}
+.footer
+{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 10px 15px;
+}
+.right_loggedarea .dropdown-menu
+{
+    background: #002395;
+    right: 0;
+    left: inherit;
+    top: 58px;
+}
+.right_loggedarea .dropdown-menu a
+{
+    display: block;
+    color: #fff;
+    font-size: 16px;
+    padding: 10px;
+    border-bottom: 1px solid #6b8498;
+}
+.right_loggedarea .dropdown-menu a:last-child
+{
+    border-bottom: none;
+}
+.right_loggedarea .dropdown-menu a i {
+    color: #fff;
+    vertical-align: middle;
+    min-width: 25px;
+}
+.right_loggedarea .dropdown-menu a:hover, .right_loggedarea .dropdown-menu a:hover i
+{
+    color:#1ACBAA;
+}
+.right_loggedarea .dropdown-menu::after
+{
+    position: absolute;
+    content: "";
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid #002395;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    top: -20px;
+    right: 5px;
+}
+.relative{
+	padding: 12px 0;
+}
+.relative .text-base{
+	font-size: 20px;
+}
+.relative .text-sm{
+	font-size: 15px;
+	padding: 5px 0;
+    line-height: 23px;
+    font-weight: 300px;
+    font-family: 'Raleway' !important;
+}
+.inline-flex{
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    font-size: 20px;
+}
+.yellow_btn
+{
+    font-size: 16px;
+    font-weight: 700;
+    background: #1ACBAA;
+    padding: 6px 20px;
+}
+.yellow_btn:hover
+{
+    background: #002395;
+}
+.tables_area .white_box
+{
+    padding: 0;
+    box-shadow: 0 0 6px rgba(0,0,0,0.2);
+    margin-top: 15px;
+    margin: 14px 93px;
+}
+.pull-left {
+    margin: 12px 90px !important;
+}
+.table-responsive table thead tr th
+{
+    color: #002395;
+    font-size: 14px;
+    font-weight: 700;
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    text-transform: uppercase;
+    padding: 10px;
+}
+.table-responsive table tbody tr td
+{
+    color: #242424;
+    font-size: 14px;
+    //border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    padding: 12px 10px;
+}
+.table-responsive table tbody tr td:last-child
+{
+    border-right: none;
+}
+.table-responsive table tbody tr:nth-child(2n) td
+{
+    background:#eeeef3;
+}
+.action_btn
+{
+    color:#242424;
+    font-size:18px;
+    display: inline-block;
+    margin: 0 5px;
+}
+.action_btn:hover
+{
+    color:#1ACBAA;
+}
+/*** dashboard page css here ***/
+
+/*** add new fleet page css here ***/
+.add_formarea
+{
+    padding: 15px;
+}
+.big_yellow
+{
+    font-size: 18px;
+    padding: 10px 35px;
+    margin-bottom: 20px;
+}
+.add_formarea label
+{
+    font-size: 14px;
+    color: #242424;
+    font-weight: 400;
+    letter-spacing: 1px;
+}
+.add_formarea .form-control
+{
+    font-size: 16px;
+    color: #242424;
+    height: auto;
+    box-shadow: none;
+    padding: 8px 12px;
+}
+.add_map a
+{
+    font-size: 14px;
+    text-decoration: underline;
+}
+.icon_input
+{
+    position: relative;
+}
+.icon_input i {
+    font-size: 20px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+.form-group h3 {
+    margin-top: 5px;
+}
+.custom_select select
+{
+    width: 100%;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 8px;
+    line-height: 40px;
+}
+.custom_select
+{
+    position: relative;
+}
+.custom_select::after {
+    position: absolute;
+    top: 1px;
+    width: 40px;
+    background: #fff;
+    bottom: 1px;
+    text-align: center;
+    content: "\f0dd";
+    font-family: 'Raleway';
+    right: 1px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    font-size: 20px;
+    line-height: 30px;
+    pointer-events:none;
+}
+.tags li
+{
+    display: inline-block;
+    margin-top: 12px;
+}
+.tags li span
+{
+    display: inline-block;
+    border-radius: 5px;
+    background: #002395;
+    font-size: 14px;
+    position: relative;
+    padding-right: 20px;
+    color: #fff;
+    padding: 3px 25px 3px 8px;
+}
+.tags li span a
+{
+    position: absolute;
+    right: 7px;
+    top: 3px;
+    color:#fff;
+}
+.top_form
+{
+    padding-bottom: 20px;
+}
+.top_form .yellow_btn {
+    height: 39px;
+    margin: 0;
+    vertical-align: middle;
+    padding: 6px 35px;
+    font-size: 18px;
+}
+/*** add new fleet page css here ***/
+
+/*** accepted payment page css here ***/
+.payment_whitebox
+{
+    background: #fff;
+    padding: 12px 25px;
+    border-radius: 3px;
+    border:2px solid #fff;
+    box-shadow: 0px 8px 28px rgba(0,0,0,.12);
+    margin-bottom: 15px;
+}
+.payment_options li
+{
+    float: left;
+    width: 210px;
+    text-align: center;
+    text-transform: uppercase;
+    margin-top: 20px;
+    margin-right: 20px;
+    font-size: 14px;
+}
+.payment_options li:last-child
+{
+    margin-right: 0;
+}
+.payment_options li a
+{
+    color:#242424;
+}
+.payment_options li a.active
+{
+    color:#002395;
+}
+.payment_options li a.active .payment_whitebox
+{
+    border-color:#002395;
+}
+.payment_options
+{
+    padding-bottom: 20px;
+}
+/*** accepted payment page css here ***/
+
+/*** my Profile page css here ***/
+.profile_image
+{
+    margin: 0 auto;
+    width: 200px;
+    height: 200px;
+    border-radius: 100px;
+    object-fit: cover;
+}
+.my_profile label
+{
+    font-size: 14px;
+    color:#b5bbcb;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight:400;
+}
+.my_profile h4
+{
+    font-size: 20px;
+    margin-top: 0px;
+}
+.my_profile .col-sm-8 .row
+{
+    margin-top: 15px;
+}
+.upload_text
+{
+    color:#c4c4c5;
+    font-size: 14px;
+}
+.upload_image
+{
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+}
+.upload_image input
+{
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    z-index: 99;
+    cursor: pointer;
+}
+.my_profile .form-control
+{
+    height: auto;
+    padding: 10px;
+    color: #000;
+    box-shadow: none;
+    margin-bottom: 20px;
+}
+.my_profile .yellow_btn
+{
+    font-size: 18px;
+    padding: 10px 35px;
+    margin: 35px 0;
+}
+.top_form .form-control, .search_input .form-group .form-control
+{
+    height: auto;
+    padding: 8px 10px;
+    box-shadow: none;
+}
+.upload-certificate-box img.profile_picture {
+    width: 130px;
+    height: auto;
+}
+.upload-certificate-box {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+.eye-icon {
+    background: #000000bf;
+    color: #fff;
+    height: 40px;
+    position: absolute;
+    width: 40px;
+    margin: 0 auto !important;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+}
+.upload-certificate-box:hover .eye-icon {
+    background: #042395;
+}
+.eye-icon i {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+}
+/* .dropdown a:hover {
+    color: #fff !important;
+} */
+/*** my Profile page css here ***/
+
+/*** payment transaction page css here ***/
+.top_form h4
+{
+    margin-top: 30px;
+}
+.search_form li
+{
+    float: left;
+    width: 19%;
+    margin-right: 1.2%;
+}
+.search_form li:last-child
+{
+    margin-right: 0;
+}
+/*** payment transaction page css here ***/
+
+/*** subscription page css here ***/
+.subscription_box
+{
+    background: #fff;
+    padding: 12px;
+}
+.subscription_box h1
+{
+    font-weight: 700;
+    color: #002395;
+    font-size: 62px;
+}
+.subscription_time
+{
+    position: relative;
+    color: #1ACBAA;
+    text-transform: uppercase;
+}
+.subscription_time:after
+{
+    position: absolute;
+    left:0;
+    top:20px;
+    content: "";
+    width:100%;
+    height:1px;
+    background: #1ACBAA;
+}
+.subscription_time span
+{
+    display: inline-block;
+    background: #fff;
+    padding: 10px;
+    position: relative;
+    z-index: 1;
+}
+.subscription_box p
+{
+    color: #b5bbcb;
+    font-size: 18px;
+    margin-top: 25px;
+}
+.subscription_box h3
+{
+    margin-top: 10px;
+}
+/*** subscription page css here ***/
+
+/*** booking page css here ***/
+.search_input .form-group
+{
+    margin: 15px 0 0 0;
+}
+.search_input
+{
+    min-width: 260px;
+}
+.ticket_detailbox p, .ticket_detailbox h5
+{
+    color: #b5bbcb;
+    font-size: 16px;
+}
+.ticket_detailbox p span
+{
+    color: #000;
+}
+.ticket_detailbox .yellow_btn
+{
+    font-size: 18px;
+}
+.ticket_detailbox h5 span
+{
+    margin-left: 15px;
+}
+.ticket_detailbox h5
+{
+    margin-top: 30px;
+}
+.onward_returntable table thead tr th
+{
+    border-color: #b5bbcb;
+}
+.onward_returntable table tbody tr td
+{
+    vertical-align: top;
+    border-right:none;
+}
+.onward_returntable table tbody tr:last-child td
+{
+    border-bottom:none;
+}
+.onward_returntable table tbody tr td h4
+{
+    font-weight: 700;
+    margin:0;
+    color:#242424;
+}
+.ticket_detailbox td
+{
+    background:#fff !important;
+}
+.ticket_detailbox > td
+{
+    padding: 0px 25px 25px !important;
+}
+.hide_detail
+{
+    display: inline-block;
+    margin: 0 10px;
+}
+.dashboard_logoarea a
+{
+    display: inline-block;
+    vertical-align: middle;
+}
+.dashboard_logoarea a.menu_bar
+{
+    display:none;
+    vertical-align: middle;
+    font-size: 28px;
+    margin-right: 15px;
+}
+
+/*** booking page css here ***/
+
+/*** date picker css here ***/
+.ui-datepicker.ui-widget{background: #fff;border: 1px solid #ddd;min-width: 311px;}
+.ui-datepicker.ui-widget .ui-datepicker-header{background: none;border: none;}
+.ui-datepicker.ui-widget .ui-datepicker-prev .ui-icon, .ui-datepicker.ui-widget .ui-datepicker-next .ui-icon {background:url("../images/left_arrow.png") no-repeat scroll center center;cursor: pointer;height: 35px;left: 0;margin: 0;top: 0;width: 35px;}
+.ui-datepicker.ui-widget .ui-datepicker-next .ui-icon { background:url("../images/right_arrow.png") no-repeat scroll center center;}
+.ui-datepicker-title {color: #000;}
+.ui-datepicker.ui-widget a.ui-state-active{background: #15a5fb;color: #fff;}
+.ui-datepicker.ui-widget .ui-state-default, .ui-datepicker.ui-widget .ui-widget-content .ui-state-default, .ui-datepicker.ui-widget .ui-widget-header .ui-state-default {color: #000;padding: 0 10px;text-align: center;text-shadow: none;}
+.ui-datepicker .ui-datepicker-prev {left: 2px !important;top: 2px !important;}
+.ui-datepicker .ui-datepicker-next {right: 2px !important; top:2px !important;}
+.bootstrap-timepicker-widget.dropdown-menu.open {display: block;padding: 5px;}
+.bootstrap-timepicker-widget {text-align: center;}
+.bootstrap-timepicker-widget input {border: 1px solid #ccc; padding: 5px;text-align: center;border-radius: 5px;width: 75px;}
+.bootstrap-timepicker-widget table td {padding: 5px 10px;}
+/*** date picker css here ***/
+
+.custom_select .fstElement
+{
+    display: block;
+    font-size: 12px;
+    border-radius: 5px;
+}
+.custom_select .fstElement .fstControls
+{
+    width: 100%;
+}
+.custom_select .fstElement .fstControls .fstQueryInput
+{
+    color:#000;
+    padding: 5px;
+}
+.custom_select .fstChoiceItem, .custom_select .fstResultItem.fstSelected, .custom_select .fstResultItem.fstFocused
+{
+    background-color: #002395;
+    border-color:#002395;
+}
+.attireMainNav
+{
+    display:none;
+}
+.add_formarea h4 {
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #002395;
+}
+
+#passenger_detail .modal-dialog
+{
+    width: 98%;
+    margin: 30px auto;
+    max-width: 1000px;
+}
+.passenger_tabledrop, .hide_passenger, .drop_passenger_detail.active .view_passenger
+{
+    display: none;
+}
+.drop_passenger_detail a
+{
+    font-size: 14px;
+}
+.drop_passenger_detail.active .hide_passenger
+{
+    display: inline-block;
+}
+
+.notify{
+    z-index: 999;
+}
+/*----26 Decemeber 2021----*/
+.upload_image:after {
+    content: "\f040 ";
+    position: absolute;
+    font-family: 'FontAwesome';
+    bottom: 33px;
+    right: 2px;
+    font-size: 20px;
+    background: #1acbaa;
+    color: #fff;
+    padding: 12px;
+    border-radius: 50px;
+    width: 40px;
+    height: 40px;
+}
+.flex  {
+    width: 300px;
+}
+.btn-toggle.active {
+    background-color: #29b5a8;
+}
+.btn-toggle.active {
+    transition: background-color 0.25s;
+}
+.btn-toggle {
+    margin: 5px 4rem;
+    padding: 0;
+    position: relative;
+    border: none;
+    height: 22px;
+    width: 38px;
+    border-radius: 1.5rem;
+    color: #6b7381;
+    background: #bdc1c8;
+}
+.btn-toggle:before, .btn-toggle:after {
+    line-height: 1.5rem;
+    width: 4rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: absolute;
+    bottom: 0;
+    transition: opacity 0.25s;
+}
+.btn-toggle:before {
+    content: 'Suspend';
+    left: -4rem;
+}
+.btn-toggle.active:before {
+    opacity: 0.5;
+}
+.btn-toggle.active > .handle {
+    left: 1.6875rem;
+    transition: left 0.25s;
+}
+.btn-toggle > .handle {
+    position: absolute;
+    top: 0.1875rem;
+    left: 0.1875rem;
+    width: 17px;
+    height: 17px;
+    border-radius: 1.125rem;
+    background: #fff;
+    transition: left 0.25s;
+}
+.btn-toggle:before, .btn-toggle:after {
+    line-height: 1.5rem;
+    width: 4rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: absolute;
+    bottom: 0;
+    transition: opacity 0.25s;
+}
+.btn-toggle:after {
+    content: 'Active';
+    right: -4rem;
+    opacity: 0.5;
+}
+.no-found {
+  padding: 52px;
+}
+.no-found h4 {
+  font-size: 50px;
+  color: #ddd;
+  text-align: center;
+  font-style: italic;
+  padding: 60px 0;
+  font-family: 'Raleway' !important;
+}
+}
+.require-validation {
+    max-width: 1122px;
+    width: 100%;
+    margin: 70px auto;
+    background: #f7f7f7;
+    padding: 32px;
+    border-radius: 12px;
+}
+/*** responsive css here ***/
+@media screen and (max-width:1200px)
+{
+    .search_form li
+    {
+        width: 32%;
+        margin-right: 1.333%;
+    }
+}
+
+@media screen and (max-width:991px)
+{
+    .main-page
+    {
+        padding-left: 0;
+    }
+    .left_sidebar
+    {
+        left:-270px;
+    }
+    .left_sidebar.active
+    {
+        left:0;
+    }
+    .dashboard_logoarea a.menu_bar
+    {
+        display:inline-block;
+    }
+}
+
+@media screen and (max-width:767px)
+{
+    .login_form_outer
+    {
+        margin: 20px auto 0;
+    }
+}
+/*** responsive css here ***/
