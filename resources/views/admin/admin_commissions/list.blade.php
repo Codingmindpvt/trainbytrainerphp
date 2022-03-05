@@ -16,6 +16,7 @@
 								<tr>
 									<th>Serial No.</th>
 									<th>Commisssion Percent</th>
+									<th>Commisssion Type</th>
                                     <th>Action</th>
 								</tr>
 							</thead>
@@ -24,6 +25,7 @@
 								<tr>
 									<td>{{ $serial_no+1 }}</td>
 									<td>{{ $commission->commission_percent}}</td>
+									<td>{{ $commission->commission_type}}</td>
 									<td>
 										<a href="{{ route('admin.commission.edit',$commission->id) }}" class="action_btn"><i class="fa fa-edit" aria-hidden="true"></i></a>
 									</td>

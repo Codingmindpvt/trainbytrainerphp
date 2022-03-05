@@ -37,7 +37,7 @@
                 <aside class="col-lg-8 marketplace-main-box varification-box">
                     <div class="marketplace-header">
                         <div class="info-profile-head head-edit-account p-0">
-                            <h3>Add Class</h3>
+                            <h3>My Class</h3>
                         </div>
                     </div>
                     <div class="sale-by-location">
@@ -47,10 +47,13 @@
                             </div>
                         @endif
                         @include('frontend.class.includes.class_list')
+                        @if(isset($classes) && !empty($classes) && count($classes) > 0)
                         <h3 class="pull-right add-btn my-3 add_class_btn btn" style="font-size: 15px; cursor: pointer;">Add
                             Class</h3>
+                        @endif
                         <br>
-                        <div class="add_class_div" style="display: none;">
+
+                        <div class="add_class_div" style="{{ (isset($classes) && !empty($classes) && count($classes) > 0) ? 'display:none;' : 'display:block;' }}">
                             @include('frontend.class.includes.add_class')
 
                         </div>

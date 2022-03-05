@@ -20,13 +20,13 @@
                             <div class="form-group upload-profile" id="image-holder">
                             </div>
                             <input type="file" name="profile_image" accept="image/png, image/jpg, image/jpeg, image/webp"
-                                class="" id="fileUpload" style="display:none;">
+                                 id="fileUpload" style="display:none;">
                             <!-- <input type="file" name="profile_image22" class=""> -->
                             <p>Upload profile picture (optional)</p>
                             <div class="form-group row">
                                 <div class="col-sm-6">
                                     <label for="">First Name</label>
-                                    <input type="text" name="first_name" class="form-control form-input" id=""
+                                    <input type="text" name="first_name" class="form-control form-input"
                                         placeholder="E.g. Adam" onkeypress="return blockSpecialChar(event)">
                                 </div>
                                 <div class="col-sm-6">
@@ -41,10 +41,10 @@
 
                                 <label>Phone Number</label>
                                 <div class="phone-code-selected">
-                                    <input type="text" name="contact_no" class="form-control form-input" id=""
+                                    <input type="text" name="contact_no" class="form-control form-input"
                                         placeholder="Enter Phone Number" onkeypress="return onlyNumber(event)">
-                                    {{-- <span class="phone-code">+1</span> --}}
-                                    <?php
+                                    <span class="phone-code">+31</span>
+                                    {{-- <?php
                                     $details = get_country_code();
 
                                     ?>
@@ -52,11 +52,11 @@
                                         $details = get_country_code();
                                     @endphp
                                     <select class="phone-code" name="phonecode">
-                                        @foreach ($details as $detail)
+                                          @foreach ($details as $detail)
                                             <option value="+{{ $detail }} ">+{{ $detail }}</option>
                                         @endforeach
-                                        <!-- <option value="+91">+91</option> -->
-                                    </select>
+                                        <option>+31</option>
+                                    </select> --}}
 
                                 </div>
 
@@ -64,40 +64,27 @@
                             </div>
 
                             <h4 class="oswald-font blue-text normal-font">Billing Address</h4>
-                            {{-- <div class="view-box">
+                             {{--  <div class="view-box">
                                 <p class="my-2 form-p">Location of the Class</p>
                                 <input type="hidden" id="address_lat" name="latitude">
                                 <input type="hidden" id="address_long" name="longitude"><br>
 
                                 <input class="form-input on_change_addess map_address" type="text" id="address_1" name="address">
-                                <span class="errors address_error hide" id="address_error">
-                                    This address is not valid address. Please enter valid address
-                                </span>
-                            </div> --}}
+
+                            </div>  --}}
                             <div class="form-group">
-                                <label for="">Address</label>
-                                <input type="hidden" id="address_lat" name="latitude">
-                                <input type="hidden" id="address_long" name="longitude">
-                                <input class="form-input on_change_addess map_address" type="text" id="address_1"
-                                    name="address">
-                                <span class="errors address_error hide" id="address_error">
-                                    This address is not valid address. Please enter valid address
-                                </span>
+                                <label>Address</label>
+                                <input type="hidden" name="address_lat" id="address_lat" value="{{@$user->address_lat}}">
+                                <input type="hidden" name="address_long" id="address_long" value="{{@$user->address_long}}">
+                                <input type="text" class="form-control form-input" name="address" id="address"
+                                    placeholder="202 main chock, Dolphin nagar" value="{{@$user->address}}">
                             </div>
                             <div class="form-group row">
-
                                 <aside class="col-sm-6">
                                     <label for="">Country</label>
-                                    <div class="form-select">
-                                        <select class="form-input" name="country" id="country-dd">
-                                            <option value="">Select</option>
-                                            @foreach ($countries as $country)
-                                                <option value="{{ $country->id }}">{{ $country->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+                                    <input type="hidden" name="country" value="{{ $country->id }}">
+                                        <input type="text" class="form-control form-input"  value="{{@$country->name}}" disabled>
                                 </aside>
-
                                 <aside class="col-sm-6">
                                     <label for="">State</label>
                                     <div class="form-select">

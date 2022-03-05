@@ -50,4 +50,7 @@ class CoachProgram extends Model
     {
         return $this->hasOne(CoachDetail::class, 'user_id', 'id');
     }
+    public function order_list(){
+        return $this->hasMany('App\Models\OrderList', 'program_id', 'id'); 
+    }
 }

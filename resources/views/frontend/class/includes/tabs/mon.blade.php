@@ -8,8 +8,8 @@
                             <p class="tag-line">Class Name</p>
                             <div class="form-select">
                                 <select class="form-input class_id" id="exampleFormControlSelect1">
-                                    @if (isset($classes) && !empty($classes) && count($classes) > 0)
-                                        @foreach ($classes as $class)
+                                    @if (isset($show_classes) && !empty($show_classes) && count($show_classes) > 0)
+                                        @foreach ($show_classes as $class)
                                             <option value="{{ $class->id }}">{{ $class->name }}</option>
                                         @endforeach
                                     @endif
@@ -60,8 +60,8 @@
                         <p class="tag-line">Class Name</p>
                         <div class="form-select">
                             <select class="form-input class_id" id="exampleFormControlSelect1">
-                                @if (isset($classes) && !empty($classes) && count($classes) > 0)
-                                    @foreach ($classes as $class)
+                                @if (isset($show_classes) && !empty($show_classes) && count($show_classes) > 0)
+                                    @foreach ($show_classes as $class)
                                         <option value="{{ $class->id }}">{{ $class->name }}</option>
                                     @endforeach
                                 @endif

@@ -33,9 +33,6 @@ use Illuminate\Support\Facades\Route;
  */
 
 // Route::any('/review_submit',[HomeController::class,'review_submit']);
-
-/////
-
 Route::get('/', [HomeController::class, 'index'])->name('frontend.index');
 //Route::get('/admin/',[AdminController::class,'login'])->name('admin.login');
 Route::get('/admin/login', [AdminController::class, 'login'])->name('admin.login');
@@ -63,7 +60,7 @@ Route::any('/programs', [HomeController::class, 'Programs'])->name('programs');
 Route::get('/program-detail/{id}', [HomeController::class, 'programDetail'])->name('program-detail')->prefix('programs');
 Route::get('ajax-get-coaches', [HomeController::class, 'ajaxGetCoaches'])->name('ajax-get-coaches');
 
-Route::get('/classes-detail/{id}', [HomeController::class, 'classesDetail'])->name('classes-detail');
+Route::get('classes/classes-detail/{id}', [HomeController::class, 'classesDetail'])->name('classes-detail');
 
 /******************************************** Frontend *********************************************/
 
@@ -114,7 +111,7 @@ Route::group(['middleware' => ['auth', 'is.suspended']], function () {
     Route::get('/chat/{id?}', [HomeController::class, 'chat'])->name('chat');
     Route::get('/getchat', [HomeController::class, 'getchat_data'])->name('chat_data');
     Route::get('/getuser', [HomeController::class, 'chat_user_list'])->name('user_list');
-    
+
     Route::post('/chat_document',[HomeController::class,'upload_image_in_chat'])->name('upload_chat_doc');
     Route::get('dependent-dropdown', [HomeController::class, 'index']);
     Route::post('api/fetch-states', [HomeController::class, 'fetchState']);
@@ -123,8 +120,15 @@ Route::group(['middleware' => ['auth', 'is.suspended']], function () {
     Route::get('my-wishlist', [HomeController::class, 'myWishList'])->name('my-wishlist');
     Route::get('remove-to-wishlist', [HomeController::class, 'removeToWishlist'])->name('remove-to-wishlist'); // Date 6/1/2022 by Tarun saini
     Route::get('my-review-list', [HomeController::class, 'myreviewlist'])->name('my-review-list');
+
+    /************************************************* search**********************************/
+    Route::get('search', [HomeController::class, 'search'])->name('search');
+
     /***********************************Order history *****************/
     Route::get('/order-history', [HomeController::class, 'orderHistory'])->name('order-history');
+    Route::get('/my-orders', [HomeController::class, 'myOrders'])->name('my-orders');
+    Route::get('/my-program-order-detail/{id}', [HomeController::class, 'myProgramOrderDetail'])->name('my-program-order-detail');
+    Route::get('/my-session-order-detail/{id}', [HomeController::class, 'mySessionOrderDetail'])->name('my-session-order-detail');
 
     /*********************************************** Coach ************************************************/
     Route::match(['get', 'post'], '/review_submit_program', [CoachController::class, 'review_submit_program'])->name('review_submit_program');
@@ -132,6 +136,11 @@ Route::group(['middleware' => ['auth', 'is.suspended']], function () {
     Route::get('coach-dashboard', [CoachController::class, 'coachDashboard'])->name('coach-dashboard');
     Route::get('/coach-profile-detail', [CoachController::class, 'coach_profile_detail'])->name('coach-profile-detail');
     Route::any('/coach-profile-Detail', [CoachController::class, 'coachProfileDetail'])->name('coach.Profile.Detail');
+    Route::get('add-coach-result', [CoachController::class, 'addCoachResult'])->name('coach.add-coach-result');
+    Route::post('create-coach-result', [CoachController::class, 'createCoachResult'])->name('coach.create-coach-result');
+    Route::get('edit-coach-result/{id}', [CoachController::class, 'editCoachResult'])->name('coach.edit-coach-result');
+    Route::post('update-coach-result', [CoachController::class, 'updateCoachResult'])->name('coach.update-coach-result');
+    Route::get('/delete-coach-result/{id}', [CoachController::class, 'deleteCoachResult'])->name('coach.delete-coach-result');
     Route::get('edit-coach-profile/{id}', [CoachController::class, 'editCoachProfile'])->name('edit-coach-profile');
     Route::post('update-coach-profile', [CoachController::class, 'updateCoachProfile'])->name('update-coach-profile');
     Route::any('delete-coach-profile', [CoachController::class, 'deleteCoachProfile'])->name('delete-coach-profile');
@@ -140,6 +149,25 @@ Route::group(['middleware' => ['auth', 'is.suspended']], function () {
     Route::get('/add-program', [CoachController::class, 'addProgram'])->name('add-program');
     Route::get('/edit-program/{id}', [CoachController::class, 'editProgram'])->name('edit-program');
     Route::post('/update-program', [CoachController::class, 'updateProgram'])->name('update-program');
+
+    Route::get('add-program-result/{id}', [CoachController::class, 'addProgramResult'])->name('coach.add-program-result');
+    Route::post('create-program-result', [CoachController::class, 'createProgramResult'])->name('coach.create-program-result');
+    Route::get('edit-program-result/{id}', [CoachController::class, 'editProgramResult'])->name('coach.edit-program-result');
+    Route::post('update-program-result', [CoachController::class, 'updateProgramResult'])->name('coach.update-program-result');
+    Route::get('/delete-program-result/{id}', [CoachController::class, 'deleteProgramResult'])->name('coach.delete-program-result');
+
+    Route::get('add-program-inside/{id}', [CoachController::class, 'addProgramInside'])->name('coach.add-program-inside');
+    Route::post('create-program-inside', [CoachController::class, 'createProgramInside'])->name('coach.create-program-inside');
+    Route::get('edit-program-inside/{id}', [CoachController::class, 'editProgramInside'])->name('coach.edit-program-inside');
+    Route::post('update-program-inside', [CoachController::class, 'updateProgramInside'])->name('coach.update-program-inside');
+    Route::get('/delete-program-inside/{id}', [CoachController::class, 'deleteProgramInside'])->name('coach.delete-program-inside');
+
+    Route::get('add-program-file/{id}', [CoachController::class, 'addProgramFile'])->name('coach.add-program-file');
+    Route::post('create-program-file', [CoachController::class, 'createProgramFile'])->name('coach.create-program-file');
+    Route::get('edit-program-file/{id}', [CoachController::class, 'editProgramFile'])->name('coach.edit-program-file');
+    Route::post('update-program-file', [CoachController::class, 'updateProgramFile'])->name('coach.update-program-file');
+    Route::get('/delete-program-file/{id}', [CoachController::class, 'deleteProgramFile'])->name('coach.delete-program-file');
+
     Route::get('/add-class', [ClassController::class, 'addClass'])->name('add.class');
     Route::post('/save-class', [ClassController::class, 'saveClass'])->name('save.class');
     Route::post('/update-class', [ClassController::class, 'updateClass'])->name('update.class');
@@ -158,6 +186,10 @@ Route::group(['middleware' => ['auth', 'is.suspended']], function () {
     Route::get('/add-new-program', [CoachController::class, 'addNewprogram'])->name('add-new-program');
     Route::get('/certificate-diploma', [CoachController::class, 'certificateDiploma'])->name('coach.certificate-diploma');
     Route::get('/certificate-diploma-edit/{id}', [CoachController::class, 'editCertificateDiploma'])->name('coach.certificate-diploma-edit');
+    Route::get('/add-coach-education', [CoachController::class, 'addCoachEducation'])->name('coach.add-coach-education');
+    Route::post('/create-coach-education', [CoachController::class, 'createCoachEducation'])->name('coach.create-coach-education');
+    Route::get('/edit-coach-education/{id}', [CoachController::class, 'editCoachEducation'])->name('coach.edit-coach-education');
+    Route::post('/update-coach-education', [CoachController::class, 'updateCoachEducation'])->name('coach.update-coach-education');
     Route::post('/certificate-diploma-update', [CoachController::class, 'updateCertificateDiploma'])->name('coach.certificate-diploma-update');
     Route::get('/certificate-diploma-delete/{id}', [CoachController::class, 'deleteCertificateDiploma'])->name('coach.certificate-diploma-delete');
     Route::get('/coach-verification', [CoachController::class, 'coach_verification'])->name('coach.verification');
@@ -166,13 +198,19 @@ Route::group(['middleware' => ['auth', 'is.suspended']], function () {
     Route::get('/edit-coach-verification/{id}', [CoachController::class, 'editCoachVerification'])->name('edit-coach-verification');
     Route::post('/update-coach-verification', [CoachController::class, 'updateCoachVerification'])->name('update-coach-verification');
     Route::get('/delete-coach-verification/{id}', [CoachController::class, 'deleteCoachVerification'])->name('delete-coach-verification');
+
     Route::get('/coach-badge-send-request/{id}', [CoachController::class, 'coachBadgeSendRequest'])->name('coach-badge-send-request');
     Route::get('/my-product-list', [CoachController::class, 'myProductList'])->name('coach.my-product-list');
+    Route::get('/searchProductList', [CoachController::class, 'searchProductList'])->name('searchProductList');
+    Route::get('/searchProductListDetail', [CoachController::class, 'searchProductListDetail'])->name('searchProductListDetail');
+
     Route::get('/reviews', [CoachController::class, 'Reviews'])->name('coach.reviews');
     Route::get('/review-reason', [CoachController::class, 'ReviewReason'])->name('coach.review_reason');
     Route::get('/my-transaction-list', [CoachController::class, 'myTransactionList'])->name('coach.my-transaction-list');
     Route::get('/add-new-program-two', [CoachController::class, 'addNewProgramTwo'])->name('coach.add-new-program-two');
     Route::any('/coach-status', [CoachController::class, 'coachStatus'])->name('coach.check-status');
+    Route::any('/coach-chat-status', [CoachController::class, 'coachChatStatus'])->name('coach.check-chat-status');
+    Route::get('/searching_program_list', [CoachController::class, 'searching_program_list'])->name('searching_program_list');
 
     /******************************* Billing Address ************************/
 
@@ -182,9 +220,15 @@ Route::group(['middleware' => ['auth', 'is.suspended']], function () {
     Route::get('/address-billing-delete/{id}', [CoachController::class, 'removeBillingAddress'])->name('address-billing-delete');
     Route::get('/edit-address-billing/{id}', [CoachController::class, 'editBillingAddress'])->name('edit-address-billing');
     Route::post('/update-address-billing/{id}', [CoachController::class, 'updateBillingAddress'])->name('update-address-billing');
+    Route::get('/order-program-detail/{id}', [CoachController::class, 'orderProgramDetail'])->name('coach.order-program-detail');
+    Route::get('/order-class-detail/{id}', [CoachController::class, 'orderClassDetail'])->name('coach.order-class-detail');
     Route::get('/my-order-list', [CoachController::class, 'myOrderList'])->name('coach.my-order-list');
+    Route::any('reject-booking-request', [CoachController::class, 'rejectBookingRequest'])->name('booking.reject-booking-request');
+    Route::any('accept-booking-request', [CoachController::class, 'acceptBookingRequest'])->name('booking.accept-booking-request');
     Route::get('/my-customers', [CoachController::class, 'myCustomers'])->name('coach.my-customers');
     Route::get('/checkout', [CoachController::class, 'checkout'])->name('coach.checkout');
+
+
 });
 
 /*********************************************** Admin ************************************************/
@@ -285,8 +329,7 @@ Route::any('/admin/change-review-status', [ReviewController::class, 'changeRevie
 //class booking
 Route::any('booking-list', [BookingController::class, 'bookingList'])->name('admin.booking.list');
 Route::any('booking-view/{id}/', [BookingController::class, 'bookingView'])->name('admin.booking.view');
-Route::any('reject-booking-request', [BookingController::class, 'rejectBookingRequest'])->name('admin.booking.reject-booking-request');
-Route::any('accept-booking-request', [BookingController::class, 'acceptBookingRequest'])->name('admin.booking.accept-booking-request');
+
 
 //how it works (heading)
 Route::any('heading-list', [AdminHowItWorkController::class, 'headingList'])->name('admin.how-it-work.heading.list');
@@ -314,3 +357,4 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::any('verify-sepa-debit', [SepaController::class, 'verifySepaDebit'])->name('verify.sepa.debit');
 Route::any('webhook-verify-sepa-debit', [SepaController::class, 'webhookVerifySepaDebit'])->name('webhook.verify.sepa.debit');
+Route::get('verify-direct-payment', [SepaController::class, 'verifyDirectPayment'])->name('verify.direct.payment');

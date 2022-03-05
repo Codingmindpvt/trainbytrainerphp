@@ -41,7 +41,9 @@
                             <span class="add-image-new"><img src="{{asset('public/images/add.png') }}" alt="add">
                                 <input type="file" name="profile_image" accept="image/png, image/jpg, image/jpeg, image/webp"  onchange="profileurl(this);" class="custom-input">
                             </span>
+                            <div class="select_profile_box">
                             <div class="select_profile_errors"></div>
+                            </div>
 
                             <div class="profile-content-text">
                                 <p>Update Profile Picture</p>
@@ -53,14 +55,14 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>First Name</label>
-                                            <input type="text" class="form-control" id=""
+                                            <input type="text" class="form-control"
                                                 placeholder="Adam" name="first_name" value="{{@$user->first_name}}" onkeypress="return blockSpecialChar(event)">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Last Name</label>
-                                            <input type="text" class="form-control" name="last_name" id=""
+                                            <input type="text" class="form-control" name="last_name"
                                                 placeholder="Smith" value="{{@$user->last_name}}" onkeypress="return blockSpecialChar(event)">
                                         </div>
                                     </div>
@@ -68,7 +70,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label >Email Address</label>
-                                            <input type="text" class="form-control" name="email" id=""
+                                            <input type="text" class="form-control" name="email"
                                                 placeholder="adam_smith007@gmail.com" value="{{@$user->email}}" readonly>
                                         </div>
                                     </div>
@@ -76,9 +78,9 @@
                                         <div class="form-group">
                                              <label>Phone Number</label>
                                             <div class="phone-code-selected">
-                                            <input type="text" name="contact_no" value="{{@$user->contact_no}}" class="form-control form-input" id="" placeholder="Enter Phone Number" onkeypress="return onlyNumber(event)">
-                                            {{-- <span class="phone-code">+1</span> --}}
-                                            <?php
+                                            <input type="text" name="contact_no" value="{{@$user->contact_no}}" class="form-control form-input" placeholder="Enter Phone Number" onkeypress="return onlyNumber(event)">
+                                             <span class="phone-code">+31</span>
+                                            {{-- <?php
                                             $details = get_country_code();
 
                                             ?>
@@ -86,11 +88,13 @@
                                         $details = get_country_code();
                                     @endphp
                                     <select class="phone-code" name="phonecode">
+                                        <option value="">+31</option>
                                         @foreach ($details as $detail)
-                                            <option value="+{{ $detail }} ">+{{ $detail }}</option>
+                                            <option value="+{{ $detail }}">+{{ $detail }}</option>
                                         @endforeach
+                                        <option>+31</option>
                                         <!-- <option value="+91">+91</option> -->
-                                    </select>
+                                    </select> --}}
                                         </div>
                                         </div>
                                     </div>
@@ -100,30 +104,25 @@
                                             <input type="hidden" name="address_lat" id="address_lat" value="{{@$user->address_lat}}">
                                             <input type="hidden" name="address_long" id="address_long" value="{{@$user->address_long}}">
                                             <input type="text" class="form-control" name="address" id="address"
-                                                placeholder="202 main chock, Dolphin nagar" value="{{@$user->address}}">
+                                                placeholder="202 main chock, Dolphin nagar" value="{{@$user->address}}"
+                                                onkeypress="return notSpace(event)">
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="exampleFormControlSelect1">Country</label>
-                                            <i class="fa fa-angle-down select-angle" aria-hidden="true"></i>
-                                            <select class="form-control" name="country" id="exampleFormControlSelect1">
-                                                @if(!empty(@$user->country_id))
-                                                <option style="display:none" value="{{$user->country->id}}" selected>{{$user->country->name}}</option>
-                                                @endif
-                                                <option value="">Select</option>
-                                                @foreach($countries as $country)
-                                                  <option value="{{$country->id}}">{{$country->name}}</option>
-                                                @endforeach
-                                            </select>
+                                             <label for="">Country</label>
+                                             <input type="hidden" name="country" value="{{ $country->id }}">
+                                                    <input type="text" class="form-control form-input"  value="{{@$country->name}}" disabled>
+
+                                            </aside>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="exampleFormControlSelect1">State</label>
                                             <i class="fa fa-angle-down select-angle" aria-hidden="true"></i>
-                                            <select class="form-control" name="state_id"  id="exampleFormControlSelect1">
+                                            <select class="form-control" name="state_id">
                                                 @if(!empty(@$user->state_id))
                                                 <option style="display:none" value="{{$user->state->id}}" selected>{{$user->state->name}}</option>
                                                 @endif
@@ -140,14 +139,14 @@
 
                                                 <label for="">City</label>
 
-                                              <input type="text" name="city"  value="{{$user->city }}"class="form-control form-input" id="get-city" placeholder="E.g. City">
+                                              <input type="text" name="city"  value="{{$user->city }}"class="form-control form-input"  placeholder="E.g. City">
 
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Postal Code</label>
-                                            <input type="text" class="form-control" name="postal_code" id="postal_code"
+                                            <input type="text" class="form-control" name="postal_code"
                                                 placeholder="111111" value="{{@$user->postal_code}}">
                                         </div>
                                     </div>
@@ -172,4 +171,15 @@
             </div>
         </div>
     </section>
+    <script>
+        function notSpace(evt) {
+            evt = (evt) ? evt : window.event;
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if(charCode == 32){
+                return false;
+            }
+            return true;
+        }
+
+        </script>
 @endsection

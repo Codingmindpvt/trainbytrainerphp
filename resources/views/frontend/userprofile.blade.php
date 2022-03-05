@@ -5,47 +5,49 @@
 <section class="user-profile-page">
     <div class="container">
         <div class="user-name-tag text-center m-5">
-            <h1>Hi, {{ucwords(@$user->first_name." ".@$user->last_name)}} !</h1>
+            <h1>Hi, {{ucwords(@$user->first_name." ".@$user->last_name)}} {!! certifiedUser() !!}</h1>
+
             <p>View and edit personal details here</p>
         </div>
         <div class="row">
             <div class="col-md-4">
-            @if(Auth::check() && Auth::user()->role_type == 'C')
-                    <!-- start coach sidebar here -->
+                @if(Auth::check() && Auth::user()->role_type == 'C')
+                <!-- start coach sidebar here -->
 
-                                @include('frontend.nav._coachSideBar')
+                @include('frontend.nav._coachSideBar')
 
-                    <!-- end coach sidebar here -->
-            @else
-                    <!-- start sidebar here -->
+                <!-- end coach sidebar here -->
+                @else
+                <!-- start sidebar here -->
 
-                                @include('frontend.nav._sidebar')
+                @include('frontend.nav._sidebar')
 
-                    <!-- end sidebar here -->
-            @endif
+                <!-- end sidebar here -->
+                @endif
             </div>
             <div class="col-md-8">
                 <div class="user-profle-right-side">
                     <div class="info-profile-head">
                         <h3>Account Information</h3>
-                        <a href ="{{ route('edit_profile') }}"><i class="fa fa-pencil" aria-hidden="true"></i> EDIT INFORMATION</a>
+                        <a href="{{ route('edit_profile') }}"><i class="fa fa-pencil" aria-hidden="true"></i> EDIT
+                            INFORMATION</a>
                     </div>
                     <hr>
                     <div class="profile-content-box">
 
                         @if(!empty(@$user->profile_image))
-                        <img src="{{asset('public/'.@$user->profile_image) }}" alt="" class="mr-3">
+                        <img src="{{asset('public/'.@$user->profile_image) }}" alt="" class="mr-3 profile_picture">
                         @else
-                        <img src="{{asset('public/images/default-image.png') }}" alt="" class="mr-3">
+                        <img src="{{asset('public/images/default-image.png') }}" alt="" class="mr-3 profile_picture">
                         @endif
 
-                        <div class="profile-content-text">
+                        <div class="profile-content-text ">
                             <h2>{{ucwords(@$user->first_name." ".@$user->last_name)}}</h2>
                             <p>{{@$user->email}}</p>
                             <div class="row mt-3">
                                 <div class="col-6">
                                     <p class="phone-head">Phone Number</p>
-                                    <p>{{@$user->contact_no}}</p>
+                                    <p>+31{{@$user->contact_no}}</p>
                                 </div>
                                 <div class="col-6">
                                     <p class="phone-head">Address</p>
@@ -81,21 +83,26 @@
                     <div class="change-pass-area">
                         <h3>Change Password</h3>
 
-                        <form id="changePasswordForm" class="input-box" action="{{ route('change_password') }}" method="post" enctype="multipart/form-data">
-                                @csrf
+                        <form id="changePasswordForm" class="input-box" action="{{ route('change_password') }}"
+                            method="post" enctype="multipart/form-data">
+                            @csrf
                             <div class="form-group">
-                              <label for="formGroupExampleInput">Current Password</label>
-                              <input type="password" class="form-control" name="old_password" id="old_password" placeholder="Enter Password">
+                                <label for="formGroupExampleInput">Current Password</label>
+                                <input type="password" class="form-control" name="old_password" id="old_password"
+                                    placeholder="Enter Password" onkeypress="return notSpace(event)">
                             </div>
                             <div class="form-group">
-                              <label for="formGroupExampleInput2">New Password</label>
-                              <input type="password" class="form-control" name="new_password" id="new_password" placeholder="Enter Password" onkeypress="return notSpace(event)">
+                                <label for="formGroupExampleInput2">New Password</label>
+                                <input type="password" class="form-control" name="new_password" id="new_password"
+                                    placeholder="Enter Password" onkeypress="return notSpace(event)">
                             </div>
                             <div class="form-group">
                                 <label for="formGroupExampleInput2">Confirm New Password</label>
-                                <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="Enter Password" onkeypress="return notSpace(event)">
+                                <input type="password" class="form-control" name="confirm_password"
+                                    id="confirm_password" placeholder="Enter Password"
+                                    onkeypress="return notSpace(event)">
                             </div>
-                            <input type="submit" name="submit" class="sign-bt" value="SUBMIT"/>
+                            <input type="submit" name="submit" class="sign-bt" value="SUBMIT" />
                         </form>
                     </div>
                 </div>
@@ -104,14 +111,13 @@
     </div>
 </section>
 <script>
-    function notSpace(evt) {
-        evt = (evt) ? evt : window.event;
-        var charCode = (evt.which) ? evt.which : evt.keyCode;
-        if(charCode == 32){
-            return false;
-        }
-        return true;
+function notSpace(evt) {
+    evt = (evt) ? evt : window.event;
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    if (charCode == 32) {
+        return false;
     }
-
-    </script>
+    return true;
+}
+</script>
 @endsection

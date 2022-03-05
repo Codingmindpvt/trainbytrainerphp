@@ -44,7 +44,8 @@
 					<form method="post" id="coachVerificationForm" action="{{ route('coach.add-verification') }}" enctype="multipart/form-data">
 						@csrf
 					<div class="sale-by-location">
-					<h4 class="oswald-font">Qualifications</h4>
+					<h4 class="oswald-font">Qualifications<span><i class="fa fa-asterisk validate-mark"
+                        aria-hidden="true"></i></span></h4>
 						<div class="view-box">
 							<p class="my-2 form-p">Are you a qualified fitness coach?</p>
 							<div class="form-check-inline">
@@ -85,7 +86,8 @@
 
 						</div>
 						<div class="view-box imsurance-box">
-							<h4 class="oswald-font">Insurance</h4>
+							<h4 class="oswald-font">Insurance<span><i class="fa fa-asterisk validate-mark"
+                                aria-hidden="true"></i></span></h4>
 						</div>
 						<div class="view-box">
 							<p class="my-2 form-p">Are you currently insured?</p>

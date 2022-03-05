@@ -258,16 +258,17 @@ class AdminController extends Controller
         $coachProfile = CoachDetail::where('user_id',$request->id)->first();
         $details->coach_profile_verification_status = User::COACH_PROFILE_STATUS_REJECT;
         $coachProfile->status = CoachDetail::STATUS_SUSPEND;
+        $coachProfile->profile_status = 'D';
         $reason = $request->reason;
         if ($details->save()) {
             $coachProfile->save();
-            //send verification mail for admin 
+            //send verification mail for admin
             $base_url = url('/');
 
             $mail_data['subject'] = 'Train By Trainer: Verification of Profile';
             $mail_data['email'] = $details->email;
             $mail_data['full_name'] = $details->first_name . " " . $details->last_name;
-            $mail_data['link'] = $base_url . "/index";
+            $mail_data['link'] = $base_url;
             $mail_data['content'] = '<p>Admin has rejected your account approval request. Please see the reason mentioned below and resubmit your profile information.</p><p><b>Reason: </b>'.$reason.'</p>';
             $mail_data['layout'] = 'email_templates.coach-profile-status';
             emailSend($mail_data);
@@ -281,15 +282,16 @@ class AdminController extends Controller
         $coachProfile = CoachDetail::where('user_id',$request->id)->first();
         $details->coach_profile_verification_status = User::COACH_PROFILE_STATUS_VERIFY;
         $coachProfile->status = CoachDetail::STATUS_VERIFY;
+        $coachProfile->profile_status = 'E';
         if ($details->save()) {
             $coachProfile->save();
-            //send verification mail for admin 
+            //send verification mail for admin
             $base_url = url('/');
 
             $mail_data['subject'] = 'Train By Trainer: Verification of Profile';
             $mail_data['email'] = $details->email;
             $mail_data['full_name'] = $details->first_name . " " . $details->last_name;
-            $mail_data['link'] = $base_url . "/index";
+            $mail_data['link'] = $base_url;
             $mail_data['content'] = 'Admin has accepted your account approval request.';
             $mail_data['layout'] = 'email_templates.coach-profile-status';
             emailSend($mail_data);
@@ -309,7 +311,7 @@ class AdminController extends Controller
             $reason = $request->reason;
             if ($details->save()) {
                 $coachVerificationDetail->save();
-                //send verification mail for admin 
+                //send verification mail for admin
                 $base_url = url('/');
 
                 $mail_data['subject'] = 'Train By Trainer: Request for Badge';
@@ -333,7 +335,7 @@ class AdminController extends Controller
             $coachVerificationDetail->badge_status = VerificationDetail::STATUS_CERTIFIED;
             if ($details->save()) {
                 $coachVerificationDetail->save();
-                //send verification mail for admin 
+                //send verification mail for admin
                 $base_url = url('/');
 
                 $mail_data['subject'] = 'Train By Trainer: Request for Badge';
@@ -344,11 +346,11 @@ class AdminController extends Controller
                 $mail_data['layout'] = 'email_templates.coach-profile-status';
                 emailSend($mail_data);
                 return response()->json(['message' => 'User status update successfully!']);
-            }  
+            }
         }else{
              return response()->json(['message' => 'Please verify coach profile first!!']);
         }
-        
+
         return response()->json(['error' => 'User status not updated successfully!!!']);
     }
 
@@ -421,7 +423,7 @@ class AdminController extends Controller
             'contact_no' => 'required',
             'address' => 'required',
             'postal_code' => 'required',
-            
+
             'city' =>'required'
         ]);
 
@@ -438,7 +440,7 @@ class AdminController extends Controller
         $user->contact_no = $request->contact_no;
         $user->address = $request->address;
         $user->postal_code = $request->postal_code;
-        
+
         $user->city =$request->city;
         $user->country_id = $request->country;
         $user->state_id =$request->state;
@@ -463,17 +465,17 @@ class AdminController extends Controller
                 $userToLogout = User::find($request->id);
                 Auth::setUser($userToLogout);
                 Auth::logout();
-    
+
             }
             if ($details->save()) {
-    
+
                 return response()->json([
                     'status' => $details->getStatusText(),
                     'message' => 'User status update successfully!'
                 ]);
             }
-           
-            
+
+
         }
     public function editBuisnessUser($id)
     {

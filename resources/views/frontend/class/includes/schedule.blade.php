@@ -36,7 +36,7 @@
         </div>
     @else
         <center>
-            <h4>If you schedule a class create a class first!</h4>
+            <h4>Kindly add classes first to schedule them!</h4>
         </center>
     @endif
 

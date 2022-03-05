@@ -26,7 +26,7 @@
 
 
 
-					<a class="categories-icon-box" href="{{ route('coaches', ['cat_id'=>$item->id]) }}">
+					<a class="categories-icon-box" href="{{ route('coaches', ['filter_category'=>$item->id]) }}">
 						@if(!empty(@$item->image_file))
 			               				 	<img src="{{asset('public/'.@$item->image_file) }}" class="img-circle profile_image_small"/>
 			             				@else

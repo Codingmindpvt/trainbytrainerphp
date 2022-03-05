@@ -30,7 +30,8 @@ class AdminCommissionController extends Controller
              notify()->error('Error', 'Commission already added');
             return redirect()->route('admin.commission.list');
         }
-
+        
+        
         if ($request->isMethod('post')) {
             $validator = Validator::make($request->all(), [
                 'commission_percent' => 'required|numeric',
@@ -44,6 +45,8 @@ class AdminCommissionController extends Controller
 
             $admin_commission = new AdminCommission;
             $admin_commission->commission_percent = $request->commission_percent;
+            $admin_commission->commission_type = $request->commission_type;
+
 
             if ($admin_commission->save()) {
                 notify()->success('Success', 'Commission added successfully');
@@ -80,6 +83,7 @@ class AdminCommissionController extends Controller
             }
 
             $commission->commission_percent = $request->commission_percent;
+            $commission->commission_type = $request->commission_type;
 
             if ($commission->save()) {
                 return redirect()->route('admin.commission.list')->with('success', 'Commission updated successfully');

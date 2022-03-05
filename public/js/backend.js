@@ -25,8 +25,6 @@
 
 
 
-
-
  /********************************/
 
     /* LOGIN: Form Validation */
@@ -37,6 +35,7 @@ $("#loginForm").validate({
     email: {
       required: true,
       email: true,
+      noSpace: true
     },
     password : {
       required: true,
@@ -239,10 +238,10 @@ $("#createProfileForm").validate({
     },
     postal_code : {
     	required: true,
-      maxlength : 6,
+      maxlength : 8,
       noSpace: true
     },
-    city_id : {
+    city : {
     	required: true,
         noSpace: true,
     },
@@ -258,6 +257,27 @@ $("#createProfileForm").validate({
   }
 });
 
+
+	/****************************************************/
+
+    /* PROGRAMDETAIL REVIW AND RATING: Form Validation */
+
+/***************************************************/
+$("#frm").validate({
+    rules: {
+      title: {
+        required: true,
+        noSpace: true,
+        maxlength:50,
+      },
+      description : {
+        required: true,
+        noSpace: true,
+        maxlength:500,
+      }
+
+    }
+  });
 
 
 
@@ -317,6 +337,7 @@ $("#updateAccountForm").validate({
     address: {
       required: true,
       noSpace: true,
+      maxlength:100,
     },
     contact_no : {
       required: true,
@@ -327,7 +348,7 @@ $("#updateAccountForm").validate({
     },
     postal_code : {
       required: true,
-      maxlength :6,
+      maxlength :8,
       noSpace: true,
     },
     country : {
@@ -337,6 +358,11 @@ $("#updateAccountForm").validate({
     state_id : {
       required: true,
       noSpace: true,
+    },
+    city :{
+        required: true,
+        noSpace: true,
+        maxlength:50,
     }
   }
 });
@@ -353,9 +379,10 @@ $("#changePasswordForm").validate({
  rules : {
       old_password : {
         required : true,
+        noSpace: true,
         minlength : 3,
         maxlength : 15,
-        noSpace: true,
+
       },
       new_password : {
         required : true,
@@ -372,7 +399,7 @@ $("#changePasswordForm").validate({
       }
     },
     messages : {
-      old_password: "Enter your Old Password.",
+      old_password: "Enter your Current Password.",
       new_password: "Enter your New Password.",
       confirm_password: {
         required: "Enter your Confirm Password.",
@@ -388,8 +415,10 @@ $("#changePasswordForm").validate({
 
 /***************************************************/
 var address_1 = document.getElementById('address');
+
         var autocomplete_address_1 = new google.maps.places.Autocomplete(address_1);
         // alert(autocomplete_address_1);
+        autocomplete_address_1.setComponentRestrictions({'country': ['nl']});
         google.maps.event.addListener(autocomplete_address_1, 'place_changed', function () {
 
             var address_1 = autocomplete_address_1.getPlace();
@@ -423,7 +452,19 @@ var address_1 = document.getElementById('address');
     /* CoachDeatilForm: Form Validation */
 
 /***************************************************/
+
+$.validator.addMethod("needsSelection", function (value, element) {
+    //console.log("okkk");
+    var count = $(element).find('option:selected').length;
+    return count > 0;
+    // return $(element).multiselect("getChecked").length > 0;
+});
+
+
+$.validator.messages.needsSelection = 'This field is required';
+
 $("#coachDetailForm").validate({
+    ignore: ':hidden:not("#categories"):not("#personality_and_training"):not("#languages")',
   rules: {
     image_file: {
       required: true,
@@ -431,9 +472,7 @@ $("#coachDetailForm").validate({
     city: {
       required: true,
       noSpace: true,
-    },
-    timezone: {
-      required: true,
+      maxlength:100,
     },
     price_range: {
       required: true,
@@ -452,16 +491,15 @@ $("#coachDetailForm").validate({
       noSpace: true,
       maxlength:300,
     },
-    category: {
-      required: true,
+    'categories[]': {
+        needsSelection:true
     },
-    personality_and_training: {
-      required: true,
+    'personality_and_training[]': {
+        needsSelection: true,
     },
-    languages : {
-      required: true,
-      noSpace: true,
-    },
+   'languages[]': {
+    needsSelection: true,
+          },
     education_title_1: {
         required: true,
         noSpace: true,
@@ -482,16 +520,12 @@ $("#coachDetailForm").validate({
       result_title_1: {
         required: true,
         noSpace: true,
-      },
-      category1:{
-        required: true,
-      },
-      language:{
-        required: true,
+        maxlength:50,
       },
       result_description_1: {
         required: true,
         noSpace: true,
+        maxlength:500,
       },
       result_image_file_1:{
         required: true,
@@ -503,23 +537,35 @@ $("#coachDetailForm").validate({
       twitter_url:{
         noSpace: true,
         url: true,
+        maxlength:60,
       },
       facebook_url:{
         noSpace: true,
         url: true,
+        maxlength:60,
       },
       instagram_url:{
         noSpace: true,
         url: true,
+        maxlength:60,
       },
       youtube_url:{
         noSpace: true,
-        url: true
+        url: true,
+        maxlength:60,
       },
       pinterest_url:{
         noSpace: true,
         url: true,
-      },
+        maxlength:60,
+      }
+  },
+  errorPlacement: function(error, element) {
+    if (element.parent('.form-select').length) {
+      error.insertAfter(element.parent());
+    } else {
+      error.insertAfter(element); // ng-multiple-bs-select
+    }
   },
   messages: {
     image_file: {
@@ -540,6 +586,7 @@ $("#coachDetailForm").validate({
           },
           city: {
               required: true,
+              noSpace: true,
           },
           timezone: {
               required: true
@@ -570,25 +617,108 @@ $("#coachDetailForm").validate({
               required: true
           },
           edu_title: {
-              required: true
+              required: true,
+              noSpace: true,
           },
           completion_year: {
               required: true
           },
           education_institute: {
-              required: true
+              required: true,
+              noSpace: true,
           },
           result_title: {
-              required: true
+              required: true,
+              noSpace: true,
           },
           result_star: {
-              required: true
+              required: true,
+            noSpace: true,
           },
           result_description: {
-              required: true
-          }
+              required: true,
+              noSpace: true,
+          },
+          twitter_url:{
+            noSpace: true,
+            url: true,
+          },
+          facebook_url:{
+            noSpace: true,
+            url: true,
+          },
+          instagram_url:{
+            noSpace: true,
+            url: true,
+          },
+          youtube_url:{
+            noSpace: true,
+            url: true
+          },
+          pinterest_url:{
+            noSpace: true,
+            url: true,
+          },
       },
   });
+
+  /****************************************************/
+
+    /* add-coach-education */
+
+/***************************************************/
+$(".add-coach-education").validate({
+    rules: {
+        title: {
+            required: true,
+            noSpace: true,
+            maxlength:50,
+      },
+      completion_year:{
+        required: true,
+        noSpace: true,
+      },
+      institute:{
+        required: true,
+        noSpace: true,
+        maxlength:125,
+      }
+
+    }
+
+  });
+
+   /****************************************************/
+
+    /* add- coach-result */
+/***************************************************/
+$(".add-coach-result").validate({
+    rules: {
+        image_file: {
+            required: true,
+      },
+      title:{
+        required: true,
+        noSpace: true,
+        maxlength:50,
+      },
+      star:{
+        required: true,
+      },
+      description:{
+        required: true,
+        noSpace: true,
+        maxlength:125,
+      },
+      messages: {
+        image_file: {
+          accept: "Please select a valid image file",
+        },
+    }
+
+    }
+  });
+
 
 /****************************************************/
 
@@ -608,9 +738,18 @@ $("#coachDetailForm").validate({
 //     return this.optional(element) || (element.files[0].size <= param)
 //   }, 'File size must be less than {0} bytes');
 
-
+$('#categories').change(function(){
+    $(this).valid();
+})
+$('#personality_and_training').change(function(){
+    $(this).valid();
+})
+$('#languages').change(function(){
+    $(this).valid();
+})
 
 $("#coachProgramForm").validate({
+    ignore: ':hidden:not("#categories")',
     rules: {
     image_file: {
     required: true,
@@ -618,9 +757,9 @@ $("#coachProgramForm").validate({
     // extension: "jpg,jpeg,png",
     //     filesize: 1048576 // <- 5 MB
         },
-        category : {
-        required: true,
-      },
+        'categories[]': {
+            needsSelection:true
+        },
       program_name: {
         required: true,
         maxlength:50,
@@ -663,6 +802,7 @@ $("#coachProgramForm").validate({
       result_description_1: {
         required: true,
         noSpace: true,
+        maxlength:500,
       },
       result_image_file_1:{
         required: true,
@@ -705,11 +845,9 @@ $("#coachProgramForm").validate({
 
 
   $("#coachProgramFormEdit").validate({
+
     rules: {
 
-      //   category : {
-      //   required: true,
-      // },
       program_name: {
         required: true,
         maxlength:50,
@@ -767,7 +905,65 @@ $("#coachProgramForm").validate({
 
   });
 
+  $(".add-program-result").validate({
+    rules: {
 
+         image_file : {
+        required: true,
+       },
+       title: {
+        required: true,
+        maxlength:50,
+        noSpace: true,
+      },
+
+      star: {
+        required: true,
+      },
+      description: {
+        required: true,
+        noSpace: true,
+        maxlength:500,
+      }
+    },
+    messages: {
+        image_file: {
+          accept: "Please select a valid image file",
+        },
+    }
+  });
+
+  $(".add-program-inside").validate({
+    rules: {
+       title: {
+        required: true,
+        maxlength:50,
+        noSpace: true,
+      },
+      description: {
+        required: true,
+        noSpace: true,
+        maxlength:500,
+      }
+    },
+  });
+  $(".add-program-file").validate({
+    rules: {
+        image_file: {
+        required: true,
+      },
+      title: {
+        required: true,
+        noSpace: true,
+        maxlength:50,
+      }
+    },
+    messages: {
+        image_file:{
+            accept: "Please select a valid Pdf",
+        },
+    }
+  });
 
 
 /****************************************************/

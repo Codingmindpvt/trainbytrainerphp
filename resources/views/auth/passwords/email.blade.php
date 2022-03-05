@@ -15,18 +15,15 @@
                     </div>
                 @endif
 
-                <form class="form" method="POST" action="{{ route('password.email') }}">
+                <form class="form" id="reset" method="POST" action="{{ route('password.email') }}">
                     @csrf
 
                     <div class="form-group">
 
                         <label for="email" class="col-md-3 col-form-label text-md-right d-flex align-items-center">{{ __('E-Mail Address') }}</label>
+                            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror form-input" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus  onkeypress="return notSpace(event)">
 
-
-
-                            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror form-input" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-
-                            @error('email')
+                             @error('email')
                             <span class="text-danger" role="alert">
                                 {{ $message }}
                             </span>
@@ -47,4 +44,15 @@
         </div>
     </div>
 </section>
+<script>
+    function notSpace(evt) {
+        evt = (evt) ? evt : window.event;
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if(charCode == 32){
+            return false;
+        }
+        return true;
+    }
+
+    </script>
 @endsection

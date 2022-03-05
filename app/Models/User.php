@@ -485,13 +485,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function verification_detail(){
         return $this->hasOne('App\Models\VerificationDetail','user_id','id');
     }
+    
 
     public function getCategoryName($id)
     {
 
         $category = Category::where('id', $id)->first();
 
-        return $category['title'];
+        return isset($category['title']) ? $category['title'] : "-----";
     }
     // public function coach_program()
     // {
@@ -560,6 +561,15 @@ class User extends Authenticatable implements MustVerifyEmail
         return $data;
     }
 
+    public function getClassWishList($class_id){
+        $data = WishList::where('class_id',$class_id)
+        ->where('user_id', Auth::user()->id)
+        ->where('type', WishList::TYPE_CLASS)
+        ->first();
+
+        return $data;
+    }
+
     public function getFullName(){
       return  (!empty($this->first_name) && !empty($this->last_name)) ? ucwords($this->first_name." ".$this->last_name) : "-----";
     }
@@ -573,9 +583,9 @@ class User extends Authenticatable implements MustVerifyEmail
      }
 
      public function getReviewAndRatingDetail($id = Null){
-        $review = Review::where('rate_for', $id)
+        $review = Review::where('rate_for_coach_id', $id)
         // ->orwhere('rated_by', $id)
-        ->where('review_type', Review::REVIEW_TYPE_PROGRAM)
+        // ->where('review_type', Review::REVIEW_TYPE_PROGRAM)
         // ->orwhere('review_type', Review::REVIEW_TYPE_PROGRAM)
             ;
 
@@ -583,9 +593,16 @@ class User extends Authenticatable implements MustVerifyEmail
         $avg_rating = $review->avg('star');
         return (['review_list' => $review_list, 'avg_rating' => $avg_rating]);
      }
+
+     public function reviews(){     
+         
+        return $this->hasMany('App\Models\Review','rate_for_coach_id','id');
+     }
+
      public function chat()
      {
          return $this->hasMany('App\chat', 'receiver_id', 'sender_id', 'message');
      }
+   
 
 }

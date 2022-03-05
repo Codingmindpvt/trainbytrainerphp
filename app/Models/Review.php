@@ -99,6 +99,11 @@ class Review extends Model
     {
          return $this->hasOne(CoachClass::class,'id','rate_for_class_id');
     }
+
+    public function topreview()
+    {
+         return $this->hasOne(CoachClass::class,'id','rate_for_coach_id');
+    }
   
 
 }

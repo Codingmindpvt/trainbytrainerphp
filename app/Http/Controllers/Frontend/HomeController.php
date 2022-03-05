@@ -17,6 +17,8 @@ use App\Models\Page;
 use App\Models\Review;
 use App\Models\Schedule;
 use App\Models\State;
+use App\Models\OrderList;
+use App\Models\Booking;
 use App\Models\TrainingStyle;
 use App\Models\User;
 use App\Models\WishList;
@@ -109,32 +111,30 @@ class HomeController extends Controller
                 return redirect()->route('create_profile');
             }
         }
-        $trainingStyles = TrainingStyle::where('status', TrainingStyle::STATUS_ACTIVE)->get();
+        $trainingStyles = TrainingStyle::where('status', TrainingStyle::STATUS_ACTIVE)->orderby('id', 'Desc')->get();
+        $coach = User::where('id','!=',Auth::id())->withCount(['reviews as average_rating' => function($query) {
+            $query->select(DB::raw('coalesce(avg(star),0)'));
+        }])->
+
+        withCount(['reviews as user_count' => function($query) {
+            $query->select(DB::raw('coalesce(count(rate_for_coach_id),0)'));
+        }])->
+        orderByDesc('average_rating')->take(10)->get();
+
+       $total_users = Review::where('id','!=',Auth::id())->where('rate_for_coach_id','id')->count();
+    //    dd($total_users);
+             $reviewListAVG = DB::table('reviews')->where('rate_for_coach_id', 2)->AVG('star');
+             //dd($reviewListAVG);
+             //SELECT AVG(star) FROM `reviews` WHERE rate_for_coach_id=2
+
+        $getCategories = Category::where('status', Category::STATUS_ACTIVE)->orderby('id', 'Desc');
+        $allCategories = $getCategories->get();
+        $categories = $getCategories->limit(8)->get();
+        $category_count = $getCategories->count();
+        return view('frontend.index', ['categories' => $categories,'total_users' =>$total_users, 'categorie' =>$allCategories,'category_count' => $category_count, 'coach' => $coach, 'trainingStyles' => $trainingStyles]);
 
 
-        $coach = User::where('role_type', User::ROLE_COACH)
-            ->where('id', "!=", Auth::id())
-            ->has('coach_detail')->first();
-        if ($request->has('filter_category') && $request->filter_category != '') {
-            $category_ids = $request->filter_category;
-            //$category_ids = explode(',', $category_ids);
-            $coach_ids = $this->coachFilter($category_ids);
-            // if (isset($user_ids) && !empty($user_ids)) {
-            //     $coach->whereIn('id', $user_ids);
-            // }
-            $coach->whereIn('id', $coach_ids);
-        }
-
-
-        // $users = $coach->where('id',$id)
-        // ->get();
-        //dd($users);
-        $categories = Category::where('status', Category::STATUS_ACTIVE)->orderby('id', 'Desc')->limit(8)->get();
-        //dd($categories);
-        $category_count = Category::where('status', Category::STATUS_ACTIVE)->orderby('id', 'Desc')->count();
-        return view('frontend.index', ['categories' => $categories, 'category_count' => $category_count, 'coach' => $coach, 'trainingStyles' => $trainingStyles]);
     }
-
     /********************************/
 
     /* Signup */
@@ -185,9 +185,9 @@ class HomeController extends Controller
 
     public function create_profile()
     {
-        $countries = Country::get(['id', 'name']);
-        $states = State::limit('100')->get(['id', 'name']);
-        return view('frontend.create-profile', compact('countries', 'states'));
+        $country = Country::where('code','NL')->select('id', 'name')->first();
+        $states = State::where('country_id',155)->get(['id', 'name']);
+        return view('frontend.create-profile', compact('country', 'states'));
     }
 
     public function createprofile(Request $request)
@@ -311,17 +311,17 @@ class HomeController extends Controller
     public function edit_profile(Request $request)
     {
         $user = Auth::user();
-        $countries = Country::get(['id', 'name']);
-        $states = State::limit('100')->get(['id', 'name']);
+        $country = Country::where('code','NL')->select('id', 'name')->first();
+        $states = State::where('country_id',155)->get(['id', 'name']);
         if ($request->isMethod('post')) {
             $postData = $request->all();
 
             $rules = [
-                'first_name' => 'required',
-                'last_name' => 'required',
-                'address' => 'required',
-                'postal_code' => 'required',
-                'contact_no' => ['required'],
+                // 'first_name' => 'required',
+                // 'last_name' => 'required',
+                // 'address' => 'required',
+                // 'postal_code' => 'required',
+                // 'contact_no' => ['required'],
             ];
             $validator = Validator::make($postData, $rules);
             if ($validator->fails()) {
@@ -344,7 +344,7 @@ class HomeController extends Controller
                 return redirect()->route('userprofile');
             }
         }
-        return view('frontend.account-edit', compact('user', 'countries', 'states'));
+        return view('frontend.account-edit', compact('user', 'country', 'states'));
     }
 
     /*****************************************/
@@ -375,7 +375,7 @@ class HomeController extends Controller
                 if (Hash::check(trim($request->old_password), $user->password)) {
                     $user->password = Hash::make($request->new_password);
                     $user->save();
-                    notify()->success('Password updated successfully.');
+                    notify()->success('Password changed successfully!!');
                     return redirect::back();
                 } else {
                     notify()->error('Error, The old password is incorrect.');
@@ -509,18 +509,36 @@ class HomeController extends Controller
     /****************************************/
     public function coaches(Request $request)
     {
-
-
-
-
         $coach = User::where('role_type', User::ROLE_COACH)
             ->where('id', "!=", Auth::id())
-            ->has('coach_detail')
+            ->whereHas('coach_detail', function($qry){
+                $qry->where('profile_status', 'E');
+            })
             ->with('verification_detail');
 
 
+            $search_name  = $request->ss;
+        if (isset($search_name ) && $search_name  != '') {
+            // $coach = User::whereHas('coach_detail', function ($q) use ($search_id) {
+            //     $q->whereRaw("find_in_set('".$search_id."',users_coach_details.user_id)");
+            // })->where('role_type', User::ROLE_COACH)
+            $coach = User::where(function($query) use ($search_name){
+                    $query->whereRaw(DB::raw("CONCAT(first_name, ' ', last_name) like '%".$search_name."%'"))
+                    ->orWhere('first_name','like','%'.$search_name.'%')
+                    ->orWhere('last_name','like','%'.$search_name.'%');
+                })
+                ->where('role_type', User::ROLE_COACH)
+                ->where('id', "!=", Auth::id())
+                ->has('coach_detail')
+                ->whereHas('coach_detail', function($qry){
+                    $qry->where('profile_status', 'E');
+                })
+                ->with('verification_detail');
+        }
 
-        $cat_id  = $request->cat_id;
+
+        $cat_id  = $request->filter_ctegory;
+
         if (isset($cat_id) && $cat_id != '') {
             $coach = User::whereHas('coach_detail', function ($q) use ($cat_id) {
                 $q->whereRaw("find_in_set('".$cat_id."',users_coach_details.categories)");
@@ -529,7 +547,7 @@ class HomeController extends Controller
                 ->has('coach_detail')
                 ->with('verification_detail');
         }
-        $pat_id = $request->pat_id;
+        $pat_id = $request->filter_personality;
         if (isset($pat_id) && $pat_id != '') {
             $coach = User::whereHas('coach_detail', function ($q) use ($pat_id) {
                 $q->whereRaw("find_in_set('".$pat_id."',users_coach_details.personality_and_training)");
@@ -581,8 +599,6 @@ class HomeController extends Controller
             // if (isset($user_id_review) && !empty($user_id_review)) {
             $coach->whereIn('id', $user_id_review);
             // }
-
-            // dd($coach->get()->toArray());
 
         }
 
@@ -654,13 +670,17 @@ class HomeController extends Controller
     public function coachesProfile(Request $request, $id)
     {
 
+
+
         //$book = Book::find($id);
         $myReviewDetail = Review::where('rated_by', Auth::id())
-            ->where('rate_for', @$id)
+            ->where('rate_for_coach_id', @$id)
             ->first();
 
-        $reviewList = Review::where('rate_for', $id)->with('users')->get();
-        $reviewListsum = DB::table('reviews')->where('rate_for', $id)->sum('star');
+        $reviewList = Review::where('rate_for_coach_id', $id)->with('users')->get();
+        $reviewListsum = DB::table('reviews')->where('rate_for_coach_id', $id)->sum('star');
+
+
         $userProfile = User::where('id', $id)
             ->where('role_type', User::ROLE_COACH)
             ->has('coach_detail')
@@ -918,14 +938,14 @@ class HomeController extends Controller
             ->first();
         $wishList = new WishList();
         $cartItem = Cart::where('user_id', Auth::id())->where('program_id', $id)->first();
-        $reviewList = Review::where('rate_for_program_id', $id)->with('users')->get();
+        $reviewList = Review::where('rate_for_program_id', $id)->orderBy("id", "DESC")->with('users')->get();
         $reviewListsum = DB::table('reviews')->where('rate_for_program_id', $id)->sum('star');
         $coach = new User();
         $programs = CoachProgram::with('program_user', 'program_result', 'program_inside')->where(["id" => $id])->orderBy("id", "DESC")->first();
 
         $programDetail = CoachProgram::with('program_user', 'program_result', 'program_inside')
             ->where("id", "!=", $id)
-            ->where("user_id", "!=", Auth::id());
+            ->where("user_id", $programs['user_id']);
         $otherPogram = $programDetail->orderBy("id", "DESC")->paginate(3);
         $otherPogramCount = $programDetail->count();
 
@@ -955,14 +975,22 @@ class HomeController extends Controller
         //     // return redirect()->back()->with($response);
         // }
 
-        if (!empty($postData['user_id']) && !empty($postData['coach_id']) && !empty($postData['type']) || !empty(@$postData['program_id'])) {
+        if (!empty($postData['user_id']) && !empty($postData['coach_id']) && !empty($postData['type']) || !empty(@$postData['program_id']) || !empty(@$postData['class_id'])) {
             if (!empty(@$postData['program_id'])) {
                 $checkWishList = WishList::where([
                     'user_id' => $postData['user_id'],
                     'program_id' => $postData['program_id'],
                     'type' => $postData['type'],
                 ])->first();
-            } else {
+            }
+            elseif (!empty(@$postData['class_id'])) {
+                $checkWishList = WishList::where([
+                    'user_id' => $postData['user_id'],
+                    'class_id' => $postData['class_id'],
+                    'type' => $postData['type'],
+                ])->first();
+            }
+            else {
                 $checkWishList = WishList::where([
                     'user_id' => $postData['user_id'],
                     'coach_id' => $postData['coach_id'],
@@ -978,14 +1006,22 @@ class HomeController extends Controller
                 $wishList->user_id = $postData['user_id'];
                 $wishList->coach_id = $postData['coach_id'];
                 $wishList->program_id = @$postData['program_id'];
+                $wishList->class_id = @$postData['class_id'];
                 $wishList->type = $postData['type'];
                 if ($wishList->save()) {
-                    if (empty($wishList->program_id)) {
+                    if (!empty($wishList->class_id)) {
+                        $response['data'] = $wishList;
+                        $response['status'] = "Success";
+                        $response['message'] = "Class successfully added to wishlist.";
+                        return response()->json($response);
+                    }
+                    else if (empty($wishList->program_id) && empty($wishList->class_id)) {
                         $response['data'] = $wishList;
                         $response['status'] = "Success";
                         $response['message'] = "Coach profile successfully added to wishlist.";
                         return response()->json($response);
-                    } else {
+                    }
+                     else {
                         $response['data'] = $wishList;
                         $response['status'] = "Success";
                         $response['message'] = "Program successfully added to wishlist.";
@@ -1018,10 +1054,16 @@ class HomeController extends Controller
             ->with('coach_program')
             ->orderBy("id", "DESC")
             ->paginate(6);
+    // dd($getProgramWishList);
+        $getClassWishList = WishList::where('user_id', Auth::user()->id)->where('type', WishList::TYPE_CLASS)
+            ->with('coach_class')
+            ->orderBy("id", "DESC")
+            ->paginate(6);
 
         return view("frontend.my-wishlist", [
             "getWishList" => $getWishList,
             "getProgramWishList" => $getProgramWishList,
+            "getClassWishList" => $getClassWishList,
             "wishList" => $wishList,
         ]);
     }
@@ -1036,7 +1078,15 @@ class HomeController extends Controller
             $response['status'] = "Success";
             $response['message'] = "Program successfully removed from wishlist.";
             return response()->json($response);
-        } else {
+        }
+       else if (!empty($postData['class_id'])) {
+            $wishList = WishList::where('coach_id', $postData['coach_id'])->where('user_id', Auth::user()->id)->where('class_id', $postData['class_id'])->delete();
+            $response['data'] = $wishList;
+            $response['status'] = "Success";
+            $response['message'] = "Class successfully removed from wishlist.";
+            return response()->json($response);
+        }
+         else {
             $wishList = WishList::where('coach_id', $postData['coach_id'])->where('user_id', Auth::user()->id)->where('type', WishList::TYPE_COACH)->delete();
             $response['data'] = $wishList;
             $response['status'] = "Success";
@@ -1055,8 +1105,14 @@ class HomeController extends Controller
     public function chat()
     {
 
-        $users = User::where('id', '!=', auth()->user()->id)->where('role_type', '!=', 'A')->get()->toArray();
+        $users = User::where('id', '!=', auth()->user()->id)
+        ->where('role_type', '!=', 'A')
+        ->with(['coach_detail' => function ($query) {
+            $query->where('chat_status', '!=', 'D');
+        }])
+        ->get()->toArray();
 
+        $has_one_message = false;
         foreach ($users as $iii => $user) {
 
             $get_last_message = Chat::where('sender_id', '=', auth()->user()->id)
@@ -1066,6 +1122,10 @@ class HomeController extends Controller
                 ->orderBy('created_at', 'DESC')->first();
             $users[$iii]["last_message"] = $get_last_message->message ?? '';
             $users[$iii]["type"] = $get_last_message->type ?? '';
+            if(!empty($get_last_message->message)){
+                $has_one_message = true;
+            }
+
             $users[$iii]["time"] = $get_last_message->created_at ?? '';
         }
 
@@ -1076,7 +1136,7 @@ class HomeController extends Controller
         $rrr = (object) json_decode(json_encode($users), false);
 
         // dd($rrr);
-        return view('frontend.chat')->with('users', $rrr);
+        return view('frontend.chat')->with('users', $rrr)->with('has_one_message', $has_one_message);
     }
     public function getchat_data(Request $request)
     {
@@ -1160,21 +1220,26 @@ class HomeController extends Controller
             $response['error'] = true;
             return redirect()->back()->with($response);
         }
-
-        $cart = new Cart();
-        $cart->user_id = $postData['user_id'];
-        $cart->program_id = $postData['program_id'];
-        $cart->price = $postData['price'];
-        $cart->type = Cart::TYPE_PROGRAM;
-        if ($cart->save()) {
-            $response['data'] = $cart;
-            $response['status'] = "Success";
-            $response['message'] = "Item successfully added to Cart. ";
+        $checkCart = Cart::where('user_id',$postData['user_id'])->where('program_id',$postData['program_id'])->first();
+        if(isset($checkCart)){
+            $response['message'] = "Already Added in Cart!!";
             return response()->json($response);
-        } else {
-            $response['status'] = "error";
-            $response['message'] = "Something went wrong!!";
-            return response()->json($response);
+        }else{
+            $cart = new Cart();
+            $cart->user_id = $postData['user_id'];
+            $cart->program_id = $postData['program_id'];
+            $cart->price = $postData['price'];
+            $cart->type = Cart::TYPE_PROGRAM;
+            if ($cart->save()) {
+                $response['data'] = $cart;
+                //$response['status'] = "Success";
+                $response['message'] = "Item successfully added to Cart. ";
+                return response()->json($response);
+            } else {
+                $response['status'] = "error";
+                $response['message'] = "Something went wrong!!";
+                return response()->json($response);
+            }
         }
     }
 
@@ -1225,7 +1290,9 @@ class HomeController extends Controller
             ->get();
         $user = User::where('id', Auth::user()->id)->first();
 
-        return view('user.my-review-list', compact('classReviewlist', 'coachReviewlist', 'programReviewlist', 'user'));
+
+
+        return view('user.my-review-list', compact('classReviewlist','coachReviewlist', 'programReviewlist', 'user'));
     }
 
     public function orderHistory()
@@ -1265,18 +1332,21 @@ class HomeController extends Controller
             $schedule_result[$day] = $schedule_inner;
         }
 
+
         $dateByDay = self::getDateByDay($id);
+
 
         $class_detail = CoachClass::with('program_user', 'category')->where(["id" => $id])->orderBy("id", "DESC")->first();
         // print_r($class_detail); die;
         $categories = Category::all();
-        $reviewList = Review::where('rate_for_class_id', $id)->with('users')->get();
+        $reviewList = Review::where('rate_for_class_id', $id)->orderBy("id", "DESC")->with('users')->get();
 
         $myReviewDetail = Review::where('rated_by', Auth::id())
             ->where('rate_for_class_id', @$id)
             ->first();
         $classDetailAll = CoachClass::with('program_user')
             ->where("id", "!=", $id)
+            ->where("created_by",  $class_detail['created_by'])
             ->where("created_by", "!=", Auth::id());
         $otherClass = $classDetailAll->orderBy("id", "DESC")->paginate(3);
         return view('frontend.classes.classes-detail', compact('myReviewDetail', 'categories', 'reviewList', 'class_detail', 'otherClass', 'schedule_result', 'dateByDay'));
@@ -1319,5 +1389,54 @@ class HomeController extends Controller
         }
 
         return $dates;
+    }
+
+
+   /*****************************************/
+
+    /* My Orders*/
+
+    /****************************************/
+    public function myOrders()
+    {
+        $programs = OrderList::with('class')
+        ->whereHas('payment', function($qry){
+            $qry->where('user_id',Auth::id());
+        })
+        ->whereHas('program', function($query){
+            $query->with('program_user');
+        })->orderby('id', 'Desc')->paginate(5);
+
+        $sessions = Booking::where('user_id',Auth::id())->with('user','schedule')
+        ->whereHas('coach_class', function($query){
+            $query->with('program_user');
+        })
+        ->orderby('id', 'Desc')->paginate(5);
+        return view('frontend.my-order',['programs' => $programs, 'sessions' => $sessions]);
+    }
+    public function myProgramOrderDetail($id = null)
+    {
+        $program = OrderList::where('id',$id)->with('class')
+        ->whereHas('payment', function($qry){
+            $qry->where('user_id','!=',Auth::id());
+        })
+        ->whereHas('program', function($query){
+            $query->with('program_user');
+        })->first();
+        return view('frontend.my-order-detail',['program'=>$program]);
+    }
+    public function mySessionOrderDetail($id = null)
+    {
+        $session = Booking::where('id',$id)->where('user_id',Auth::id())->with('user','schedule')
+        ->whereHas('coach_class', function($query){
+            $query->with('program_user');
+        })
+        ->first();
+        $otherBookings = Booking::where('id','!=',$id)->where('user_id',Auth::id())->with('user','schedule')
+        ->whereHas('coach_class', function($query){
+            $query->with('program_user');
+        })
+        ->paginate(3);
+        return view('frontend.my-session-detail',['session'=>$session, 'otherBookings' => $otherBookings]);
     }
 }

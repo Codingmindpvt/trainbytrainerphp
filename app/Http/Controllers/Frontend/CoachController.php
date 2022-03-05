@@ -7,6 +7,7 @@ use App\Models\BillingAddress;
 use App\Models\CoachDetail;
 use App\Models\Category;
 use App\Models\CoachProgram;
+use App\Models\CoachClass;
 use App\Models\CoachImage;
 use App\Models\CoachEducation;
 use App\Models\CoachResult;
@@ -15,6 +16,8 @@ use App\Models\TrainingStyle;
 use App\Models\ProgramResult;
 use App\Models\programImage;
 use App\Models\User;
+use App\Models\Schedule;
+use App\Models\Day;
 use App\Models\Cart;
 use App\Models\Country;
 use App\Models\State;
@@ -24,8 +27,15 @@ use App\Models\Language;
 use App\Models\VerificationDetail;
 use App\Models\VerificationDocument;
 use App\Models\Review;
+use App\Models\Booking;
+use App\Models\OrderList;
+use App\Models\SepaPayment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\AdminCommission;
+use DateInterval;
+use DatePeriod;
+use DateTime;
 use Validator;
 use Illuminate\Pagination\Paginator;
 use Redirect;
@@ -38,7 +48,26 @@ use function GuzzleHttp\Promise\all;
 class CoachController extends Controller
 {
 
+   
+ 
+    public function searchProductList(Request $request)
+    {
 
+         // Get the search value from the request
+         $search = $request->input('search');
+
+    // Search in the title and body columns from the posts table
+    $posts = CoachProgram::query()
+        ->where('program_name', 'LIKE', "%{$search}%")
+        ->where('user_id', Auth::user()->id)
+        ->get();
+
+
+
+    // Return the search view with the resluts compacted
+    return view('frontend.coach.my-product-search-list', compact('posts'));
+    // return $posts;
+    }
 
     /************************************************************/
 
@@ -53,7 +82,7 @@ class CoachController extends Controller
 
         $postData = $request->all();
         $rules = [
-            'star' => 'required',
+            'star' => 'required | regex:/[a-zA-Z0-9\s]+/',
             'title' => 'required',
             'description' => 'required',
             // 'trained_date' => 'required',
@@ -82,7 +111,7 @@ class CoachController extends Controller
             // $review->trained_date = $postData['trained_date'];
 
             if ($review->save()) {
-                notify()->success('Data updated Successfully.');
+                notify()->success('Rating updated successfully.');
                 // return redirect()->route('frontend.index');
             }
         } else {
@@ -93,11 +122,13 @@ class CoachController extends Controller
             $model->rated_by = Auth::user()->id;
             $model->rate_for = 0;
             $model->rate_for_program_id = $request->rate_for_program_id;
+            $model->rate_for_coach_id = $request->rate_for_coach_id;
+
             $model->review_type = Review::REVIEW_TYPE_PROGRAM;
             $model->status = Review::STATUS_ACTIVE;
             // $model->trained_date= $request->post('trained_date');
             if ($model->save()) {
-                notify()->success('Data added Successfully.');
+                notify()->success('Your review submitted successfully.');
             } else {
                 notify()->error('Somthing went wrong.');
             }
@@ -106,11 +137,177 @@ class CoachController extends Controller
 
 
     /////////////////////review section end
+    public static function getDateByDay($id=null)
+    {
+        $date = Carbon::now();
+        $date = strtotime($date);
+        $date = strtotime("+15 day", $date);
+        $end_date = date('Y-m-d', $date);
+        $current_date = Carbon::now();
 
+        $period = new DatePeriod(
+            new DateTime($current_date),
+            new DateInterval('P1D'),
+            new DateTime($end_date)
+        );
+
+        $dates = [];
+        foreach ($period as $key => $value) {
+            $date = $value->format('Y-m-d');
+            $d = new DateTime($date);
+
+            $day = substr($d->format('l'), 0, 3);
+            $day_id = Day::where('name', $day)->pluck('id')->first();
+            $sch = Schedule::with('class', 'day', 'user', 'booking')
+            ->whereHas('class', function($query){
+                $query->where('created_by', Auth::id());
+        })
+                ->where(['day_id' => $day_id])->get()->toArray();
+            $classes = Schedule::where(['day_id' => $day_id])->whereHas('class', function($query){
+                $query->where('created_by', Auth::id());
+        })->pluck('class_id')->toArray();
+            $array = [
+                "date" => $value->format('M d'),
+                "actual_date" => $value->format('Y-m-d'),
+                'day' => substr($d->format('l'), 0, 3),
+                'day_id' => $day_id,
+                'data' => $sch,
+                'classes' => $classes,
+            ];
+
+            array_push($dates, $array);
+        }
+
+        return $dates;
+    }
     public function coachDashboard()
     {
+        $id =1;
+       // $class_detail = CoachClass::with('program_user', 'category')->where(["id" => $id])->orderBy("id", "DESC")->first();
+        $schedules = Schedule::with('day', 'user')
+        ->whereHas('class', function($query){
+                $query->where('created_by', Auth::id());
+        })->get()->toArray();
+        $schedule_result = [];
+        $final_result = [];
+        foreach ($schedules as $schedule) {
+            $schedule_inner = [];
+            $day = Day::where('id', $schedule['day_id'])->pluck('name')->first();
+            $inner_schedule = Schedule::with('class','day', 'user', 'booking')
+            ->where(['day_id' => $schedule['day_id']])
+            ->whereHas('class', function($query){
+                $query->where('created_by', Auth::id());
+        })
+            ->get()->toArray();
+
+            array_push($schedule_inner, $inner_schedule);
+
+            $schedule_result[$day] = $schedule_inner;
+            //$dateByDay = self::getDateByDay($inner_schedule['class']['id']);
+        }
+
+
+        $dateByDay = self::getDateByDay();
+
+
+        $topSellingProgram = CoachProgram::where('user_id',Auth::id())
+        ->has('order_list')
+        ->withCount(['order_list as orders' => function ($query) {
+            $query->groupBy('program_id');
+        }])->orderBy('orders', 'desc')->take(5)->get();
+
+
+        $getCategories = CoachProgram::select('categories')->where('user_id',Auth::id())->withCount(['order_list as orders' => function ($query) {
+            $query->groupBy('program_id');
+        }])->orderBy('orders', 'desc')->get();
+        $categoryArr = [];
+        foreach($getCategories as $index=>$getCategory){
+            $categoryArr[(int)$index] = explode(",",$getCategory['categories']);
+        }
+        foreach($categoryArr as $i => $cat){
+            $catMerge = array_merge($cat,$categoryArr[$i]);
+        }
+        if(!empty($catMerge)){
+            $getCategoryList = Category::whereIn('id',$catMerge)->groupBy('id')->orderBy('id', 'desc')->take(3)->get();
+        }
+        else{
+            $getCategoryList = [];
+        }
+
+
+        $paymentData =  SepaPayment::select(DB::raw('SUM(amount) as total_amount'))
+        ->whereHas('order_list', function($query){
+            $query->whereHas('program', function($qry){
+                $qry->where('user_id', Auth::id());
+            });
+        })
+        ->whereYear('created_at', date('Y'))
+       ->get()
+       ->groupBy(function ($date) {
+           return Carbon::parse($date->created_at)->format('m');
+       });
+
+       $payMonthlyCount = [];
+        $paymentArr = [];
+       $index = 0;
+        foreach ($paymentData as $key => $value) {
+            $payMonthlyCount[(int)$key] = $value[$index++]['total_amount'];
+        }
+
+        $month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        $totalEarnings = OrderList::has('payment')
+        ->whereHas('program', function($query){
+            $query->where('user_id', Auth::id())
+                ->with('program_user');
+        })->get();
+        for ($i = 1; $i <= 12; $i++) {
+            if (!empty($payMonthlyCount[$i])) {
+                //$totalEarnings +=  (double)$payMonthlyCount[$i];
+                $paymentArr[$i]['count'] = $payMonthlyCount[$i];
+            } else {
+                $paymentArr[$i]['count'] = 0;
+            }
+            $paymentArr[$i]['month'] = $month[$i - 1];
+
+        }
+
+
+        $paymentData = [];
+        $payment_data = ['Sale'];
+        $monthList = [];
+        $month_list = ['Month'];
+        foreach($paymentArr as $key=>$user){
+            $paymentData[] = $user['count'];
+            $payment_data[] = $user['count'];
+            $monthList[] = $user['month'];
+            $month_list[] = $user['month'];
+        }
+        $mergePaymentArray = array_combine($month_list,$payment_data);
+            array_push( $mergePaymentArray);
+
+        $monthlyPayment = json_encode($mergePaymentArray);
+
+        $orders = OrderList::with('class','payment')
+        ->whereHas('program', function($query){
+            $query->where('user_id', Auth::id())
+                ->with('program_user');
+        })->paginate(5);
+
+        $classBookings = Booking::with('user','schedule')
+        ->whereHas('coach_class', function($query){
+            $query->where('created_by', Auth::id())
+            ->with('program_user');
+        })
+        ->orderby('id', 'Desc')->paginate(5);
+
+        $classes_count = CoachClass::where('created_by', auth()->user()->id)->count();
+        $programs_count = CoachProgram::where('user_id', auth()->user()->id)->count();
+        $reviews = Review::where('rate_for_coach_id',Auth::id())->count();
+
         $coachDetail = new CoachDetail();
-        return view('frontend.coach.marketplace-dashboard-data', compact('coachDetail'));
+        return view('frontend.coach.marketplace-dashboard-data',
+        compact('coachDetail','paymentData','monthlyPayment','classes_count','programs_count','orders','classBookings', 'topSellingProgram', 'getCategoryList','totalEarnings','reviews','monthList','schedule_result', 'dateByDay'));
     }
 
     public function coachStatus(Request $request)
@@ -137,6 +334,29 @@ class CoachController extends Controller
         }
     }
 
+    public function coachChatStatus(Request $request)
+    {
+        $postData = $request->all();
+        $id = $postData['user_id'];
+        $status = $postData['chat_status'];
+        $checkCoachDetail = CoachDetail::where('user_id', $id)->first();
+        if ($status == "on") {
+            $getStatus = 'E';
+        } else {
+            $getStatus = 'D';
+        }
+
+        if (!empty($checkCoachDetail['id'])) {
+            $coachDetail = CoachDetail::find($checkCoachDetail['id']);
+            $coachDetail->chat_status = $getStatus;
+            if ($coachDetail->save()) {
+                return $coachDetail;
+            }
+        } else {
+            return $checkCoachDetail;
+        }
+    }
+
 
 
     /************************************************************/
@@ -151,13 +371,13 @@ class CoachController extends Controller
         $checkCoachDetail = CoachDetail::where("user_id", Auth::user()->id)->first();
         $coachDetail = new CoachDetail();
         $categories = Category::where('status', Category::STATUS_ACTIVE)->get();
-        $timezones = TimeZone::all();
+        //$timezones = TimeZone::all();
         $languages = Language::all();
         $trainingStyles = TrainingStyle::where('status', TrainingStyle::STATUS_ACTIVE)->get();
         if (isset($checkCoachDetail)) {
             return redirect()->route('coach.view.profile', $checkCoachDetail['id']);
         } else {
-            return view('frontend.coach.coach-profile', compact('coachDetail', 'categories', 'trainingStyles', 'timezones', 'languages'));
+            return view('frontend.coach.coach-profile', compact('coachDetail', 'categories', 'trainingStyles', 'languages'));
         }
     }
 
@@ -166,11 +386,11 @@ class CoachController extends Controller
         //dd($request->all());
         $postData = $request->all();
         $rules = [
-            'bio' => 'required',
-            'city' => 'required',
-            'timezone' => 'required',
+            //'bio' => 'required',
+            //'city' => 'required',
+            //'timezone' => 'required',
             'categories' => 'required',
-            'price_range' => 'required',
+            //'price_range' => 'required',
             'languages' => 'required',
             'personality_and_training' => 'required'
 
@@ -306,7 +526,15 @@ class CoachController extends Controller
         $coachDetail = new CoachDetail();
         $coachProgram = new CoachProgram();
         $categories = Category::where('status', Category::STATUS_ACTIVE)->get();
-        return view('frontend.coach.add-new-program-two', compact('coachProgram', 'categories', 'coachDetail', 'commission'));
+        $coach = User::where('id', Auth::user()->id)->where('coach_profile_verification_status', User::COACH_PROFILE_STATUS_VERIFY)->first();
+        $checkCoachDetail = CoachDetail::where('user_id', Auth::user()->id)->where('status', CoachDetail::STATUS_VERIFY)->first();
+        if (!isset($checkCoachDetail) && !isset($coach)) {
+            notify()->warning('You have not completed all of the required fields to make your account active. Please complete all the required fields in Coach Profile.');
+            return Redirect::back();
+        } else {
+            return view('frontend.coach.add-new-program-two', compact('coachProgram', 'categories', 'coachDetail', 'commission','coach'));
+        }
+
     }
     public function editProgram($id)
     {
@@ -341,117 +569,24 @@ class CoachController extends Controller
         }
         // dd($coachProgram);
         if ($coachProgram->save()) {
-            // update result program
-            $result_program_title = $request->result_title;
-            $res_star = $request->result_star;
-            $res_description = $request->result_description;
-            $result_image = $request->result_image_file;
-            // dd($res_image);
-            $coach_result_id = $request->coach_result_id;
-            if (isset($result_program_title)) {
-                $images = array();
-                if ($files = $request->file('result_image_file')) {
-                    foreach ($files as $file) {
-                        $name = $file->getClientOriginalName();
-                        $file->move('public/coach/result/', time() . '_' . $name);
-                        $images[] = time() . '_' . $name;
-                    }
-                }
-
-                foreach ($result_program_title as $index => $result) {
-                    $coach_result = ProgramResult::where('id', $coach_result_id[$index])->first();
-                    if (isset($coach_result) && !empty($coach_result)) {
-                        $coach_result->title = $result_program_title[$index] ?? '';
-                        $coach_result->certificate = $res_star[$index];
-                        $coach_result->description = $res_description[$index];
-                        if (isset($images[$index])) {
-                            $coach_result->image_file = $images[$index];
-                        }
-                        $coach_result->save();
-                    } else {
-                        $coach_result = ProgramResult::create(
-                            [
-                                "title" => $result_program_title[$index],
-                                "certificate" => $res_star[$index],
-                                "description" => $res_description[$index],
-                                "coach_program_id" => $coachProgram->id
-                            ]
-                        );
-                    }
-                }
-            }
-
-
-            $education_program_title = $request->edu_title;
-            $education_program_description = $request->edu_description;
-            $education_program_id = $request->coach_prog_id;
-            // dd($education_program_id);
-            if (isset($education_program_title)) {
-                foreach ($education_program_title as $index => $education) {
-                    $program_inside = ProgramInside::where('id', $education_program_id[$index])->first();
-                    // dd($program_inside);
-                    if (isset($program_inside) && !empty($program_inside)) {
-                        $program_inside->title = $education_program_title[$index];
-                        $program_inside->description = $education_program_description[$index];
-                        $program_inside->save();
-                    } else {
-                        $program_inside = ProgramInside::create([
-                            "title" => $education_program_title[$index],
-                            "description" => $education_program_description[$index],
-                            "coach_program_id" => $education_program_id[$index]
-                        ]);
-                    }
-                }
-            }
-
-            //end inside program
-
-            //Update Upload  Program Image Detail
-            $image_program_title = $request->image_title;
-            $image_program_image = $request->upload_image_file;
-            $image_program_id = $request->education_count_id;
-            // dd($image_program_id);
-            if (isset($image_program_title)) {
-                $program_images = array();
-                if ($files = $request->file('upload_image_file')) {
-                    foreach ($files as $file) {
-                        $name = $file->getClientOriginalName();
-                        $file->move('public/coach/images/', time() . '_' . $name);
-                        $program_images[] = time() . '_' . $name;
-                    }
-                }
-
-                // if ($request->file('upload_image_file')) {
-                //     $file = $request->file('upload_image_file');
-                //     $filename = time() . '.' . $request->file('upload_image_file')->extension();
-                //     $filePath = public_path() . '/public/coach/result/';
-                //     $file->move($filePath, $filename);
-                // }
-                foreach ($image_program_title as $index => $imageProgram) {
-                    $coach_image = programImage::where('id', $image_program_id[$index])->first();
-                    // dd($coach_image);
-                    if (isset($coach_image) && !empty($coach_image)) {
-                        $coach_image->title = $image_program_title[$index];
-                        if (isset($program_images[$index])) {
-                            $coach_image->image_file = $program_images[$index];
-                        }
-                        $coach_image->save();
-                    } else {
-                        $coach_image = programImage::create([
-                            "title" => $image_program_title[$index],
-                        ]);
-                    }
-                }
-            }
-            return redirect()->back()->with('message', 'Coach Program update successfully!!');
+            notify()->success('Coach Program updated successfully.');
+             return redirect()->route('program-view', @$coachProgram['id']);
         }
         return redirect()->back()->with('error', 'Coach program not update.');
     }
 
-    public function myProductList()
+    public function myProductList(Request $request)
     {
         $coachDetail = new CoachDetail();
-        $coachPrograms = CoachProgram::where('user_id', Auth::user()->id)->with('program_image', 'program_inside', 'program_result')->get();
+        $coachPrograms = CoachProgram::where('user_id', Auth::user()->id)->with('program_image', 'program_inside', 'program_result')->orderBy('id', 'desc')->paginate(10);
+
+        // if($request->keyword != ''){      
+        //     $coachPrograms = CoachProgram::where('name','LIKE','%'.$request->keyword.'%')->get();      
+        // }      
+        // return response()->json([         
+        //     'coachPrograms' => $coachPrograms      
+        // ]);    
+    
         return view("frontend.coach.my-product-list", compact('coachDetail', 'coachPrograms'));
     }
 
@@ -467,11 +602,73 @@ class CoachController extends Controller
     //
     public function myOrderList()
     {
-        $orders = PaymentDetail::with('users')->paginate(5);
+        $orders = OrderList::with('class','payment')
+        ->whereHas('program', function($query){
+            $query->where('user_id', Auth::id())
+                ->with('program_user');
+        })->paginate(5);
 
-        return view("frontend.coach.order-history",['orders' => $orders]);
+        $classBookings = Booking::with('user','schedule')
+        ->whereHas('coach_class', function($query){
+            $query->where('created_by', Auth::id())
+            ->with('program_user');
+        })
+        ->orderby('id', 'Desc')->paginate(5);
+       // print_r($classBookings); die;
+
+        return view("frontend.coach.order-history",['orders' => $orders, 'classBookings' => $classBookings]);
     }
-    //
+
+    public function orderClassDetail($id)
+    {
+        $order =  Booking::with('user','schedule')->where('id',$id)
+        ->whereHas('coach_class', function($query){
+            $query->where('created_by', Auth::id())
+            ->with('program_user');
+        })->first();
+
+        $classBookings = Booking::with('user','schedule')
+        ->where('id','!=',$id)
+        ->whereHas('coach_class', function($query){
+            $query->where('created_by', Auth::id())
+            ->with('program_user');
+        })
+        ->orderby('id', 'Desc')->paginate(3);
+
+        return view("frontend.coach.session-order-history",['order'=>$order, 'classBookings' => $classBookings]);
+    }
+    public function orderProgramDetail($id)
+    {
+        $order = OrderList::with('class')
+        ->where('id',$id)
+        ->whereHas('payment', function($query){
+            $query->with('user');
+        })
+        ->whereHas('program', function($query){
+            $query->where('user_id', Auth::id())
+                ->with('program_user','program_image');
+        })->first();
+        return view("frontend.coach.order-program-detail",['order' => $order]);
+    }
+
+    public function acceptBookingRequest(Request $request){
+        $details = Booking::find($request->id);
+        $details->status = Booking::STATUS_ACCEPT;
+        if ($details->save()) {
+            return response()->json(['message' => 'Booking status update successfully!']);
+        }
+        return response()->json(['error' => 'Booking status not updated successfully!!!']);
+    }
+
+    public function rejectBookingRequest(Request $request){
+        $details = Booking::find($request->id);
+        $details->status = Booking::STATUS_REJECT;
+        if ($details->save()) {
+            return response()->json(['message' => 'Booking status update successfully!']);
+        }
+        return response()->json(['error' => 'Booking status not updated successfully!!!']);
+    }
+
     public function myCustomers()
     {
         $customers = PaymentDetail::select('user_id')
@@ -653,6 +850,81 @@ class CoachController extends Controller
             return view("frontend.coach.certified-update", ['certificateDiploma' => $certificateDiploma, 'coachDetail' => $coachDetail]);
         }
         return Redirect::back();
+    }
+
+    public function addCoachEducation()
+    {
+        $coachDetail = CoachDetail::where(["user_id" => Auth::id()])->first();
+        if ($coachDetail) {
+            return view("frontend.coach.add_coach_education", ['coachDetail' => $coachDetail]);
+        }
+        return Redirect::back();
+    }
+
+    public function createCoachEducation(Request $request)
+    {
+
+        $postData = $request->all();
+        $validator = Validator::make($postData, [
+            'title' => 'required',
+            'completion_year' => 'required',
+            'institute' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $response['message'] = $validator->errors()->first();
+            $response['error'] = true;
+            return redirect()->back()->with($response);
+        }
+
+        $certificateDiploma = new CoachEducation();
+
+        $certificateDiploma->coach_detail_id = $postData['coach_detail_id'];
+        $certificateDiploma->title = $postData['title'];
+        $certificateDiploma->completion_year = $postData['completion_year'];
+        $certificateDiploma->institute = $postData['institute'];
+        if ($certificateDiploma->save()) {
+            notify()->success('Coach Education Added successfully.');
+            return redirect()->route('coach.view.profile', @$certificateDiploma['coach_detail_id']);
+        }
+    }
+
+    public function editCoachEducation($id)
+    {
+        $coachDetail = new CoachDetail();
+        $certificateDiploma = CoachEducation::where(["id" => $id])->first();
+        if ($certificateDiploma) {
+            return view("frontend.coach.edit_coach_education", ['certificateDiploma' => $certificateDiploma, 'coachDetail' => $coachDetail]);
+        }
+        return Redirect::back();
+    }
+
+    public function updateCoachEducation(Request $request)
+    {
+
+        $postData = $request->all();
+        $validator = Validator::make($postData, [
+            'title' => 'required',
+            'completion_year' => 'required',
+            'institute' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $response['message'] = $validator->errors()->first();
+            $response['error'] = true;
+            return redirect()->back()->with($response);
+        }
+
+        $certificateDiploma = CoachEducation::find($postData['id']);
+
+        $certificateDiploma->id = $postData['id'];
+        $certificateDiploma->title = $postData['title'];
+        $certificateDiploma->completion_year = $postData['completion_year'];
+        $certificateDiploma->institute = $postData['institute'];
+        if ($certificateDiploma->save()) {
+            notify()->success('Data updated successfully.');
+            return redirect()->route('coach.view.profile', @$certificateDiploma['coach_detail_id']);
+        }
     }
 
     public function updateCertificateDiploma(Request $request)
@@ -888,17 +1160,20 @@ class CoachController extends Controller
     public function Reviews()
     {
         $coachDetail = new CoachDetail();
-        $coachReview = Review::where('rate_for', Auth::id())
-            ->where('review_type', Review::REVIEW_TYPE_COACH)
+        $coachReview = Review::where('rate_for_coach_id', Auth::id())
+        ->orderBy('id', 'DESC')
+            ->where('review_type', Review::REVIEW_TYPE_CLASS)
             ->with('users')
             ->get();
 
-        $programReview = Review::where('rate_for', Auth::id())
+        $programReview = Review::where('rate_for_coach_id', Auth::id())
+        ->orderBy('id', 'DESC')
             ->where('review_type', Review::REVIEW_TYPE_PROGRAM)
             ->with('users', 'program')
             ->get();
-        $ratingReview = Review::where('rate_for', Auth::id())
-            ->where('review_type', Review::REVIEW_TYPE_COACH)
+        $ratingReview = Review::where('rate_for_coach_id', Auth::id())
+        ->orderBy('id', 'DESC')
+            ->where('review_type', Review::REVIEW_TYPE_CLASS)
             ->with(['program' => function ($query) {
                 $query->where('user_id', Auth::id())
                     ->with('program_reviews', function ($query) {
@@ -1063,15 +1338,17 @@ class CoachController extends Controller
     }
     public function updateCoachProfile(Request $request)
     {
+
         $request->validate([
             'city' => 'required',
-            'timezone' => 'required',
+            //'timezone' => 'required',
             'price_range' => 'required',
             'title' => 'required',
             'bio' => 'required',
             'categories' => 'required'
         ]);
         // dd($request->all());
+        $id = $request->id;
         $update_coach_profile = CoachDetail::find($request->id);
         if (isset($request->image) && !empty($request->image)) {
            $request->image = UploadImage($request->image, 'coach/images');
@@ -1098,71 +1375,35 @@ class CoachController extends Controller
                     $coach_image->save();
                 }
             }
-            //Update Eduaction Coach Detail
-            $education_coach_title = $request->edu_title;
-            $education_completion_year = $request->completion_year;
-            $education_coach_institute = $request->education_institute;
-            $education_coach_id = $request->education_count_id;
-            //dd($education_coach_id);
-            if (isset($education_coach_title)) {
-                foreach ($education_coach_title as $index => $education) {
-                    $coach_education = CoachEducation::where('id', $education_coach_id[$index])->first();
-                    //dd($coach_education);
-                    if (isset($coach_education) && !empty($coach_education)) {
-                        $coach_education->title = $education_coach_title[$index];
-                        $coach_education->completion_year = $education_completion_year[$index];
-                        $coach_education->institute = $education_coach_institute[$index];
-                        $coach_education->save();
-                    } else {
-                        $coach_education = CoachEducation::create([
-                            "title" => $education_coach_title[$index],
-                            "completion_year" => $education_completion_year[$index],
-                            "coach_program_id" => $education_coach_id[$index],
-                        ]);
-                    }
-                }
-            }
-            //End Education Coach Deatil
+           if($update_coach_profile->status == CoachDetail::STATUS_PENDING || $update_coach_profile->status == CoachDetail::STATUS_SUSPEND){
+                $coach = CoachDetail::find($id);
+                $coachDetail = CoachDetail::where('id', $id)->with('coach_education', 'coach_result', 'coach_images')->first();
+                $adminDetail = User::where('role_type', User::ROLE_ADMIN)->first();
+                $user = new User();
+                $coach->status = CoachDetail::STATUS_PENDING;
+                $coach->save();
+        
+                //send verification mail for admin
+                $base_url = url('/');
+        
+                $mail_data['subject'] = 'Train By Trainer: Verification of Coach Profile';
+                $mail_data['email'] = $adminDetail->email;
+                $mail_data['full_name'] = "TrainByTrainer Admin";
+                $mail_data['link'] = $base_url . "/admin/login";
+                $mail_data['content'] = Auth::user()->first_name . " " . Auth::user()->last_name . ' sent you account approval request again for the coach profile. Please check the request on dashboard';
+                $mail_data['layout'] = 'email_templates.verification-request';
+                emailSend($mail_data);
+                notify()->success('Send Verification mail for admin successfully!!');
+                return redirect()->route('coach.view.profile', @$update_coach_profile['id']);
+        }
 
-            //Update Coach Result Detail
-            $result_coach_title = $request->result_title;
-            $result_coach_star = $request->result_star;
-            $result_coach_description = $request->result_description;
-            $result_coach_image = $request->result_coach_image;
-            $result_coach_id = $request->result_count_id;
-
-            // dd($result_coach_id);
-
-            if (isset($result_coach_title)) {
-
-                $images = array();
-                if ($files = $request->file('result_coach_image')) {
-                    foreach ($files as $file) {
-                        $name = $file->getClientOriginalName();
-                        $file->move('public/coach/result', time() . '_' . $name);
-                        $images[] = 'coach/result/'.time() . '_' . $name;
-                    }
-                }
-                foreach ($result_coach_title as $index => $result) {
-                    $coach_result = CoachResult::where('id', $result_coach_id[$index])->first();
-                    // dd($coach_result);
-                    if (isset($coach_result) && !empty($coach_result)) {
-                        $coach_result->title = $result_coach_title[$index];
-                        $coach_result->star = $result_coach_star[$index];
-                        $coach_result->description = $result_coach_description[$index];
-                        //Image Update
-                        $coach_result->image_file = !empty($images[$index]) ? $images[$index] : @$coach_result->image_file;
-                        $coach_result->save();
-                    }
-                }
-            }
-            // End Coach Program Detail
             notify()->success('Coach profile update successfully!.');
             return redirect()->route('coach.view.profile', @$update_coach_profile['id']);
         }
         notify()->error('something went wrong!.');
         return redirect()->back();
     }
+
     public function deleteCoachProfile(Request $request)
     {
         $id = $request->id;
@@ -1176,5 +1417,323 @@ class CoachController extends Controller
 
         return response()->json(['status' => 400]);
     }
+
+    public function addCoachResult()
+    {
+        $coachDetail = CoachDetail::where('user_id',Auth::id())->first();
+        return view('frontend.coach.add-coach-result',['coachDetail'=>$coachDetail]);
+    }
+    public function createCoachResult(Request $request)
+    {
+
+        $postData = $request->all();
+        $validator = Validator::make($postData, [
+            'title' => 'required',
+            'star' => 'required',
+            'description' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $response['message'] = $validator->errors()->first();
+            $response['error'] = true;
+            return redirect()->back()->with($response);
+        }
+
+        $result = new CoachResult();
+
+        $result->coach_detail_id = $postData['coach_detail_id'];
+        $result->title = $postData['title'];
+        $result->star = $postData['star'];
+        $result->description = $postData['description'];
+        if (isset($postData['image_file']) && !empty($postData['image_file'])) {
+            $postData['image_file'] = UploadImage($postData['image_file'], 'result');
+            $result->image_file = $postData['image_file'];
+    }
+        if ($result->save()) {
+            notify()->success('Coach Result Added successfully.');
+            return redirect()->route('coach.view.profile', @$result['coach_detail_id']);
+        }
+    }
+
+    public function editCoachResult($id = null)
+    {
+        $result = CoachResult::where('id',$id)->first();
+        return view('frontend.coach.edit-coach-result',['result'=>$result]);
+    }
+    public function updateCoachResult(Request $request)
+    {
+
+        $postData = $request->all();
+        $validator = Validator::make($postData, [
+            'title' => 'required',
+            'star' => 'required',
+            'description' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $response['message'] = $validator->errors()->first();
+            $response['error'] = true;
+            return redirect()->back()->with($response);
+        }
+
+        $result = CoachResult::find($postData['id']);
+
+        $result->id = $postData['id'];
+        $result->title = $postData['title'];
+        $result->star = $postData['star'];
+        $result->description = $postData['description'];
+        if (isset($postData['image_file']) && !empty($postData['image_file'])) {
+            $postData['image_file'] = UploadImage($postData['image_file'], 'result');
+            $result->image_file =  !empty($postData['image_file'])?$postData['image_file']:@$result->image_file;
+    }
+        if ($result->save()) {
+            notify()->success('Coach Result updated successfully.');
+            return redirect()->route('coach.view.profile', @$result['coach_detail_id']);
+        }
+    }
+
+    public function deleteCoachResult($id)
+    {
+        $result = CoachResult::where("id", $id)->delete();
+        if ($result) {
+            notify()->success('Coach Result Deleted successfully.');
+            return Redirect::back();
+        }
+    }
+
+    //program
+    public function addProgramResult($id = null)
+    {
+        $coachDetail = CoachProgram::where('id',$id)->first();
+        return view('frontend.coach.add-program-result',['coachDetail'=>$coachDetail]);
+    }
+    public function createProgramResult(Request $request)
+    {
+
+        $postData = $request->all();
+        $validator = Validator::make($postData, [
+            // 'title' => 'required',
+            // 'star' => 'required',
+            // 'description' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $response['message'] = $validator->errors()->first();
+            $response['error'] = true;
+            notify()->error('error'.$response['message']);
+            return redirect()->back()->with($response);
+        }
+
+        $result = new ProgramResult();
+
+        $result->coach_program_id = $postData['coach_program_id'];
+        $result->title = $postData['title'];
+        $result->certificate  = $postData['star'];
+        $result->description = $postData['description'];
+        if (isset($postData['image_file']) && !empty($postData['image_file'])) {
+            $postData['image_file'] = UploadImage($postData['image_file'], 'result');
+            $result->image_file = $postData['image_file'];
+    }
+        if ($result->save()) {
+            notify()->success('Coach Result Added successfully.');
+            return redirect()->route('program-view', @$result['coach_program_id']);
+        }
+    }
+
+    public function editProgramResult($id = null)
+    {
+        $result = ProgramResult::where('id',$id)->first();
+        return view('frontend.coach.edit-program-result',['result'=>$result]);
+    }
+    public function updateProgramResult(Request $request)
+    {
+        $postData = $request->all();
+        $validator = Validator::make($postData, [
+            // 'title' => 'required',
+            // 'star' => 'required',
+            // 'description' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $response['message'] = $validator->errors()->first();
+            $response['error'] = true;
+            notify()->error('error'.$response['message']);
+            return redirect()->back()->with($response);
+        }
+
+        $result = ProgramResult::find($postData['id']);
+
+        $result->id = $postData['id'];
+        $result->title = $postData['title'];
+        $result->certificate  = $postData['star'];
+        $result->description = $postData['description'];
+        if (isset($postData['image_file']) && !empty($postData['image_file'])) {
+            $postData['image_file'] = UploadImage($postData['image_file'], 'result');
+            $result->image_file =  !empty($postData['image_file'])?$postData['image_file']:@$result->image_file;
+    }
+        if ($result->save()) {
+            notify()->success('Program Result updated successfully.');
+            return redirect()->route('program-view', @$result['coach_program_id']);
+        }
+    }
+
+    public function deleteProgramResult($id)
+    {
+        $result = ProgramResult::where("id", $id)->delete();
+        if ($result) {
+            notify()->success('Program Result Deleted successfully.');
+            return Redirect::back();
+        }
+    }
+
+     //program inside
+     public function addProgramInside($id = null)
+     {
+         $coachDetail = CoachProgram::where('id',$id)->first();
+         return view('frontend.coach.add-program-inside',['coachDetail'=>$coachDetail]);
+     }
+     public function createProgramInside(Request $request)
+     {
+
+         $postData = $request->all();
+         $validator = Validator::make($postData, [
+            //  'title' => 'required',
+            //  'description' => 'required',
+         ]);
+
+         if ($validator->fails()) {
+             $response['message'] = $validator->errors()->first();
+             $response['error'] = true;
+             notify()->error('error'.$response['message']);
+             return redirect()->back()->with($response);
+         }
+
+         $result = new ProgramInside();
+
+         $result->coach_program_id = $postData['coach_program_id'];
+         $result->title = $postData['title'];
+         $result->description = $postData['description'];
+         if ($result->save()) {
+             notify()->success('Program Inside Added successfully.');
+             return redirect()->route('program-view', @$result['coach_program_id']);
+         }
+     }
+
+     public function editProgramInside($id = null)
+     {
+         $result = ProgramInside::where('id',$id)->first();
+         return view('frontend.coach.edit-program-inside',['result'=>$result]);
+     }
+     public function updateProgramInside(Request $request)
+     {
+         $postData = $request->all();
+         $validator = Validator::make($postData, [
+            //  'title' => 'required',
+            //  'description' => 'required',
+         ]);
+
+         if ($validator->fails()) {
+             $response['message'] = $validator->errors()->first();
+             $response['error'] = true;
+             notify()->error('error'.$response['message']);
+             return redirect()->back()->with($response);
+         }
+
+         $result = ProgramInside::find($postData['id']);
+
+         $result->id = $postData['id'];
+         $result->title = $postData['title'];
+         $result->description = $postData['description'];
+         if ($result->save()) {
+             notify()->success('Program Inside updated successfully.');
+             return redirect()->route('program-view', @$result['coach_program_id']);
+         }
+     }
+
+     public function deleteProgramInside($id)
+     {
+         $result = ProgramInside::where("id", $id)->delete();
+         if ($result) {
+             notify()->success('Program Inside Deleted successfully.');
+             return Redirect::back();
+         }
+     }
+
+     //program file
+     public function addProgramFile($id = null)
+     {
+         $coachDetail = CoachProgram::where('id',$id)->first();
+         return view('frontend.coach.add-program-file',['coachDetail'=>$coachDetail]);
+     }
+     public function createProgramFile(Request $request)
+     {
+
+         $postData = $request->all();
+         $validator = Validator::make($postData, [
+            //  'title' => 'required',
+         ]);
+
+         if ($validator->fails()) {
+             $response['message'] = $validator->errors()->first();
+             $response['error'] = true;
+             notify()->error('error'.$response['message']);
+             return redirect()->back()->with($response);
+         }
+
+         $result = new ProgramImage();
+
+         $result->coach_program_id = $postData['coach_program_id'];
+         $result->title = $postData['title'];
+         if (isset($postData['image_file']) && !empty($postData['image_file'])) {
+            $postData['image_file'] = UploadImage($postData['image_file'], 'result');
+            $result->image_file = $postData['image_file'];
+    }
+         if ($result->save()) {
+             notify()->success('Program Inside Added successfully.');
+             return redirect()->route('program-view', @$result['coach_program_id']);
+         }
+     }
+
+     public function editProgramFile($id = null)
+     {
+         $result = ProgramImage::where('id',$id)->first();
+         return view('frontend.coach.edit-program-file',['result'=>$result]);
+     }
+     public function updateProgramFile(Request $request)
+     {
+         $postData = $request->all();
+         $validator = Validator::make($postData, [
+            //  'title' => 'required',
+         ]);
+
+         if ($validator->fails()) {
+             $response['message'] = $validator->errors()->first();
+             $response['error'] = true;
+             notify()->error('error'.$response['message']);
+             return redirect()->back()->with($response);
+         }
+
+         $result = ProgramImage::find($postData['id']);
+
+         $result->id = $postData['id'];
+         $result->title = $postData['title'];
+         if (isset($postData['image_file']) && !empty($postData['image_file'])) {
+            $postData['image_file'] = UploadImage($postData['image_file'], 'result');
+            $result->image_file =  !empty($postData['image_file'])?$postData['image_file']:@$result->image_file;
+    }
+         if ($result->save()) {
+             notify()->success('Program File updated successfully.');
+             return redirect()->route('program-view', @$result['coach_program_id']);
+         }
+     }
+
+     public function deleteProgramFile($id)
+     {
+         $result = ProgramImage::where("id", $id)->delete();
+         if ($result) {
+             notify()->success('Program File Deleted successfully.');
+             return Redirect::back();
+         }
+     }
 
 }

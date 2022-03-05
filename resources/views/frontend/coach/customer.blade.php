@@ -13,7 +13,8 @@
 <section class="common-light-header">
     <div class="container">
         <div class="popular-box text-center">
-            <h1 class="oswald-font">{{Auth::user()->first_name." ".Auth::user()->last_name}}</h1>
+            <h1 class="oswald-font">{{Auth::user()->first_name." ".Auth::user()->last_name}} {!!
+                certifiedUser() !!}</h1>
             <span class="divide-line"></span>
             {{-- <p class="oswald-font light-text">View and edit COACH Program details here</p> --}}
         </div>
@@ -27,59 +28,66 @@
         <div class="row">
             <aside class="col-lg-4">
                 @if (Auth::check() && Auth::user()->role_type == 'C')
-                    <!-- start coach sidebar here -->
+                <!-- start coach sidebar here -->
 
-                    @include('frontend.nav._coachSideBar')
+                @include('frontend.nav._coachSideBar')
 
-                    <!-- end coach sidebar here -->
+                <!-- end coach sidebar here -->
                 @else
-                    <!-- start sidebar here -->
+                <!-- start sidebar here -->
 
-                    @include('frontend.nav._sidebar')
+                @include('frontend.nav._sidebar')
 
-                    <!-- end sidebar here -->
+                <!-- end sidebar here -->
                 @endif
             </aside>
 
-				<aside class="col-lg-8">
-					<div class="user-profle-right-side marketplace-main-box">
-                        <div class="info-profile-head">
-                            <h3>Customers</h3>
-                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Search By Name">
+            <aside class="col-lg-8">
+                <div class="user-profle-right-side marketplace-main-box">
+                    <div class="info-profile-head">
+                        <h3>Customers</h3>
+                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                            placeholder="Search By Name">
+                    </div>
+                    <hr>
+                    <div class="customer-page-box">
+                        <div class="row">
+                            @foreach($customers as $customer)
+                            <aside class="col-md-12">
+                                <div class="cutomers-main-box">
+                                    @if(!empty(@$customer['users']->profile_image))
+                                    <img src="{{asset('public/'.@$customer['users']->profile_image) }}"
+                                        class="img-fluid img-rounded" />
+                                    @else
+                                    <img src="{{asset('public/images/default-image.png') }}"
+                                        class="img-fluid img-rounded" />
+                                    @endif
+
+                                    <div class="customers-main-content">
+                                        <h5 class="oswald-font">
+                                            {{ ucwords(@$customer['users']['first_name']." ".@$customer['users']['last_name']) }}
+                                        </h5>
+                                        <p><i class="fa fa-map-marker"
+                                                aria-hidden="true"></i>{{$customer['users']['city']}}</p>
+                                        <span>Purchased 2 Sessions and 5 Programs</span>
+                                    </div>
+                                    <a href="{{ route('coach.view.profile',$customer['users']['id']) }}"
+                                        class="profile-new-view-bt">VIEW PROFILE</a>
+                                </div>
+                            </aside>
+                            @endforeach
+
                         </div>
-                        <hr>
-                        <div class="customer-page-box">
-                                <div class="row">
-                                    @foreach($customers as $customer)
-                                    <aside class="col-md-12">
-                                        <div class="cutomers-main-box">
-                                        @if(!empty(@$customer['users']->profile_image))
-                                          <img src="{{asset('public/'.@$customer['users']->profile_image) }}" class="img-fluid img-rounded"/>
-                                        @else
-                                          <img src="{{asset('public/images/default-image.png') }}" class="img-fluid img-rounded"/>
-                                        @endif
+                    </div>
+                    <div class="pagination-count-box">
+                        {{ $customers->links() }}
 
-                                            <div class="customers-main-content">
-                                                <h5 class="oswald-font">{{ ucwords(@$customer['users']['first_name']." ".@$customer['users']['last_name']) }}</h5>
-                                                <p><i class="fa fa-map-marker" aria-hidden="true"></i>{{$customer['users']['city']}}</p>
-                                                <span>Purchased 2 Sessions and 5 Programs</span>
-                                            </div>
-                                            <a href="{{ route('coach.view.profile',$customer['users']['id']) }}" class="profile-new-view-bt">VIEW PROFILE</a>
-                                        </div>
-                                    </aside>
-                                    @endforeach
-
-                            </div>
-                        </div>
-                        <div class="pagination-count-box">
-						{{ $customers->links() }}
-
-								<!-- end pagination -->
-						</div>
-                	</div>
-				</aside>
-			</div>
-		</div>
-	</section>
+                        <!-- end pagination -->
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
 <!--ends my profile no date area here-->
 @endsection

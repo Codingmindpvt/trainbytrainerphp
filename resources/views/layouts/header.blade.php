@@ -1,3 +1,4 @@
+
 <!--Loader-->
 	<div id="web-loader" class="loadingio-spinner-spin-7mhonr12h9"><div class="ldio-kno2f50uxvt">
 <div><div></div></div><div><div></div></div><div><div></div></div><div><div></div></div><div><div></div></div><div><div></div></div><div><div></div></div><div><div></div></div>
@@ -123,12 +124,18 @@
 						</li>
 						@endif
 						@if((Auth::check() && !empty(Auth::user()->account_complete==1) || !Auth::check()))
+
 						<li class="search-header">
 							<a href="#" class="circle-icons mobile-view" id="mobile-view-search">
 								<svg fill="none" height="24" stroke="#474646" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle cx="10.5" cy="10.5" r="7.5"/><line x1="21" x2="15.8" y1="21" y2="15.8"/></svg>
 							</a>
-							<input type="text" placeholder="Search trainer by name.." class="form-control header-search-input web-view">
+                            <form method="get" class="search-box" action={{ route('coaches') }}>
+							<input type="text" name="ss" placeholder="Search trainer by name.." class="form-control header-search-input web-view">
+                            <input type="submit" class="search-value" value="Search" >
+                            <i class="fa fa-search search-icon" aria-hidden="true"></i>
+                        </form>
 						</li>
+
 						{{-- <li>
 							<input id="country_selector" type="text">
 						</li> --}}
@@ -137,6 +144,8 @@
 				</nav>
       		</div>
       </header>
+
 <!--end header area here -->
+
 
 

@@ -44,6 +44,8 @@ class ClassController extends Controller
         $days = Day::all();
         $categories = Category::all();
         $classes = CoachClass::with('category')->where('created_by', auth()->user()->id)->latest()->get();
+        $show_classes = CoachClass::with('category')->where('created_by', auth()->user()->id)->where('status', 1)->latest()->get();
+
         $coach = User::where('id', Auth::user()->id)->where('coach_profile_verification_status', User::COACH_PROFILE_STATUS_VERIFY)->first();
         $checkCoachDetail = CoachDetail::where('user_id', Auth::user()->id)->where('status', CoachDetail::STATUS_VERIFY)->first();
         if (!isset($checkCoachDetail) && !isset($coach)) {
@@ -52,7 +54,7 @@ class ClassController extends Controller
         } else {
             return view('frontend.class.create')->with([
                 'days' => $days, 'categories' => $categories, 'commission' => $commission,
-                'classes' => $classes, 'schedules' => $schedules]);
+                'classes' => $classes, 'schedules' => $schedules, 'show_classes' => $show_classes]);
         }
 
     }
@@ -136,10 +138,10 @@ class ClassController extends Controller
             $review->title = $postData['title'];
             $review->description = $postData['description'];
             $review->star = $postData['star'];
-            // $review->trained_date = $postData['trained_date'];
+            $review->rate_for_coach_id = $request->rate_for_coach_id;
 
             if ($review->save()) {
-                notify()->success('Data updated Successfully.');
+                notify()->success('Rating updated successfully.');
                 // return redirect()->route('frontend.index');
             }
         } else {
@@ -148,14 +150,15 @@ class ClassController extends Controller
             $model->description = $request->post('description');
             $model->star = $request->post('star');
             $model->rated_by = Auth::user()->id;
-            $model->rate_for = $request->post('rate_for_class_id');
+            $model->rate_for = 0;
             $model->rate_for_class_id = $request->post('rate_for_class_id');
+            $model->rate_for_coach_id = $request->post('rate_for_coach_id');
 
             $model->review_type = Review::REVIEW_TYPE_CLASS;
             $model->status = Review::STATUS_ACTIVE;
             // $model->trained_date= $request->post('trained_date');
             if ($model->save()) {
-                notify()->success('Data added Successfully.');
+                notify()->success('Your review submitted successfully.');
             } else {
                 notify()->error('Somthing went wrong.');
             }
@@ -210,8 +213,10 @@ class ClassController extends Controller
 
     public function deleteSchedule(Request $request)
     {
-        $schedule = Schedule::find($request->id);
-        $schedule->delete();
+        if (isset($request->id)) {
+            $schedule = Schedule::find($request->id);
+            $schedule->delete();
+        }
         return response()->json([
             'message' => 'Schedule deleted successfully!!',
             'status' => true,

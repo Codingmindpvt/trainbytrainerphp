@@ -16,7 +16,9 @@ yarn-error.log
 composer.lock
 /storage/*
 package-lock.json
+/public/*
 /public/profile/
 /public/category/
 /public/coach/
-
+/nodejs/node_modules/
+/public/result/

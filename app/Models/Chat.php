@@ -16,6 +16,6 @@ class Chat extends Model
 
     public function getCreatedAtAttribute($created_at){
         // return $created_at;
-        return date('Y-m-d H:i:s', strtotime($created_at));
+        return date('d-m-Y   H:i', strtotime($created_at));
     }
 }

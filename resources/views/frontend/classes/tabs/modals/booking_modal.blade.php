@@ -10,9 +10,9 @@
             </div>
             <div class="modal-body">
                 <p>
-                    Your session will be going to book. It will be billed automatically on the 25th of this month.
+                    Your session will be going to book. It will be billed automatically after a month.
                 </p>
-            <input type="text" value="" class="actual_booking_date">
+            <input type="hidden" value="" class="actual_booking_date">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">cancel</button>

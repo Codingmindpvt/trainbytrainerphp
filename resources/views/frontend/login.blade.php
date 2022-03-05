@@ -12,14 +12,14 @@
 
 							<div class="form-group">
     							<label for="">Email address</label>
-    							<input type="email" class="form-control form-input" id="" name="email" placeholder="Enter Email Address" value="{{ old('email') }}">
+    							<input type="email" class="form-control form-input" id="" name="email" placeholder="Enter Email Address" value="{{ old('email') }}" onkeypress="return notSpace(event)">
                                 @if ($errors->has('email'))
                                 <span class="text-danger">{{ $errors->first('email') }}</span>
                                 @endif
   							</div>
   							<div class="form-group">
     							<label for="">Password</label>
-    							<input type="password" class="form-control form-input pass" id="" name="password" placeholder="Enter Password">
+    							<input type="password" class="form-control form-input pass" id="" name="password" placeholder="Enter Password" onkeypress="return notSpace(event)">
                                 @if ($errors->has('password'))
                                 <span class="text-danger">{{ $errors->first('password') }}</span>
                                 @endif
@@ -46,5 +46,16 @@
 			</div>
 		</div>
 	</section>
+    <script>
+        function notSpace(evt) {
+            evt = (evt) ? evt : window.event;
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if(charCode == 32){
+                return false;
+            }
+            return true;
+        }
+
+        </script>
 <!--login section end area here -->
 @endsection

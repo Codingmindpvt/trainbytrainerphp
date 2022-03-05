@@ -28,5 +28,4 @@ class Schedule extends Model
     {
         return $this->hasOne(Booking::class, 'schedule_id', 'id');
     }
-
 }

@@ -16,7 +16,7 @@
             <div class="popular-box text-center">
                 <h1 class="oswald-font">{{Auth::user()->first_name." ".Auth::user()->last_name}}</h1>
                 <span class="divide-line"></span>
-                <p class="oswald-font light-text">View and edit COACH Program details here</p>
+                <!-- s -->
             </div>
         </div>
     </section>
@@ -48,19 +48,25 @@
                             <a href="{{ route('coach.my-product-list') }}" class="no-border">
                                 <h3>My Products</h3>
                             </a>
-                            <h4> &gt;Product Detail</h4>
+                            <h4>&gt;Product Detail</h4>
                         </div>
 
                     </div>
                     <div class="sale-by-location">
                         <div class="view-box">
                             <p class="my-2 form-p">Hero Image</p>
+                            <a href="{{route('edit-program', @$coachProgram->id)}}" class="save-green-bt float-right">
+                                <i class="fa fa-pencil" aria-hidden="true"></i> EDIT
+                                PROGRAM
+                            </a>
                             <div class="upload-certificate-box-main">
                                 <div class="upload-certificate-box">
                                     @if (!empty($coachProgram->image_file))
-                                    <img src="{{ asset('public/' . $coachProgram->image_file) }}" class="profile_picture" alt="upload">
+                                    <img src="{{ asset('public/' . $coachProgram->image_file) }}"
+                                        class="profile_picture" alt="upload">
                                     @else
-                                    <img src="{{ asset('public/images/default-image.png') }}" class="profile_picture" alt="upload">
+                                    <img src="{{ asset('public/images/default-image.png') }}" class="profile_picture"
+                                        alt="upload">
                                     @endif
                                 </div>
                             </div>
@@ -95,8 +101,8 @@
                         </div>
                         <hr>
                         <div class="view-box">
-                            <p class="my-2 form-p">Price (USD)</p>
-                            <p class="tag-line">${{ $coachProgram['price'] }}</p>
+                            <p class="my-2 form-p">Price (EURO)</p>
+                            <p class="tag-line">{{ DEFAULT_CURRENCY.$coachProgram['price'] }}</p>
                         </div>
                         <hr>
                         {{-- <div class="view-box">
@@ -118,32 +124,44 @@
         <div class="result_field_wrapper">
             <div class="result-main-section">
                 <div class="view-box">
-                    <p class="my-2 form-p">Results</p>
+                    <p class="my-2 form-p">Results
+                @if (count($coachProgram['program_result']) < 5) </p>
+                    <a class="save-green-bt float-right"
+                        href="{{route('coach.add-program-result',@$coachProgram['id'])}}"> <i class="fa fa-plus"
+                            aria-hidden="true"></i> ADD
+                        RESULT
+                    </a><br /><br />
+                @endif
                     @if (count($coachProgram['program_result']) > 0)
-                    <div class="form-row">
-                        <div class="form-group col-md-3">
+                     <div class="form-row">
+                        <div class="form-group col-md-2">
                             <p class="tag-line"><b>Image</b></p>
                         </div>
                         <div class="form-group col-md-3">
                             <p class="tag-line"><b>Accreditation or Certificate</b></p>
                         </div>
-                        <div class="form-group col-md-3">
-                            <p class="tag-line"><b>Completion Year</b></p>
+                        <div class="form-group col-md-2">
+                            <p class="tag-line"><b>Star</b></p>
                         </div>
                         <div class="form-group col-md-3">
                             <p class="tag-line"><b>Institute or organisation</b></p>
                         </div>
-                    </div>
-                    @foreach ($coachProgram['program_result'] as $program)
+                        <div class="form-group col-md-2">
+                            <p class="tag-line"><b>Action</b></p>
+                        </div>
+                     </div>
+                     @foreach ($coachProgram['program_result'] as $program)
 
-                    <div class="form-row">
-                        <div class="form-group col-md-3">
+                     <div class="form-row">
+                        <div class="form-group col-md-2">
                             <div class="upload-certificate-box-main">
                                 <div class="upload-certificate-box">
                                     @if (!empty($program->image_file))
-                                    <img src="{{ asset('public/' . $program->image_file) }}" class="profile_picture" alt="upload">
+                                    <img src="{{ asset('public/' . $program->image_file) }}" class="profile_picture"
+                                        alt="upload">
                                     @else
-                                    <img src="{{ asset('public/images/default-image.png') }}" class="profile_picture" alt="upload">
+                                    <img src="{{ asset('public/images/default-image.png') }}" class="profile_picture"
+                                        alt="upload">
                                     @endif
                                 </div>
                             </div>
@@ -151,19 +169,28 @@
                         <div class="form-group col-md-3">
                             <p class="tag-line">{{ $program['title'] }}</p>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-md-2">
                             <p class="tag-line">{{ $program['certificate'] }}</p>
                         </div>
                         <div class="form-group col-md-3">
                             <p class="tag-line">{{ $program['description'] }}</p>
                         </div>
+                        <div class="form-group col-md-2">
+                            <a href="{{ route('coach.edit-program-result',$program['id']) }}"><i
+                                    class="fa fa-pencil edit-pencil-new mr-2" aria-hidden="true" data-toggle="modal"
+                                    data-target="#edit-certified_{{$program['id']}}"></i></a>
+                            <a href="{{ route('coach.delete-program-result',$program['id']) }}"
+                                onclick="return confirm('Are you sure you want to delete this record?')"><i
+                                    class="fa fa-trash" aria-hidden="true"></i></a>
+                        </div>
+
 
                         <hr>
                     </div>
                     @endforeach
                     @else
                     <p class="tag-line">No record Found!</p>
-                    @endif
+            @endif
                 </div>
             </div>
             <hr>
@@ -173,29 +200,46 @@
                 <div class="result-main-section">
                     <div class="view-box">
                         <p class="my-2 form-p">Inside the Program</p>
-                        @if (count($coachProgram['program_inside']) > 0)
-                        <div class="form-row">
-                            <div class="form-group col-md-4">
-                                <p class="tag-line"><b>Title</b></p>
+                        @if (count($coachProgram['program_inside']) < 5) <a class="save-green-bt float-right"
+                            href="{{route('coach.add-program-inside',@$coachProgram['id'])}}"> <i class="fa fa-plus"
+                                aria-hidden="true"></i> ADD
+                            INSIDE
+                            </a><br /><br />
+                            @endif
+                            @if (count($coachProgram['program_inside']) > 0)
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <p class="tag-line"><b>Title</b></p>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <p class="tag-line"><b>Description</b></p>
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <p class="tag-line"><b>Action</b></p>
+                                </div>
                             </div>
-                            <div class="form-group col-md-4">
-                                <p class="tag-line"><b>Description</b></p>
+                            @foreach ($coachProgram['program_inside'] as $program)
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <p class="tag-line">{{ $program['title'] }}</p>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <p class="tag-line">{{ $program['description'] }}</p>
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <a href="{{ route('coach.edit-program-inside',$program['id']) }}"><i
+                                            class="fa fa-pencil edit-pencil-new mr-2" aria-hidden="true"
+                                            data-toggle="modal"></i></a>
+                                    <a href="{{ route('coach.delete-program-inside',$program['id']) }}"
+                                        onclick="return confirm('Are you sure you want to delete this record?')"><i
+                                            class="fa fa-trash" aria-hidden="true"></i></a>
+                                </div>
+                                <hr>
                             </div>
-                        </div>
-                        @foreach ($coachProgram['program_inside'] as $program)
-                        <div class="form-row">
-                            <div class="form-group col-md-4">
-                                <p class="tag-line">{{ $program['title'] }}</p>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <p class="tag-line">{{ $program['description'] }}</p>
-                            </div>
-                            <hr>
-                        </div>
-                        @endforeach
-                        @else
-                        <p class="tag-line">No record Found!</p>
-                        @endif
+                            @endforeach
+                            @else
+                            <p class="tag-line">No record Found!</p>
+                            @endif
                     </div>
                 </div>
                 <hr>
@@ -206,37 +250,53 @@
                     <div class="inside-main-section">
                         <div class="view-box">
                             <p class="my-2 form-p">Upload Your Program Files</p>
-                            @if (count($coachProgram['program_image']) > 0)
-                            <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <p class="tag-line"><b>Title</b></p>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <p class="tag-line"><b>Upload File</b></p>
-                                </div>
-                            </div>
-                            @foreach ($coachProgram['program_image'] as $program)
-                            <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <p class="tag-line">{{ $program['title'] }}</p>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <div class="upload-certificate-box-main">
-                                        <div class="upload-certificate-box">
-                                            @if (!empty($program))
-                                            <iframe src="{{ asset('public/' . $program->image_file) }}" width="100%" height="250px" class="profile_picture"></iframe>
-                                            @else
-                                            <img src="{{ asset('public/images/default-image.png') }}" class="profile_picture" alt="upload">
-                                            @endif
-                                        </div>
+                            @if (count($coachProgram['program_image']) < 5) <a class="save-green-bt float-right"
+                                href="{{route('coach.add-program-file',@$coachProgram['id'])}}"> <i class="fa fa-plus"
+                                    aria-hidden="true"></i> ADD
+                                PROGRAM FILE
+                                </a><br /><br />
+                                @endif
+                                @if (count($coachProgram['program_image']) > 0)
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        <p class="tag-line"><b>Title</b></p>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <p class="tag-line"><b>Upload File</b></p>
                                     </div>
                                 </div>
-                                <hr>
-                            </div>
-                            @endforeach
-                            @else
-                            <p class="tag-line">No record Found!</p>
-                            @endif
+                                @foreach ($coachProgram['program_image'] as $program)
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        <p class="tag-line">{{ $program['title'] }}</p>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <div class="upload-certificate-box-main">
+                                            <div class="upload-certificate-box">
+                                                @if (!empty($program))
+                                                <iframe src="{{ asset('public/' . $program->image_file) }}" width="100%"
+                                                    height="250px" class="profile_picture"></iframe>
+                                                @else
+                                                <img src="{{ asset('public/images/default-image.png') }}"
+                                                    class="profile_picture" alt="upload">
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <a href="{{ route('coach.edit-program-file',$program['id']) }}"><i
+                                                class="fa fa-pencil edit-pencil-new mr-2" aria-hidden="true"
+                                                data-toggle="modal"></i></a>
+                                        <a href="{{ route('coach.delete-program-file',$program['id']) }}"
+                                            onclick="return confirm('Are you sure you want to delete this record?')"><i
+                                                class="fa fa-trash" aria-hidden="true"></i></a>
+                                    </div>
+                                    <hr>
+                                </div>
+                                @endforeach
+                                @else
+                                <p class="tag-line">No record Found!</p>
+                                @endif
                         </div>
                     </div>
 

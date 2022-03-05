@@ -211,7 +211,29 @@ $("#changePasswordForm").validate({
     }
 });
 
-
+$("#reseremailPasswordForm").validate({
+  rules : {
+         password : {
+         required : true,
+         minlength : 8,
+         noSpace: true,
+       },
+       password_confirm : {
+         required : true,
+         minlength : 8,
+         noSpace: true,
+         equalTo : '#new_password'
+       }
+     },
+     messages : {
+      password: "Enter your Password.",
+     
+      password_confirm: {
+         required: "Enter your Confirm Password.",
+         equalTo: "Confirm Password does not match with New Password."
+       }
+     }
+ });
 
 
 

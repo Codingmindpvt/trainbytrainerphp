@@ -292,7 +292,7 @@ $("#changePasswordForm").validate({
       }
     },
     messages : {
-      old_password: "Enter your Old Password.",
+      old_password: "Enter your Current Password.",
       new_password: "Enter your New Password.",
       confirm_password: {
         required: "Enter your Confirm Password.",

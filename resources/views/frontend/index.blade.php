@@ -5,29 +5,31 @@
 		<div class="container">
 			<h2>Inspiring you to live a healthy lifestyle</h2>
 			<h1 class="oswald-font">Do <span>work that aligns</span> with your heart</h1>
-			<form>
+			<form method="get" action={{ route('coaches') }}>
 				<div class="row">
 					<aside class="col-lg-6" data-aos="fade-down">
 						<div class="custom-selectbox">
-							<select>
-								<option>Select Your Goal..</option>
-							</select>
+                            <select  name="filter_category">
+                                <option value="">All Categories</option>
+                                @foreach ($categorie as $category)
+                                    <option value="{{ @$category->id }}">{{ @$category->title }}</option>
+                                @endforeach
+                            </select>
 						</div>
 					</aside>
 					<aside class="col-lg-6" data-aos="fade-down">
 						<div class="custom-selectbox">
-                            <select  name="personality_and_training[]"
-                                        required>
+                            <select  name="filter_personality">
+                                        <option value="">All Personality and Training</option>
                                         @foreach ($trainingStyles as $trainingStyle)
-                                            <option value="{{ @$trainingStyle->id }}">{{ @$trainingStyle->title }}</option>
+                                            <option  value="{{ @$trainingStyle->id }}">{{ @$trainingStyle->title }}</option>
                                         @endforeach
                                     </select>
 						</div>
 					</aside>
 				</div>
-				<a href="coaches.html">
-					<a class="blue-btn" data-aos="fade-down" href="{{ route('coaches', ['pat_id'=>$trainingStyle->id]) }}">Search</a>
-				</a>
+					<input type="submit" class="blue-btn" value="Search" data-aos="fade-down">
+
 			</form>
 		</div>
 	</section>
@@ -57,7 +59,7 @@
 
 				@forelse ($categories as $category)
 				<aside class="col-lg-3 col-sm-6" data-aos="fade-down">
-					<a class="categories-icon-box" href="{{ route('coaches', ['cat_id'=>$category->id]) }}">
+					<a class="categories-icon-box" href="{{ route('coaches', ['filter_category'=>$category->id]) }}">
 						@if(!empty(@$category->image_file))
 			               	<img src="{{asset('public/'.@$category->image_file) }}"/>
 			            @else
@@ -84,42 +86,90 @@
 				<span class="divide-line"></span>
 				<p>Meet some of the best top rated coaches</p>
 			</div>
+
+
 			<div class="screenshot_slider owl-carousel">
+                @foreach ($coach as $item)
+				@if (!$item['user_count'])
+
+
 				<div class="item">
 					<div class="top-coach-thumbs">
+
 						<div class="coach-image-rating">
-                            @if (!empty(@$coach->profile_image))
-                            <img src="{{ asset('public/' . @$coach->profile_image) }}"
+
+                            <img src="{{ asset('public/images/default-image.png') }}"
+                                class="img-fluid img-rounded" />
+
+						<p class="review-rate">
+						<div class="rating">
+                                        <div class="rateyo" data-rateyo-rating="0" data-rateyo-num-stars="5"></div>
+                                    </div>
+
+							 <ul class="raring-stars review-rate">
+
+
+							 (0 Reviews)</p>
+
+                        </div>
+						<h2 class=" oswald-font">Adam Paul</h2>
+
+						<p> TrainByTrainer
+                        </p>
+                        <p><i class="fa fa-map-marker" aria-hidden="true"></i> California,Usa</p>
+
+
+
+						<a href="" class="small-blue-btn">View Profile</a>
+
+					</div>
+				</div>
+				@else
+				<div class="item">
+					<div class="top-coach-thumbs">
+
+						<div class="coach-image-rating">
+                            @if (!empty(@$item->profile_image))
+                            <img src="{{ asset('public/' . @$item->profile_image) }}"
                                 class="img-fluid img-rounded" />
                         @else
                             <img src="{{ asset('public/images/default-image.png') }}"
                                 class="img-fluid img-rounded" />
                         @endif
+						<p class="review-rate">
+						<div class="rating">
+                                        <div class="rateyo" data-rateyo-rating="{{!empty(@$item['average_rating']) ? @$item['average_rating'] :0}}" data-rateyo-num-stars="5"></div>
+                                    </div>
 
-							 <ul class="raring-stars">
-								<li><i class="fa fa-star" aria-hidden="true"></i></li>
-								<li><i class="fa fa-star" aria-hidden="true"></i></li>
-								<li><i class="fa fa-star" aria-hidden="true"></i></li>
-								<li><i class="fa fa-star" aria-hidden="true"></i></li>
-								<li><i class="fa fa-star" aria-hidden="true"></i></li>
-							</ul>
-							<p>(1.2k Reviews)</p>
+							 <ul class="raring-stars review-rate">
+
+
+							 ({{number_format($item['user_count'])}} Reviews)</p>
 
                         </div>
-						{{ ucwords(@$coach['first_name'] . ' ' . @$coach['last_name']) }}
-                        @if(isset($coach['coach_badge_status']) && !empty($coach['coach_badge_status']) && $coach['coach_badge_status'] == 'C')
-                        <span><img
+						<h2 class=" oswald-font">{{ ucwords(@$item['first_name'] . ' ' . @$item['last_name']) }}
+                        @if(isset($item['coach_badge_status']) && !empty($item['coach_badge_status']) && $item['coach_badge_status'] == 'C')
+                        <img
                                 src="{{ url('/') }}/public/images/verified2.png" alt="image"
-                                class="img-fluid">Certified</span>
+                                class="img-fluid">
                         @endif</h2>
-						<p>{{ !empty(@$coach['coach_detail']['title']) ? @$coach['coach_detail']['title'] : '' }}
+						<p>{{ !empty(@$item['coach_detail']['title']) ? @$item['coach_detail']['title'] : '' }}
                         </p>
-                        <p><i class="fa fa-map-marker" aria-hidden="true"></i> {{ @$coach->state->name }}.
-                            {{ @$coach->country->name }}</p>
-						<a href="{{  route('coaches.profile', @$coach['id']) }}" class="small-blue-btn">View Profile</a>
+                        <p><i class="fa fa-map-marker" aria-hidden="true"></i> {{ @$item->state->name }}.
+                            {{ @$item->country->name }}</p>
+
+
+
+						<a href="{{  route('coaches.profile', @$item['id']) }}" class="small-blue-btn">View Profile</a>
+
 					</div>
 				</div>
+				@endif
+
+
+                @endforeach
 			</div>
+
 		</div>
 	</section>
 <!--end top rated coach area here -->
@@ -196,5 +246,27 @@
 
 		</div>
 	</section>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+    $(function () {
+        $(".rateyo").rateYo({
+            readOnly: true,
+            starWidth: "18px",
+            spacing: "2px",
+        });
+        $("#rateYo").rateYo({
+            fullStar: true,
+            starWidth: "35px",
+            spacing: "4px",
+            //normalFill: '#f0f0f0',
+            ratedFill: '#F29E20',
+            onSet: function (rating, rateYoInstance) {
+                $('#inpt_rating').val(rating);
+            }
+        });
+    });
+	</script>
 <!--end real trainer real results area here -->
 @endsection

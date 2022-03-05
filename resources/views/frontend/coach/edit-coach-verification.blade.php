@@ -51,7 +51,8 @@
                     @csrf
                     <div class="sale-by-location">
                         <input type="hidden" name="id" value="{{$verificationDetail['id']}}">
-                        <h4 class="oswald-font">Qualifications</h4>
+                        <h4 class="oswald-font">Qualifications<span><i class="fa fa-asterisk validate-mark"
+                            aria-hidden="true"></i></span></h4>
                         <div class="view-box">
                             <p class="my-2 form-p">Are you a qualified fitness coach?</p>
                             <div class="form-check-inline">
@@ -123,7 +124,8 @@
 
                         </div>
                         <div class="view-box imsurance-box">
-                            <h4 class="oswald-font">Insurance</h4>
+                            <h4 class="oswald-font">Insurance<span><i class="fa fa-asterisk validate-mark"
+                                aria-hidden="true"></i></span></h4>
                         </div>
 
                         <div class="view-box">
@@ -157,7 +159,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="view-box">
                             <p class="my-2 form-p">Upload your proof of insurance (this must clearly show that your insurance has been paid and is currently valid).</p>
 

@@ -281,10 +281,16 @@
                                     </span>
                                 @endif
 
-                            @else
+                                @else
                                 <span class="view-save-bt">
+                                    @if(!empty(Auth::id()))
                                     <i class="fa fa-heart-o" aria-hidden="true"></i> SAVE</span>
-                            @endif
+
+                                @else
+                                    <a href="{{route('login')}}"><i class="fa fa-heart-o" aria-hidden="true"></i> SAVE</span></a>
+
+                                @endif
+                                @endif
                         </div>
                         <a href="{{ route('program-detail', $item->id) }}">
                             <div class="barbell-image">
@@ -301,6 +307,7 @@
                             <div class="barberll-content">
                                 <div class="doller-review">
                                     <h4>{{ DEFAULT_CURRENCY.@$item['price'] }}</h4>
+                                    
                                     <?php $reviewDetail = $item->getReviewAndRatingDetail($item['id']); ?>
                                     <p class="review-rate">
                                     <div class="rating">

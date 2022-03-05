@@ -1,0 +1,133 @@
+
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <form action="">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form> 
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+  $(function () {
+    var socket = io();
+    var room_id = "1";
+    socket.on('connect', function() {
+        socket.emit('joinroom', room_id);
+        socket.emit('joinroom', "VCR-13");
+		
+    });
+
+    $('form').submit(function(e){
+      e.preventDefault(); // prevents page reloading
+      /*socket.emit('message', {
+                            message: $('#m').val(),
+                           room_id: room_id,
+                           sender_id: "3",
+                           receiver_id: "13",
+                           message_type: "F"
+                         });
+        console.log("socket emit");
+
+        socket.emit('groupmessage', {
+                            message: $('#m').val(),
+                           group_id: room_id,
+                           sender_id: "3",
+                           message_type: "F"
+                         });
+        console.log("socket emit");
+
+        /*socket.emit('deleteGroupMessages', {
+            group_id: room_id,
+            messsage_ids: "3,2",            
+         });*/
+
+        /*socket.emit('deleteMessages', {
+            room_id: room_id,
+            messsage_ids: "1,3,2",            
+         });*/
+
+         /*socket.emit('startcalls', {
+            room_id: room_id,
+            caller_id: "1",            
+            group_id: "1",            
+            receiver_id: "3,2,13",            
+            calltype: "G",   //G - Group Call, S- one to one         
+         });*/
+		 socket.emit('endcall', {
+            room_id: room_id,
+            caller_id: "1",            
+            calltype: "G",   //G - Group Call, S- one to one         
+         });
+
+         /*socket.emit('rejectcall', {
+            room_id: room_id,
+            caller_id: "1",        
+            calltype: "G",        
+         });*/
+
+         /*socket.emit('acceptcall', {
+            room_id: room_id,
+            caller_id: "2",        
+            calltype: "G",        
+         });*/
+		 
+      $('#m').val('');
+      return false;
+    });
+
+    socket.on('deleteGroupMessages', function(data){
+       console.log("deleteGroupMessages===" + JSON.stringify(data));      
+    });
+
+    socket.on('deleteMessages', function(data){
+       console.log("deleteMessages===" + JSON.stringify(data));      
+    });
+
+    socket.on('joinroom', function(data){
+       alert("fdgfd" + data);      
+    });
+
+    socket.on('message', function(data){
+        console.log("fdgfd" + JSON.stringify(data));
+      $('#messages').append($('<li>').text(data.message));
+    });
+
+    socket.on('groupmessage', function(data){
+        console.log("fdgfd" + JSON.stringify(data));
+      $('#messages').append($('<li>').text(data.message));
+    });
+
+	socket.on('getCalls', function(data){
+        console.log("getCalls" + JSON.stringify(data));     
+    });
+
+  socket.on('startcalls', function(data){
+        console.log("startcalls" + JSON.stringify(data));     
+    });
+
+	socket.on('endcall', function(data){
+        console.log("endcall" + JSON.stringify(data));     
+    });
+
+  socket.on('rejectcall', function(data){
+        console.log("rejectcall" + JSON.stringify(data));     
+    });
+  });
+</script>
+  </body>
+</html>

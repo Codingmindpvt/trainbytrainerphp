@@ -24,7 +24,7 @@
                 </div>
                 <div id="p" class="form-group sign-up">
                   <label for="">Sign Up As</label>
-                  <div class="personal-gp row">
+                  <div class="personal-gp row personal-bus-error">
                       <div class="col-sm-6">
                           <div class="coach-choice">
                             <input type="radio" id="user_type" class="radio" name="user_type" value="{{$user->userTypePersonal()}}">
@@ -41,7 +41,7 @@
                 </div>
                 <div class="form-group">
                   <label for="">Email Address</label>
-                  <input type="email" name="email" class="form-control form-input" value="{{ old('email') }}" id="" placeholder="E.g. adam_smith007@gmail.com">
+                  <input type="email" name="email" class="form-control form-input" value="{{ old('email') }}" id="" placeholder="E.g. adam_smith007@gmail.com" onkeypress="return notSpace(event)">
                 </div>
                 <div class="form-group">
                   <label for="">Create Password</label>
@@ -56,7 +56,7 @@
                     <input type="checkbox" name="agree_terms">
                     <span class="checkmark"></span>
                 </label>
-                  <p>I read and agree to <a href="{{route('termscondition')}}">Terms & Conditions</a> and <a href="{{route('privacyPolicy')}}">Privacy Policy</a>.</p>
+                  <p>I read and agree to <a href="{{route('termscondition')}}" target="_blank">Terms & Conditions</a> and <a href="{{route('privacyPolicy')}}" target="_blank">Privacy Policy</a>.</p>
                   <div class="errorName"></div>
                </div>
                <br/>

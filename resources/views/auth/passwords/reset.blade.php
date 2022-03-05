@@ -9,7 +9,7 @@
                 <div class="card-header">{{ __('Reset Password') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('password.update') }}">
+                    <form id = "reseremailPasswordForm" method="POST" action="{{ route('password.update') }}">
                         @csrf
 
                         <input type="hidden" name="token" value="{{ $token }}">
@@ -28,11 +28,12 @@
                             </div>
                         </div>
 
+                        
                         <div class="form-group row">
                             <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
 
                             <div class="col-md-6">
-                                <input id="password" type="password" class="form-control form-input @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
+                                <input id="password" id="password" type="password" class="form-control form-input @error('password') is-invalid @enderror" name="password" required autocomplete="new-password" onkeypress="return notSpace(event)">
 
                                 @error('password')
                                     <span class="invalid-feedback" role="alert">
@@ -46,7 +47,7 @@
                             <label for="password-confirm" class="col-md-4 col-form-label text-md-right">{{ __('Confirm Password') }}</label>
 
                             <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control form-input" name="password_confirmation" required autocomplete="new-password">
+                                <input id="password_confirm" type="password" class="form-control form-input" name="password_confirmation"  required autocomplete="new-password" onkeypress="return notSpace(event)">
                             </div>
                         </div>
 
@@ -58,10 +59,25 @@
                             </div>
                         </div>
                     </form>
+                  
                 </div>
             </div>
         </div>
     </div>
 </div>
 </section>
+
+
+<script>
+    function notSpace(evt) {
+        evt = (evt) ? evt : window.event;
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if(charCode == 32){
+            return false;
+        }
+        return true;
+    }
+
+    </script>
+
 @endsection

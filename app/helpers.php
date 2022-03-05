@@ -4,6 +4,8 @@
 
 use App\Models\Booking;
 use App\Models\Country;
+use App\Models\User;
+use phpseclib3\File\ASN1\Maps\Certificate;
 
 /* Email Send */
 
@@ -95,7 +97,8 @@ if (!function_exists('get_country_code')) {
 if (!function_exists('check_sch_booking')) {
     function check_sch_booking($date,$id,$class_id)
     {
-        $booking = Booking::where(['booking_date'=> $date,'schedule_id'=>$id,'class_id'=>$class_id])->first();
+
+        $booking = Booking::where(['booking_date'=> $date,'schedule_id'=>$id,'class_id'=>$class_id,'user_id'=>Auth::id()])->first();
         if (isset($booking) && !empty($booking)) {
             return true;
         }else{
@@ -107,7 +110,7 @@ if (!function_exists('check_sch_booking')) {
 if (!function_exists('booked')) {
     function booked($date,$id,$class_id)
     {
-        $booking = Booking::where(['booking_date'=> $date,'schedule_id'=>$id,'status'=>2,'class_id'=>$class_id])->first();
+        $booking = Booking::where(['booking_date'=> $date,'schedule_id'=>$id,'status'=>2,'class_id'=>$class_id,'user_id'=>Auth::id()])->first();
         if (isset($booking) && !empty($booking)) {
             return true;
         }else{
@@ -115,4 +118,9 @@ if (!function_exists('booked')) {
         }
     }
 
+}
+
+function certifiedUser(){
+    $user = User::Where('id',Auth::id())->first();
+    return (isset($user['coach_badge_status']) && $user['coach_badge_status'] == User::BADGE_STATUS_CERTIFIED) ? "<span><img src='".url('/')."/public/images/verified2.png'> Certified</span>" : "";
 }

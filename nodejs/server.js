@@ -5,15 +5,15 @@ var request = require('request');
 const dotenv = require('dotenv');
 dotenv.config();
 var api_url = '';
-var port = 3001;
+var port = process.env.API_PORT;
 const date = require('date-and-time');
 
 var mysql      = require('mysql');
 var db = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : 'root',
-  database : 'trainbytrainer'
+  host     : process.env.DB_HOST,
+  user     : process.env.DB_USERNAME,
+  password : process.env.DB_PASSWORD,
+  database : process.env.DB_DATABASE
 });
 
 app.use( (req, res, next) => {
@@ -34,7 +34,7 @@ io.on('connection', function(socket){
 
     //Join room
     socket.on('joinroom', function (room_id) {
-        console.log('room_id = ' + room_id);
+        // console.log('room_id = ' + room_id);
         socket.join(room_id);
     });
 
@@ -43,30 +43,33 @@ io.on('connection', function(socket){
     
     socket.on('message', function(data){
         data.user_status = 1;
-        console.log('data = ', data);
+        // console.log('data = ', data);
         checkUserStatus(data,function(res) {
-            const now = new Date();
-            data.message_time = date.format(now, 'YYYY-MM-DD HH:mm:ss');
+            const now = new Date(new Date().toLocaleString('en', { timeZone: 'Asia/Calcutta' }));
+            data.message_time = date.format(now, 'YYYY-MM-DD HH:mm');
             data.id = "0";
 
             if(res.user_status == 1) {
                 var created_at = data.message_time;
                 var chatInsertQuery =  "INSERT INTO `chats` (`sender_id`, `receiver_id`, `message`, `media`, `thumbnail`, `type`, `is_read`, `is_deleted`, `created_at`, `updated_at`) VALUES ('"+data.sender_id+"', '"+data.receiver_id+"', "+db.escape(data.message)+", 'Null', 'Null', '"+data.message_type+"', 'N', 'N', '"+created_at+"', NULL)";
-              //  var chatInsertQuery = "INSERT INTO `messages` (`sender_id`, `receiver_id`, `message_type`, `message`, `message_time`, `read_status`, `sender_status`, `receiver_status`, `thumbnail`) VALUES ('"+data.sender_id+"', '"+data.receiver_id+"', '"+data.message_type+"', "+db.escape(data.message)+", '"+created_at+"', '1', 'Y', 'Y', '"+data.thumbnail+"');";
-                console.log('query ==  ', chatInsertQuery);
+                //  var chatInsertQuery = "INSERT INTO `messages` (`sender_id`, `receiver_id`, `message_type`, `message`, `message_time`, `read_status`, `sender_status`, `receiver_status`, `thumbnail`) VALUES ('"+data.sender_id+"', '"+data.receiver_id+"', '"+data.message_type+"', "+db.escape(data.message)+", '"+created_at+"', '1', 'Y', 'Y', '"+data.thumbnail+"');";
+                // console.log('query ==  ', chatInsertQuery);
                // var chatInsertQuery = "INSERT INTO `chats` (`sender_id`, 'receiver_id', `room_id`, `message`, `thumbnail`, `chat_type`, `created_at`) VALUES ('"+data.sender_id+"', '"+data.room_id+"', "+db.escape(data.message)+", '"+data.thumbnail+"', '"+data.chat_type+"', '"+created_at+"')";
                 db.query(chatInsertQuery, function(err, result, fields) {
                 if (err) throw err;
                     var messageId = result.insertId;
                     data.id = messageId.toString();
+                    data.message_time = date.format(now, 'DD-MM-YYYY HH:mm');
                     io.sockets.emit('message',data);
-                    console.log("message sent", data);
+                    // console.log("message sent", data);
                     var url = api_url + '/webservices/sendOneToOneNotification?sender_id='+data.sender_id+'&receiver_id='+data.receiver_id+'&message='+data.message;
                     request.get(url, function (error, response, body) {
                         //console.log('response=' + JSON.stringify(response));
                     });
                 });
             } else {
+                data.message_time = date.format(now, 'DD-MM-YYYY HH:mm');
+
                 io.sockets.emit('message',data);
             }
         });

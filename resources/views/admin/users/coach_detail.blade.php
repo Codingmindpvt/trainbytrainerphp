@@ -110,10 +110,10 @@
 							</aside>
 						</div>
 						<div class="row user-details">
-							<aside class="col-sm-6">
+							<!-- <aside class="col-sm-6">
 								<label>Time Zone</label>
 								<h4>{{ isset($user['coach_detail']['timezone']) ? $user['coach_detail']['timezone'] : "-----" }}</h4>
-							</aside>
+							</aside> -->
                              <aside class="col-sm-6">
 								<label>Price Range</label>
 								<h4>{{ isset($user['coach_detail']['price_range']) ? $user['coach_detail']['price_range'] : "-----" }}</h4>

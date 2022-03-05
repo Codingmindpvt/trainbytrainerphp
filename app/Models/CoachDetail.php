@@ -42,7 +42,7 @@ class CoachDetail extends Model
     public function getGender()
     {
 
-        $badges = self::getGenderOptions();
+        $list = self::getGenderOptions();
         return isset($list[$this->gender]) ? $list[$this->gender] : "Female";
     }
 
@@ -88,7 +88,7 @@ class CoachDetail extends Model
         $coachDetail->title =$data['title'];
          $coachDetail->bio  =$data['bio'];
          $coachDetail->city =$data['city'];
-         $coachDetail->timezone =$data['timezone'];
+         //$coachDetail->timezone =$data['timezone'];
          $coachDetail->gender = $data['gender'];
          $coachDetail->price_range = @$data['price_range'];
          $coachDetail->categories  = $data['categories'];
@@ -202,5 +202,11 @@ class CoachDetail extends Model
     {
         $data = CoachDetail::where('user_id', $user_id)->first();
         return @$data['profile_status'];
+    }
+
+    public function checkChatStatus($user_id)
+    {
+        $data = CoachDetail::where('user_id', $user_id)->first();
+        return @$data['chat_status'];
     }
 }

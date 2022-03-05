@@ -13,6 +13,7 @@
     </style>
       <div class="coaches-name">
           <div class="container">
+
               <h6><span><a href="{{ route('coaches')}}" class="active-program">Coaches</span></a>   > {{@$userProfile->getFullName()}}</h6>
           </div>
       </div>
@@ -61,29 +62,38 @@
                         <h2 class="adam-name"> {{@$userProfile->getFullName()}}
                             <!-- <span><img src="{{asset('public/images/verified2.png')}}" alt="image" class="img-fluid">Certified</span> -->
                             </h2>
-                         <div class="insta-save">
+                         <div class="insta-save save-btn">
                                 <input type="hidden" id="coach_id" value="{{@$userProfile['coach_detail']['user_id'] }}">
                                 <input type="hidden" id="user_id" value="{{ Auth::check() && !empty(Auth::user()->id) ? Auth::user()->id : '' }}">
                                 <input type="hidden" id="type" value="{{ $wishList->isTypeCoach() }}">
                                   @if(Auth::check() && Auth::user()->id)
                                 <div class="span_button">
                                     @if(@$userProfile->getWishList(@$userProfile['coach_detail']['user_id']))
-                                        <span class="view-save-bt-red remove_from_wishlist" >
+                                        <button class="view-save-bt-red remove_from_wishlist" >
                                             <i class="fa fa-heart" aria-hidden="true"></i> SAVED
-                                        </span>
+                                        </button>
                                         @else
-                                        <span id="wishList" class="view-save-bt add_to_wishlist">
-                                            <i class="fa fa-heart-o" aria-hidden="true"></i> SAVE
-                                        </span>
+                                            <button id="wishList" class="view-save-bt add_to_wishlist">
+                                                <i class="fa fa-heart-o" aria-hidden="true"></i> SAVE
+                                            </button>
                                         @endif
 
                                 </div>
                                 @else
-                                    <span class="view-save-bt"><i class="fa fa-heart-o" aria-hidden="true"></i> SAVE</span>
+
+                                @if(!empty(Auth::id()))
+                                <button class="view-save-bt"><i class="fa fa-heart-o" aria-hidden="true"></i> SAVE</button>
+
+                            @else
+                                <a href="{{route('login')}}"> <button class="view-save-bt"><i class="fa fa-heart-o" aria-hidden="true"></i> SAVE</button></a>
+
+                            @endif
+
+
                                 @endif
                             <!-- <a href="" class="view-save-bt"><i class="fa fa-heart-o" aria-hidden="true"></i> SAVE</a> -->
 
-                            <div class="social-area">
+
                             <?php
                                 $facebook_url = $userProfile['coach_detail']['facebook_url'];
                                 $twitter_url = $userProfile['coach_detail']['twitter_url'] ;
@@ -92,28 +102,29 @@
                                 $instagram_url = $userProfile['coach_detail']['instagram_url'];
 
                                 if (!empty($userProfile['coach_detail']['facebook_url'])) {
-                                   echo " <a href='$facebook_url'>
-                                    <img src='http://localhost/trainbytrainerphp/public/images/fb.svg' alt='svg'>
-                                </a>";
+                                    echo " <a href='$twitter_url' target='_blank'>
+                                        <img src='http://198.211.110.165/trainbytrainerphp/public/images/fb.svg' alt='svg'>
+                                    </a>";
+
                                 }
                                 if(!empty($userProfile['coach_detail']['twitter_url'])) {
-                                    echo " <a href='$twitter_url'>
-                                     <img src='http://localhost/trainbytrainerphp/public/images/twitter.svg' alt='svg'>
+                                    echo " <a href='$twitter_url' target='_blank'>
+                                     <img src='http://198.211.110.165/trainbytrainerphp/public/images/twitter.svg' alt='svg'>
                                  </a>";
                                  }
                                  if(!empty($userProfile['coach_detail']['pinterest_url'])) {
-                                    echo " <a href='$pinterest_url'>
-                                     <img src='http://localhost/trainbytrainerphp/public/images/pint.svg' alt='svg'>
+                                    echo " <a href='$pinterest_url' target='_blank'>
+                                     <img src='http://198.211.110.165/trainbytrainerphp/public/images/pint.svg' alt='svg'>
                                  </a>";
                                  }
                                  if(!empty($userProfile['coach_detail']['youtube_url'])) {
-                                    echo " <a href='$youtube_url'>
-                                     <img src='http://localhost/trainbytrainerphp/public/images/youtube.svg' alt='svg'>
+                                    echo " <a href='$youtube_url' target='_blank'>
+                                     <img src='http://198.211.110.165/trainbytrainerphp/public/images/youtube.svg' alt='svg'>
                                  </a>";
                                  }
                                  if(!empty($userProfile['coach_detail']['instagram_url'])) {
-                                    echo " <a href='$instagram_url'>
-                                     <img src='http://localhost/trainbytrainerphp/public/images/insta.svg' alt='svg'>
+                                    echo " <a href='$instagram_url' target='_blank'>
+                                     <img src='http://198.211.110.165/trainbytrainerphp/public/images/insta.svg' alt='svg'>
                                  </a>";
                                  }
                                 else {
@@ -139,7 +150,7 @@
                                     <img src="{{ asset('public/images/insta.svg') }}"  alt="svg">
                                 </a>
     -->
-                            </div>
+
                             {{--  <a href="{{ !empty(@$userProfile['coach_detail']['instagram_url']) ? @$userProfile['coach_detail']['instagram_url'] : '#' }}" class="view-insta-bt"><i class="fa fa-instagram" aria-hidden="true"></i> INSTAGRAM</a>  --}}
                         </div>
                         <ul>
@@ -149,7 +160,19 @@
                             <li>-</li>
                             <li><i class="fa fa-map-marker" aria-hidden="true"></i>  {{ @$userProfile->state->name}}.{{  @$userProfile->country->name}}</li>
                         </ul>
-                    <p class="review-rate mb-2"><i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> (1.2k Reviews)</p>
+                    <div class="review-rate mb-2">
+                    <?php $reviewDetail = $userProfile->getReviewAndRatingDetail(@$userProfile['coach_detail']['user_id']); ?>
+
+                                        <div class="rateyo" data-rateyo-rating="{{ !empty(@$reviewDetail['avg_rating']) ? @$reviewDetail['avg_rating'] : 0 }}" data-rateyo-num-stars="5">" data-rateyo-num-stars="5"></div>
+
+
+
+                                    ({{count(@$reviewList)}}  Reviews)</div>
+
+                    <span>
+                        {{ strtoupper(@$programs['program_user']['first_name'] . ' ' . @$programs['program_user']['last_name']) }}</span>
+
+                </p>
                     <ul class="gain-category">
                                 <?php $categories = (explode(",",@$userProfile['coach_detail']['categories']));
                                   foreach($categories as $category){
@@ -204,8 +227,9 @@
                         <h6>{{$education['completion_year']}}</h6>
                         <h6>{{ucwords($education['institute'])}}</h6>
                          </div>
-                       </div>
+
                          @endforeach
+                        </div>
                          @else
                          <p class="no-record-placeholder">This Coach doesn't currently have any education listed. If you want to know more about their qualifications, please reach out to them through the Open Chat button.</p>
                        @endif
@@ -308,10 +332,41 @@
                             <div class="barberll-content">
                                 <div class="doller-review">
                                     <h4>{{DEFAULT_CURRENCY.$program['price']}}</h4>
-                                    <p class="review-rate"><i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> (1.2ksss Reviews)</p>
+
+                                    <?php $reviewDetail = $program->getReviewAndRatingDetail($program['id']);?>
+                                    <p class="review-rate">
+
+                                    @switch(@$reviewDetail['avg_rating'])
+                                @case(1)
+                                <i class="fa fa-star" aria-hidden="true"></i>  <i class="fa fa-star-o" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i>
+                                @break
+
+                                @case(2)
+                                 <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i>
+                                @break
+
+                                @case(3)
+                                <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i>  <i class="fa fa-star-o" aria-hidden="true"></i>  <i class="fa fa-star-o" aria-hidden="true"></i>
+                                @break
+
+                                @case(4)
+                                 <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i>
+                                @break
+
+                                @case(5)
+                                <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i>
+                                @break
+
+                                @default
+                                <i class="fa fa-star-o" aria-hidden="true"></i>  <i class="fa fa-star-o" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i>                                @endswitch
+
+
+
+                                        ({{ count(@$reviewDetail['review_list']) }} Reviews)</p></p>
                                 </div>
                                 <h3>{{ strtoupper($program['program_name'])}}</h3>
                                 <p>{{$program['short_description']}}</p>
+
 
                             </div>
                         </a>
@@ -337,7 +392,7 @@
         <!-- end program area -->
 
         <!-- start review area -->
-        <section id="coach-review-area">
+       <!-- <section id="coach-review-area">
             <div class="container">
                 <div class="row">
                     <div class="col-md-8">
@@ -381,7 +436,7 @@
 
 
                 <!-- start pagination -->
-               <!--  <nav aria-label="Page navigation example">
+                <!-- <nav aria-label="Page navigation example">
                     <ul class="pagination">
                     <li class="page-item"><a class="page-link" href="#">&#60</a></li>
                     <li class="page-item"><a class="page-link" href="#">1</a></li>
@@ -400,7 +455,9 @@
         </section>
         <!-- The Modal review sign in end -->
 
-    <!-- The Modal give review -->
+
+
+        <!-- The Modal give review -->
 
 
     <!-- The Modal give review end -->
@@ -616,5 +673,26 @@ $(document).on('click', '.remove_from_wishlist', function() {
 
     });
 });
+    </script>
+    <script>
+
+
+$(function () {
+        $(".rateyo").rateYo({
+            readOnly: true,
+            starWidth: "18px",
+            spacing: "2px",
+        });
+        $("#rateYo").rateYo({
+            fullStar: true,
+            starWidth: "35px",
+            spacing: "4px",
+            //normalFill: '#f0f0f0',
+            ratedFill: '#F29E20',
+            onSet: function (rating, rateYoInstance) {
+                $('#inpt_rating').val(rating);
+            }
+        });
+    });
     </script>
 @endsection

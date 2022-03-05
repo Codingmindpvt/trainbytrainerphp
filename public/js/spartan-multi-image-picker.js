@@ -55,7 +55,6 @@
             var groupClassName = settings.groupClassName, docImage = settings.docImage, rowHeight = settings.rowHeight,fileAccept = settings.fileAccept, fieldName = settings.fieldName, placeholderImage = settings.placeholderImage, dropFileLabel = settings.dropFileLabel;
             var placeholderImageTarget = placeholderImage.image;
             var placeholderImageWidth  = '64px';
-
             var uploadLoaderIcon = '<i class="fas fa-sync fa-spin"></i>';
             if(typeof settings.directUpload.loaderIcon != 'undefined'){
                 uploadLoaderIcon = settings.directUpload.loaderIcon;
@@ -101,6 +100,22 @@
         function loadImage(settings, input, parent){
             var index = $(input).data('spartanindexinput');
             if (input.files && input.files[0]) {
+                if(settings.setFileType == 'image'){
+                    var ext = $(input).val().split('.').pop().toLowerCase();
+                    if($.inArray(ext, ['gif','png','jpg','jpeg']) == -1) {
+                        alert('invalid extension!');
+                        return false;
+                    }
+                }
+
+                if(settings.setFileType == 'document'){
+                    var ext = $(input).val().split('.').pop().toLowerCase();
+                    if($.inArray(ext, ['pdf']) == -1) {
+                        alert('invalid extension!');
+                        return false;
+                    }
+                }
+                
 
                 var file_select = input.files[0], allowedExt = settings.allowedExt, maxFileSize = settings.maxFileSize;
                 var file_select_type = file_select.type,
@@ -121,10 +136,13 @@
 
                                 $(parent).find('img[data-spartanindeximage="'+index+'"]').attr('src', docImage);
 
-                            }else{
+                            }
+                            else if(setFileType == "image"){
 
                                 $(parent).find('img[data-spartanindeximage="'+index+'"]').attr('src', e.target.result);
 
+                            }else{
+                                return false;
                             }
                             $(parent).find('img[data-spartanindeximage="'+index+'"]').show();
                             settings.onRenderedPreview.call(this, index);

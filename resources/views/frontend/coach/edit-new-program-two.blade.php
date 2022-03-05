@@ -1,6 +1,7 @@
 @extends('layouts.guest')
 @section('content')
-<form class="input-box" action="{{ route('update-program') }}" id="coachProgramFormEdit" method="post" enctype="multipart/form-data">
+<form class="input-box" action="{{ route('update-program') }}" id="coachProgramFormEdit" method="post"
+    enctype="multipart/form-data">
     @csrf
     <!--start varification div area here -->
     @include('frontend.nav._alertSection')
@@ -44,12 +45,13 @@
                             <a href="{{ route('coach.my-product-list') }}" class="no-border">
                                 <h3>Products</h3>
                             </a>
-                            <h4> &gt; Edit Product</h4>
+                            <h4>&gt;Edit Product</h4>
                         </div>
                     </div>
                     <div class="sale-by-location">
                         <div class="view-box">
-                            <p class="my-2 form-p">Program Image<span><i class="fa fa-asterisk validate-mark" aria-hidden="true"></i></p>
+                            <p class="my-2 form-p">Program Image<span><i class="fa fa-asterisk validate-mark"
+                                        aria-hidden="true"></i></p>
                             <div class="upload-certificate-box">
                                 <!-- @if(!empty(@$program['image_file']))
                                 <img src="{{asset('public/'.$program->image_file)}}">
@@ -59,157 +61,70 @@
                                 @if (!empty($coachPrograms->image_file))
                                 <img src="{{ asset('public/' . $coachPrograms->image_file) }}" id="blah">
                                 @else
-                                <img src="{{ asset('public/images/default-image.png') }}" class="profile_picture" alt="upload">
+                                <img src="{{ asset('public/images/default-image.png') }}" class="profile_picture"
+                                    alt="upload">
                                 @endif
-                                <input onchange="loadFile(event)" id="imgUpload" name="program_image" type="file" accept="image/jpeg, image/jpg, image/png" class="file imgUpload" data-show-upload="false" data-show-caption="true" data-msg-placeholder="Select {files} for upload...">
+                                <input onchange="loadFile(event)" id="imgUpload" name="program_image" type="file"
+                                    accept="image/jpeg, image/jpg, image/png" class="file imgUpload"
+                                    data-show-upload="false" data-show-caption="true"
+                                    data-msg-placeholder="Select {files} for upload...">
                             </div>
 
                         </div>
                         <input type="hidden" name="program_id" value="{{$program[0]['id']}}" placeholder="Program Name">
-                    </div>
+
                     <div class="view-box">
-                        <p class="my-2 form-p">Program Categories<span> <i class="fa fa-asterisk validate-mark" aria-hidden="true"></i></span></p>
+                        <p class="my-2 form-p">Program Categories<span><i class="fa fa-asterisk validate-mark"
+                                    aria-hidden="true"></i></span></p>
                         <div class="form-select">
                             @php
                             $getCategoryIdsArray = explode(',', $program[0]['categories']);
                             @endphp
                             <select class="form-input multiSelectDropDown" name="categories[]" multiple required>
                                 @foreach($categories as $category)
-                                <option value="{{@$category->id}}" @if(in_array($category->id, $getCategoryIdsArray )) selected
+                                <option value="{{@$category->id}}" @if(in_array($category->id, $getCategoryIdsArray ))
+                                    selected
                                     @endif >{{@$category->title}}</option>
                                 @endforeach
                             </select>
-                            <input type="text" name="category" id="cat" placeholder="Program Name" style="visibility: hidden;">
+                            <input type="text" name="category" id="cat" placeholder="Program Name"
+                                style="visibility: hidden;">
                             <span class="multi_error error_" style="font-size: 13px"> </span>
                         </div>
                         <p class="tag-line">This will appear under your name on your coach profile page. It
                             will help clients get to know you better.</p>
                     </div>
                     <div class="view-box">
-                        <p class="my-2 form-p">Program Name<span><i class="fa fa-asterisk validate-mark" aria-hidden="true"></i></p>
-                        <input class="form-input" type="text" name="program_name" value="{{$program[0]['program_name']}}" placeholder="Program Name">
+                        <p class="my-2 form-p">Program Name<span><i class="fa fa-asterisk validate-mark"
+                                    aria-hidden="true"></i></p>
+                        <input class="form-input" type="text" name="program_name"
+                            value="{{$program[0]['program_name']}}" placeholder="Program Name">
                     </div>
                     <div class="view-box">
-                        <p class="my-2 form-p">Program Description<span><i class="fa fa-asterisk validate-mark" aria-hidden="true"></i></p>
-                        <textarea class="form-input" name="description" placeholder="Program Description">{{$program[0]['description']}}</textarea>
+                        <p class="my-2 form-p">Program Description<span><i class="fa fa-asterisk validate-mark"
+                                    aria-hidden="true"></i></p>
+                        <textarea class="form-input" name="description"
+                            placeholder="Program Description">{{$program[0]['description']}}</textarea>
                     </div>
                     <div class="view-box">
-                        <p class="my-2 form-p">Program Short Description<span><i class="fa fa-asterisk validate-mark" aria-hidden="true"></i></p>
-                        <textarea class="form-input" name="short_description" placeholder="Program Short Description">{{$program[0]['short_description']}}</textarea>
+                        <p class="my-2 form-p">Program Short Description<span><i class="fa fa-asterisk validate-mark"
+                                    aria-hidden="true"></i></p>
+                        <textarea class="form-input" name="short_description"
+                            placeholder="Program Short Description">{{$program[0]['short_description']}}</textarea>
                     </div>
                     <div class="view-box">
-                        <p class="my-2 form-p">Price ({{DEFAULT_CURRENCY_SORT_NAME}})<span><i class="fa fa-asterisk validate-mark" aria-hidden="true"></i></p>
-                        <input class="form-input" type="text" name="price" placeholder="Enter Price " id="price" value="{{$program[0]['price']}}">
-                        <p class="tag-line">Prices are currently listed in USD Dollars. Please also consider
+                        <p class="my-2 form-p">Price ({{DEFAULT_CURRENCY_SORT_NAME}})<span><i
+                                    class="fa fa-asterisk validate-mark" aria-hidden="true"></i></p>
+                        <input class="form-input" type="text" name="price" placeholder="Enter Price " id="price"
+                            value="{{$program[0]['price']}}">
+                        <p class="tag-line">Prices are currently listed in EURO.Please also consider
                             taxes and our standard commission (15%) when creating this price.</p>
-                    </div>
-                    <hr>
-                    <div class="result_field_wrapper">
-                        <div class="result-main-section">
-                            <div class="view-box">
-                                @foreach($coachProgramResult as $coachProgram)
-                                <input type="hidden" name="result_count" id="result_count" value="">
-                                <input type="hidden" name="coach_result_id[]" id="result_count" value="{{$coachProgram['id']}}">
-                                <p class="my-2 form-p">Results</p>
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <p class="tag-line">Title<span><i class="fa fa-asterisk validate-mark" aria-hidden="true"></i></p>
-                                        <input class="form-input" type="text" name="result_title[]" placeholder="Enter Results Title----" value="{{$coachProgram['title']}}">
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <p class="tag-line">Star</p>
-                                        <div class="form-select">
-                                            <select class="form-input" name="result_star[]" value="{{$coachProgram['certificate']}}">
-                                                <option value="{{$coachProgram['certificate']}}">{{$coachProgram['certificate']}} Star</option>
-                                                <option value="1">1 Star</option>
-                                                <option value="2">2 Stars</option>
-                                                <option value="3">3 Stars</option>
-                                                <option value="4">4 Stars</option>
-                                                <option value="5">5 Stars</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="view-box">
-                                <div class="form-row">
-                                    <div class="form-group col-md-2">
-                                        <p class="tag-line">Image</p>
-                                        <div class="upload-certificate-box-main">
-                                            <div class="upload-certificate-box">
-                                                @if(!empty($coachProgram))
-                                                <img src="{{asset('public/'.$coachProgram->image_file)}}" id="imgPreview_1">
-                                                @else
-                                                <img src="{{asset('public/images/default-image.png')}}" class="imgPreview" id="imgPreview_1" alt="upload">
-                                                @endif
-                                                <input id="imgUpload_1" name="result_image_file[]" type="file" accept="image/jpeg, image/jpg, image/png" class="file imgUpload" data-show-upload="false" data-show-caption="true" data-msg-placeholder="Select {files} for upload...">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group col-md-10">
-                                        <p class="tag-line">Description</p>
-                                        <textarea class="form-input" name="result_description[]" placeholder="Enter Results Description">{{$coachProgram['description']}}</textarea>
-                                    </div>
-                                </div>
-                                @endforeach
-                                <a href="javascript:void(0);" class="result_add_button add-btn my-3" title="Add field"><span>Add More Result <i class="fa fa-plus-circle" aria-hidden="true"></i></span></a>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="tag-line">Upload before & after images of your clients here, along with a title,
-                        rating and short description. Make sure they have your permission to "use" their images
-                        publicly</p>
-                    <hr>
-                    <div class="inside_field_wrapper">
-                        <div class="inside-main-section">
-                            <div class="view-box">
-                                @foreach($coachProgramInside as $coach)
-                                <input type="hidden" name="inside_count" id="inside_count" value="">
-                                <input type="hidden" name="coach_prog_id[]" id="inside_count" value="{{$coach['id']}}">
-                                <p class="my-2 form-p">Inside the Program</p>
-                                <p class="tag-line">Title</p>
-                                <input class="form-input" type="text" name="edu_title[]" value="{{$coach['title']}}" placeholder="Shot title explaining a feature of the program">
-                                <p class="tag-line">Description</p>
-                                <textarea class="form-input" placeholder="More information about the title" name="edu_description[]">{{$coach['description']}}</textarea>
-                                @endforeach
-                                <a href="javascript:void(0);" class="inside_add_button add-btn my-3" title="Add field"><span><i class="fa fa-plus" aria-hidden="true"></i></span>Add more</a>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="field_wrapper">
-                        <div class="main-section">
-                            @foreach($coachProgramImage as $coachProgram)
-                            <div class="view-box">
-                                <input type="hidden" name="education_count" id="education_count" value="">
-                                <input type="hidden" name="education_count_id[]" id="education_count" value="{{$coachProgram['id']}}">
-                                <p class="my-2 form-p">Upload Your Program Files</p>
-                                <p class="tag-line">Title</p>
-                                <input class="form-input" type="text" name="image_title[]" value="{{$coachProgram['title']}}" placeholder="Shot title explaining a feature of the program">
-                                <p class="tag-line">Upload File</p>
-                                <div class="upload-certificate-box-main add-upload">
-                                    <div class="upload-certificate-box">
-                                        @if(!empty($coachProgram->image_file))
-                                        <img src="{{asset('public/'.$coachProgram->image_file)}}" >
-                                        <!-- <iframe src="{{ asset('public/coach/result/' . $coachProgram->image_file) }}" width="100%" height="250px" class="profile_picture"></iframe> -->
-                                        @else
-                                        <img src="{{asset('public/images/default-image.png')}}" class="imgPreview" id="pdfPreview_1" alt="upload">
-                                        @endif
-                                        <input name="upload_image_file[]" id="pdfUpload_1" type="file" accept="application/pdf" class="file" data-show-upload="false" data-show-caption="true" value="{{$coachProgramImage[0]['image_file']}}" data-msg-placeholder="Select {files} for upload...">
-                                    </div>
-
-                                    </a>
-                                </div>
-                                @endforeach
-                                <a href="javascript:void(0);" class="add_button add-btn my-3" title="Add field"><span>Add More <i class="fa fa-plus-circle" aria-hidden="true"></i></span>
-                            </div>
-                        </div>
-
                     </div>
 
 
                     <div class="profile-btm-btn">
                         <button type="submit" class="blue-btn oswald-font my-3" id="saveprogram">SAVE</button>
+                    </div>
                     </div>
             </div>
             </aside>
@@ -222,134 +137,136 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script type="text/javascript">
-    $(document).ready(function() {
-        var baseUrl = "{{URL('/')}}";
-        //categories validation
-        $("#saveprogram").click(function(e) {
-            var submit = true;
-            e.preventDefault();
-            $("#cat").val($('.multiSelectDropDown').val())
-            $('.error_').html('')
+$(document).ready(function() {
+    var baseUrl = "{{URL('/')}}";
+    //categories validation
+    $("#saveprogram").click(function(e) {
+        var submit = true;
+        e.preventDefault();
+        $("#cat").val($('.multiSelectDropDown').val())
+        $('.error_').html('')
 
 
-            $('#coachProgramFormEdit').submit();
+        $('#coachProgramFormEdit').submit();
 
-        });
+    });
 
-        $("#pdfUpload_1").on('change', function() {
-                    var file = this.files[0];
-                    $this = $(this);
-                    console.log(file.type);
-                    if(file.type === 'application/pdf'){
-                        $('#pdfPreview_1').attr('src', baseUrl+'/public/images/pdf.jpg');
-                        return false;
-                    }
-                    if (file){
-                    let reader = new FileReader();
-                    reader.onload = function(event){
-                        console.log(event.target.result);
-                        $('#pdfPreview_1').css('border','2px solid')
-                        $('#pdfPreview_1').attr('src', event.target.result);
+    $("#pdfUpload_1").on('change', function() {
+        var file = this.files[0];
+        $this = $(this);
+        console.log(file.type);
+        if (file.type === 'application/pdf') {
+            $('#pdfPreview_1').attr('src', baseUrl + '/public/images/pdf.jpg');
+            return false;
+        }
+        if (file) {
+            let reader = new FileReader();
+            reader.onload = function(event) {
+                console.log(event.target.result);
+                $('#pdfPreview_1').css('border', '2px solid')
+                $('#pdfPreview_1').attr('src', event.target.result);
 
-                    }
-                    reader.readAsDataURL(file);
-                    }
-                });
+            }
+            reader.readAsDataURL(file);
+        }
+    });
 
-        var count = 1; //Initial field counter is 1
-        var maxField = 5; //Input fields increment limitation
-        var addButton = $('.add_button'); //Add button selector
-        var wrapper = $('.field_wrapper'); //Input field wrapper
+    var count = 1; //Initial field counter is 1
+    var maxField = 5; //Input fields increment limitation
+    var addButton = $('.add_button'); //Add button selector
+    var wrapper = $('.field_wrapper'); //Input field wrapper
 
-        //Once add button is clicked
-        $(addButton).click(function(e) {
+    //Once add button is clicked
+    $(addButton).click(function(e) {
 
-            //Check maximum number of input fields
-            if (count < maxField) {
-                count++; //Increment field counter
-                $(wrapper).append(`<div class="main-section"><div class="view-box"><p class="my-2 form-p">Upload Your Program Files</p>
+        //Check maximum number of input fields
+        if (count < maxField) {
+            count++; //Increment field counter
+            $(wrapper).append(`<div class="main-section"><div class="view-box"><p class="my-2 form-p">Upload Your Program Files</p>
 							<p class="tag-line">Title</p>
 							<input class="form-input" type="text" name="education_title_1` + count +
-                    `"  placeholder="Shot title explaining a feature of the program">
+                `"  placeholder="Shot title explaining a feature of the program">
 							<p class="tag-line">Upload File</p>
 							<div class="upload-certificate-box-main">
                                 <div class="upload-certificate-box">
-                                    <img src="public/images/add-more.png" class="pdfPreview_` + count +`"  id="pdfPreview_` + count +`" alt="upload">
-                                    <input id="pdfUpload` + count + `" type="file" accept="application/pdf" name="education_image_file_` +
-                    count +
-                    `"  class="file imgUpload1"
+                                    <img src="public/images/add-more.png" class="pdfPreview_` + count +
+                `"  id="pdfPreview_` + count + `" alt="upload">
+                                    <input id="pdfUpload` + count +
+                `" type="file" accept="application/pdf" name="education_image_file_` +
+                count +
+                `"  class="file imgUpload1"
                                     data-show-upload="false" data-show-caption="true" data-msg-placeholder="Select {files} for upload...">
                                 </div>
 							</div><a href="javascript:void(0);" class="remove_button add-btn my-3" title="Add field"><span>Remove <i class="fa fa-minus-circle" aria-hidden="true"></i></span></a></div></div>`
-                ); //Add field html
+            ); //Add field html
 
-                $("#pdfUpload_" + count).on('change', function() {
-                    var file = this.files[0];
-                    $this = $(this);
-                    console.log(file.type);
-                    if(file.type == 'application/pdf'){
-                        alert("ok");
-                        $('#pdfPreview_' + count).attr('src', baseUrl+'/public/images/pdf.jpg');
-                        return false;
-                    }
-                    if (file){
+            $("#pdfUpload_" + count).on('change', function() {
+                var file = this.files[0];
+                $this = $(this);
+                console.log(file.type);
+                if (file.type == 'application/pdf') {
+                    //alert("ok");
+                    $('#pdfPreview_' + count).attr('src', baseUrl + '/public/images/pdf.jpg');
+                    return false;
+                }
+                if (file) {
                     let reader = new FileReader();
-                    reader.onload = function(event){
+                    reader.onload = function(event) {
                         console.log(event.target.result);
-                        $('#pdfPreview_' + count).css('border','2px solid')
-                       // $this.parent().find('#pdfPreview_' + count).attr('src', event.target.result);
+                        $('#pdfPreview_' + count).css('border', '2px solid')
+                        // $this.parent().find('#pdfPreview_' + count).attr('src', event.target.result);
                         $('#pdfPreview_' + count).attr('src', event.target.result);
 
                     }
                     reader.readAsDataURL(file);
-                    }
-                });
-            }
-            $("#education_count").attr("value", count);
-        });
-
-        //Once remove button is clicked
-        $(wrapper).on('click', '.remove_button', function(e) {
-            e.preventDefault();
-            $(this).closest('.main-section').remove();
-            // $(this).parent('.main-section').remove(); //Remove field html
-            count--; //Decrement field counter
-            $("#education_count").attr("value", count);
-        });
-
+                }
+            });
+        }
+        $("#education_count").attr("value", count);
     });
+
+    //Once remove button is clicked
+    $(wrapper).on('click', '.remove_button', function(e) {
+        e.preventDefault();
+        $(this).closest('.main-section').remove();
+        // $(this).parent('.main-section').remove(); //Remove field html
+        count--; //Decrement field counter
+        $("#education_count").attr("value", count);
+    });
+
+});
 </script>
 
 
 
 
 <script type="text/javascript">
-    $(document).ready(function() {
-        var result_count = 1; //Initial field counter is 1
-        var resultMaxField = 5; //Input fields increment limitation
-        var resultAddButton = $('.result_add_button'); //Add button selector
-        var resultWrapper = $('.result_field_wrapper'); //Input field wrapper
-        $("#imgUpload_1").on('change', function() {
-            var file = this.files[0];
-            console.log(file);
-            if (file) {
-                let reader = new FileReader();
-                reader.onload = function(event) {
-                    console.log(event.target.result);
-                    $('#imgPreview_1').attr('src', event.target.result);
-                }
-                reader.readAsDataURL(file);
+$(document).ready(function() {
+    var result_count = 1; //Initial field counter is 1
+    var resultMaxField = 5; //Input fields increment limitation
+    var resultAddButton = $('.result_add_button'); //Add button selector
+    var resultWrapper = $('.result_field_wrapper'); //Input field wrapper
+    $("#imgUpload_1").on('change', function() {
+        var file = this.files[0];
+        console.log(file);
+        if (file) {
+            let reader = new FileReader();
+            reader.onload = function(event) {
+                console.log(event.target.result);
+                $('#imgPreview_1').attr('src', event.target.result);
             }
-        });
+            reader.readAsDataURL(file);
+        }
+    });
 
 
-        //Once add button is clicked
-        $(resultAddButton).click(function(e) {
+    //Once add button is clicked
+    $(resultAddButton).click(function(e) {
 
-            //Check maximum number of input fields
-            if (result_count < resultMaxField) {
-                result_count++; //Increment field counter
-                $(resultWrapper).append(`<div class="result-main-section"><div class="view-box">
+        //Check maximum number of input fields
+        if (result_count < resultMaxField) {
+            result_count++; //Increment field counter
+            $(resultWrapper).append(`<div class="result-main-section"><div class="view-box">
 							<div class="form-row">
 							    <div class="form-group col-md-6">
 								    <p class="tag-line">Title</p>
@@ -377,9 +294,11 @@
 								    <p class="tag-line">Image</p>
 									<div class="upload-certificate-box-main">
                                         <div class="upload-certificate-box">
-                                            <img src="{{asset('public/images/default-image.png')}}" id="imgPreview_` + result_count + `" alt="upload">
-                                            <input id="imgUpload_` + result_count + `" type="file" accept="image/jpeg, image/jpg, image/png" name="image_file` +
-                    result_count + `"  class="file imgUpload1"
+                                            <img src="{{asset('public/images/default-image.png')}}" id="imgPreview_` +
+                result_count + `" alt="upload">
+                                            <input id="imgUpload_` + result_count +
+                `" type="file" accept="image/jpeg, image/jpg, image/png" name="image_file` +
+                result_count + `"  class="file imgUpload1"
                                             data-show-upload="false" data-show-caption="true" data-msg-placeholder="Select {files} for upload...">
                                         </div>
 									</div>
@@ -392,163 +311,164 @@
 						 	<a href="javascript:void(0);" class="result_remove_button add-btn my-3" title="Add field"><span>Remove Result <i class="fa fa-minus-circle" aria-hidden="true"></i></span></a>
 						</div></div>`); //Add field html
 
-                    $("#imgUpload_" + result_count).on('change', function() {
-                    var file = this.files[0];
-                    console.log(file);
-                    if (file) {
-                        let reader = new FileReader();
-                        reader.onload = function(event) {
-                            console.log(event.target.result);
-                            $('#imgPreview_' + result_count).attr('src', event.target.result);
-                        }
-                        reader.readAsDataURL(file);
+            $("#imgUpload_" + result_count).on('change', function() {
+                var file = this.files[0];
+                console.log(file);
+                if (file) {
+                    let reader = new FileReader();
+                    reader.onload = function(event) {
+                        console.log(event.target.result);
+                        $('#imgPreview_' + result_count).attr('src', event.target.result);
                     }
-                });
-            }
-            $("#result_count").attr("value", result_count);
-
-        });
-
-        //Once remove button is clicked
-        $(resultWrapper).on('click', '.result_remove_button', function(e) {
-            e.preventDefault();
-            $(this).closest('.result-main-section').remove();
-
-            // $(this).parent('.main-section').remove(); //Remove field html
-            result_count--; //Decrement field counter
-            $("#result_count").attr("value", result_count);
-        });
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        //alert(result_count);
+        $("#result_count").attr("value", result_count);
 
     });
+
+    //Once remove button is clicked
+    $(resultWrapper).on('click', '.result_remove_button', function(e) {
+        e.preventDefault();
+        $(this).closest('.result-main-section').remove();
+
+        // $(this).parent('.main-section').remove(); //Remove field html
+        result_count--; //Decrement field counter
+        $("#result_count").attr("value", result_count);
+        //alert(result_count);
+    });
+ //alert(result_count+" outer");
+});
 </script>
 
 <script type="text/javascript">
-    $(document).ready(function() {
-        var inside_count = 1; //Initial field counter is 1
-        var insideMaxField = 5; //Input fields increment limitation
-        var insideAddButton = $('.inside_add_button'); //Add button selector
-        var insideWrapper = $('.inside_field_wrapper'); //Input field wrapper
-        //Once add button is clicked
-        $(insideAddButton).click(function(e) {
+$(document).ready(function() {
+    var inside_count = 1; //Initial field counter is 1
+    var insideMaxField = 5; //Input fields increment limitation
+    var insideAddButton = $('.inside_add_button'); //Add button selector
+    var insideWrapper = $('.inside_field_wrapper'); //Input field wrapper
+    //Once add button is clicked
+    $(insideAddButton).click(function(e) {
 
-            //Check maximum number of input fields
-            if (inside_count < insideMaxField) {
-                inside_count++; //Increment field counter
-                $(insideWrapper).append(`<div class="inside-main-section">
+        //Check maximum number of input fields
+        if (inside_count < insideMaxField) {
+            inside_count++; //Increment field counter
+            $(insideWrapper).append(`<div class="inside-main-section">
                     <div class="view-box">
                         <p class="my-2 form-p">Inside the Program</p>
                         <p class="tag-line">Title</p>
                         <input class="form-input" type="text" name="title` + inside_count +
-                    `" placeholder="Shot title explaining a feature of the program">
+                `" placeholder="Shot title explaining a feature of the program">
                         <p class="tag-line">Description</p>
                         <textarea class="form-input" placeholder="More information about the title" name="description` +
-                    inside_count + `"></textarea>
+                inside_count + `"></textarea>
                         <a href="javascript:void(0);" class="inside_remove_button add-btn my-3" title="Add field"><span>Remove Result <i class="fa fa-minus-circle" aria-hidden="true"></i></span></a>
                     </div>
                 </div>`); //Add field html
-            }
-            $("#inside_count").attr("value", inside_count);
-
-        });
-
-        //Once remove button is clicked
-        $(insideWrapper).on('click', '.inside_remove_button', function(e) {
-            e.preventDefault();
-            $(this).closest('.inside-main-section').remove();
-            // $(this).parent('.main-section').remove(); //Remove field html
-            inside_count--; //Decrement field counter
-            $("#inside_count").attr("value", inside_count);
-        });
+        }
+        $("#inside_count").attr("value", inside_count);
 
     });
+
+    //Once remove button is clicked
+    $(insideWrapper).on('click', '.inside_remove_button', function(e) {
+        e.preventDefault();
+        $(this).closest('.inside-main-section').remove();
+        // $(this).parent('.main-section').remove(); //Remove field html
+        inside_count--; //Decrement field counter
+        $("#inside_count").attr("value", inside_count);
+    });
+
+});
 </script>
 
 <!-- Image preview -->
 <script type="text/javascript">
-    var loadFile = function(event) {
-        var output = document.getElementById('output');
-        output.src = URL.createObjectURL(event.target.files[0]);
-        output.onload = function() {
-            URL.revokeObjectURL(output.src) // free memory
-        }
-    };
+var loadFile = function(event) {
+    var output = document.getElementById('output');
+    output.src = URL.createObjectURL(event.target.files[0]);
+    output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+    }
+};
 </script>
 <script type="text/javascript">
-    var loadFile = function(event) {
-        var output = document.getElementById('blah');
-        output.src = URL.createObjectURL(event.target.files[0]);
-        output.onload = function() {
-            URL.revokeObjectURL(output.src) // free memory
-        }
-    };
+var loadFile = function(event) {
+    var output = document.getElementById('blah');
+    output.src = URL.createObjectURL(event.target.files[0]);
+    output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+    }
+};
 </script>
 <script type="text/javascript">
-    $(document).ready(function() {
-        $('#input-box').validate({
-            rules: {
-                program_image: {
-                    required: true
-                },
-                categories: {
-                    required: true
-                },
-                program_name: {
-                    required: true
-                },
-                description: {
-                    required: true
-                },
-                short_description: {
-                    required: true
-                },
-                price: {
-                    required: true
-                },
-                result_titl: {
-                    required: true
-                },
-                result_star: {
-                    required: true
-                },
-                edu_title: {
-                    required: true
-                },
-                edu_description: {
-                    required: true
-                },
-                image_title: {
-                    require: true
-                }
+$(document).ready(function() {
+    $('#input-box').validate({
+        rules: {
+            program_image: {
+                required: true
+            },
+            categories: {
+                required: true
+            },
+            program_name: {
+                required: true
+            },
+            description: {
+                required: true
+            },
+            short_description: {
+                required: true
+            },
+            price: {
+                required: true
+            },
+            result_titl: {
+                required: true
+            },
+            result_star: {
+                required: true
+            },
+            edu_title: {
+                required: true
+            },
+            edu_description: {
+                required: true
+            },
+            image_title: {
+                require: true
             }
-        });
+        }
     });
-
+});
 </script>
 <script>
-    var cVal = 0;
+var cVal = 0;
 
-    $('#price').keyup(function(){
-        var regexPositiveFloat = /^([0-9]*)(.[0-9]{0,2})?$/;
-        if(regexPositiveFloat.test($('#price').val())){
-            console.log('Current Value',$('#price').val())
-            cVal= $('#price').val();
-            $('#price').val(cVal);
-        }else {
-            $('#price').val(cVal);
-        }
-
-
-        var val = $(this).val();
+$('#price').keyup(function() {
+    var regexPositiveFloat = /^([0-9]*)(.[0-9]{0,2})?$/;
+    if (regexPositiveFloat.test($('#price').val())) {
+        console.log('Current Value', $('#price').val())
+        cVal = $('#price').val();
+        $('#price').val(cVal);
+    } else {
+        $('#price').val(cVal);
+    }
 
 
+    var val = $(this).val();
 
 
-        if(isNaN(val)){
-             val = val.replace(/[^0-9\.]/g,'');
-             if(val.split('.').length>0)
-                 val =val.replace(/\.+$/,'');
-        }
-        $(this).val(val);
-      });
+
+
+    if (isNaN(val)) {
+        val = val.replace(/[^0-9\.]/g, '');
+        if (val.split('.').length > 0)
+            val = val.replace(/\.+$/, '');
+    }
+    $(this).val(val);
+});
 </script>
 @endsection

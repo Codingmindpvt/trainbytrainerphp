@@ -46,6 +46,7 @@
 
     })
 
+
     $("#imgUpload_edit").on('change', function() {
         var file = this.files[0];
         if (file) {
@@ -57,33 +58,88 @@
             reader.readAsDataURL(file);
         }
     });
+    $("#prize").blur(function() {
+        if (this.checkValidity()) {
+            localStorage.setItem("errorPrize", false);
+        } else {
+            localStorage.setItem("errorPrize", true);
+            $('.class_price_error').html('Please add a valid Price').css('color', 'red').show()
+        }
+    });
+
+    $("#prize").blur(function() {
+        if (this.checkValidity()) {
+            localStorage.setItem("errorPrize", false);
+        } else {
+            localStorage.setItem("errorPrize", true);
+            $('.class_price_error').html('Please add a valid Price').css('color', 'red').show()
+        }
+    });
+
+    $("#attendees_limit").blur(function() {
+        var z = $(this).val();
+        if (!/^[1-9]+$/.test(z)) {
+            localStorage.setItem("errorAttendee", true);
+            $('.class_attendees_limit_error').html('Please add a valid Number').css('color', 'red').show()
+        } else {
+            localStorage.setItem("errorAttendee", false);
+            $('.class_attendees_limit_error').html('Please add a valid Number').css('color', 'red').hide()
+        }
+    });
+
+
+
+    localStorage.setItem("isImage", false);
+
+    $("#imgUpload_add").on('change', function() {
+        var file = this.files[0];
+        if (file) {
+            let reader = new FileReader();
+            reader.onload = function(event) {
+                console.log(event.target.result);
+                localStorage.setItem("isImage", true);
+                $('.class_image_error').html('')
+                $('.imgPreview_add').attr('src', event.target.result);
+            }
+            reader.readAsDataURL(file);
+        }
+    });
 
     function validateClassForm() {
+
+
         var errors = [];
         $('.errors').addClass('hide');
-        if ($('#address_lat').val() === '' && $('#address_lat').val() === '') {
+        if ($.trim($('#address_lat').val()) === '' && $.trim($('#address_lat').val()) === '') {
             errors.push('address_error')
         }
         if ($('#class_category').val() === '') {
             errors.push('class_category_error')
         }
-        if ($('.class_price').val() === '') {
+
+
+        if ($.trim($('.class_price').val()) === '' || localStorage.getItem("errorPrize") == 'true') {
             errors.push('class_price_error')
         }
-        if ($('.class_attendees_limit').val() === '') {
+        if ($.trim($('.class_attendees_limit').val()) === '' || localStorage.getItem("errorAttendee") == 'true') {
             errors.push('class_attendees_limit_error')
         }
-        if ($('.class_action').val() === '') {
+        if ($.trim($('.class_action').val()) === '') {
             errors.push('class_action_error')
         }
-        if ($('.class_name').val() === '') {
+        if ($.trim($('.class_name').val()) === '') {
             errors.push('class_name_error')
         }
-        if ($('.class_description').val() === '') {
+        if ($.trim($('.class_description').val()) === '') {
             errors.push('class_description_error')
         }
+        if (localStorage.getItem("isImage") == 'false') {
+            errors.push('class_image_error')
+        }
+
 
         if (errors.length > 0) {
+
             for (i = 0; i <= errors.length; i++) {
                 if (errors[i] != 'undefined') {
                     $('.' + errors[i]).css('color', 'red').removeClass('hide');
@@ -334,7 +390,7 @@
 
         $('.append_' + type + '_div').append(clone_div);
         $(".timepicker").datetimepicker({
-            format: 'h:m',
+            format: 'H:mm',
             icons: {
                 up: "fa fa-chevron-up",
                 down: "fa fa-chevron-down"
@@ -349,12 +405,13 @@
 
     $(document).ready(function() {
         $(".timepicker").datetimepicker({
-            format: 'h:m',
+            format: 'H:mm',
             icons: {
                 up: "fa fa-chevron-up",
                 down: "fa fa-chevron-down"
             }
         }).on('dp.change', function(e, v) {
+            console.log('time',e);
             var $this = $(this);
             var type = $this.data('type');
             var time = this.value;
@@ -404,7 +461,7 @@
 
 
         if ($this.hasClass('to_time')) {
-            $('.'+type + '_errors').html('');
+            $('.' + type + '_errors').html('');
             var form_time = $this.parent().prev('.clock-box').find('.from_time').val();
 
             if (form_time === '') {
@@ -422,11 +479,13 @@
 
 
 
-            console.log(hourDiff+''+minDiff);
+            console.log(hourDiff + '' + minDiff);
 
 
 
             if (minDiff <= 0 && hourDiff == 0) {
+                console.log("minDiff",minDiff);
+                console.log("hourDiff",hourDiff);
                 $this.parent().find('.' + type + '_to_time_error').html('Date must be greater then from time').css(
                     'color', 'red');
                 $('.' + type + '_add_more_button').addClass("btn-disabled");
@@ -436,6 +495,7 @@
             }
 
             if (hourDiff < 0) {
+                console.log("hourDiff be ----",hourDiff);
                 $this.parent().find('.' + type + '_to_time_error').html('Date must be greater then from time').css(
                     'color', 'red');
                 $('.' + type + '_add_more_button').addClass("btn-disabled");
@@ -460,7 +520,7 @@
 
         }
         if ($this.hasClass('from_time')) {
-            $('.'+type + '_errors').html('');
+            $('.' + type + '_errors').html('');
             var from_time = $this.parent().next('.clock-box').find('.to_time').val();
             var hourDiff1 = (parseInt(from_time.split(':')[0], 10) - parseInt(time.split(':')[0], 10));
             var minDiff1 = (parseInt(from_time.split(':')[1], 10) - parseInt(time.split(':')[1], 10));
@@ -470,8 +530,8 @@
 
 
 
-            if (minDiff > 0) {
-                $this.parent().find('.' + type + '_from_time_error').html('Date must be lesser then from time').css(
+            if (hourDiff > 0) {
+                $this.parent().find('.' + type + '_from_time_error').html('Date must be lesser then to time').css(
                     'color', 'red');
                 $('.' + type + '_add_more_button').addClass("btn-disabled");
                 return false;
@@ -483,8 +543,7 @@
                 return false;
             }
 
-            console.log(minDiff1);
-            if (hourDiff1 === 0 && minDiff1 < 15 ) {
+            if (hourDiff1 === 0 && minDiff1 < 15) {
                 $this.parent().find('.' + type + '_from_time_error').html('Differnce between time atleast 15 min.').css(
                     'color', 'red');
                 $('.' + type + '_add_more_button').addClass("btn-disabled");
@@ -512,13 +571,22 @@
             var to_time = $(".clone_" + type + "_div").eq(div_length - 1).find('.to_time').val();
 
             var diff = calculateTime(time, to_time);
-            if (diff.hourDiff >= 1 || diff.minDiff > 30) {
+            console.log('diff',diff);
+
+            if (diff.hourDiff > 0 || diff.minDiff > 30) {
                 $(".clone_" + type + "_div").eq(div_length).find('.from_time').css('border', '')
                 $(".clone_" + type + "_div").eq(div_length).find('.' + type + '_from_time_error').css('color', 'red')
                     .html(
                         '');
                 $('.' + type + '_add_more_button').removeClass("btn-disabled");
-            } else {
+            } else if(diff.hourDiff < 0){
+                $(".clone_" + type + "_div").eq(div_length).find('.from_time').css('border', '1px solid red')
+                $(".clone_" + type + "_div").eq(div_length).find('.' + type + '_from_time_error').css('color', 'red')
+                    .html(
+                        'Your time is 30 min greater then from first schedule to time.');
+                $('.' + type + '_add_more_button').addClass("btn-disabled");
+            }else {
+
                 $(".clone_" + type + "_div").eq(div_length).find('.from_time').css('border', '1px solid red')
                 $(".clone_" + type + "_div").eq(div_length).find('.' + type + '_from_time_error').css('color', 'red')
                     .html(

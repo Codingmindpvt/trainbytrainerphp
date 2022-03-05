@@ -8,21 +8,23 @@
     @csrf
     <div class="view-box">
 
-        <p class="my-2 form-p">Class Image<span> </span>
+        <p class="my-2 form-p">Class Image<span style="font-size:20px;color: red;">*</span>
         </p>
         <div class="upload-certificate-box-main">
             <div class="upload-certificate-box">
-                <img src="public/images/default-image.png" class="imgPreview" id="imgPreview" alt="upload">
-                <input id="imgUpload" name="class_image" type="file" accept="image/jpeg, image/jpg, image/png"
+                <img src="public/images/default-image.png" class="imgPreview imgPreview_add" id="imgPreview" alt="upload">
+                <input id="imgUpload_add" name="class_image" type="file" accept="image/jpeg, image/jpg, image/png"
                     class="file imgUpload" data-show-upload="false" data-show-caption="true"
                     data-msg-placeholder="Select {files} for upload...">
+             <span class="errors class_image_error hide">Please select a class Image</span>
+
             </div>
         </div>
     </div>
     <div class="view-box">
         <div class="form-row">
-            <aside class="col-md-3">
-                <p class="my-2 form-p">Class Categories</p>
+            <aside class="col-md-6">
+                <p class="my-2 form-p">Class Categories<span style="font-size:20px;color: red;">*</span></p>
                 <div class="form-select">
                     <select class="form-input class_category onchange" id="class_category" name="category_id">
                         <option value="">Select</option>
@@ -35,19 +37,19 @@
                     <span class="errors class_category_error hide">Please select a class category</span>
                 </div>
             </aside>
-            <aside class="col-md-3">
-                <p class="my-2 form-p">Price Per Session<i class="fa fa-info-circle" data-toggle="tooltip" title="Prices are currently listed in {{'('.DEFAULT_CURRENCY.') '.DEFAULT_CURRENCY_FULL_NAME}}. Please also
+            <aside class="col-md-6">
+                <p class="my-2 form-p">Price Per Session<span style="font-size:20px;color: red;">*</span><i class="fa fa-info-circle" data-toggle="tooltip" title="Prices are currently listed in {{'('.DEFAULT_CURRENCY.') '.DEFAULT_CURRENCY_FULL_NAME}}. Please also
                     consider taxes and our standard commission ({{isset($commission->commission_percent) ? $commission->commission_percent.'%' : ''}}) when creating this price."></i>
                 </p>
-                <input class="form-input class_price onchange " type="text" name="price" id="prize">
+                <input class="form-input class_price onchange"  name="price" id="prize" type="number" step="0.01" min="0" max="999" placeholder="Price Per Session">
                 <span class="errors class_price_error hide number_only"> Please add Price.</span>
             </aside>
-            <aside class="col-md-3">
-                <p class="my-2 form-p">Attendees Limit</p>
-                <input class="form-input class_attendees_limit onchange " type="text" name="attendees_limit" id="attendees_limit">
+            <aside class="col-md-6">
+                <p class="my-2 form-p">Attendees Limit<span style="font-size:20px;color: red;">*</span></p>
+                <input class="form-input class_attendees_limit onchange " type="text" name="attendees_limit" id="attendees_limit" placeholder="Attendees Limit">
                 <span class="errors class_attendees_limit_error hide number_only">Please add attendees limit</span>
             </aside>
-            <aside class="col-md-3">
+            <aside class="col-md-6">
                 <p class="my-2 form-p">Action</p>
                 <div class="form-select">
                     <select class="form-input class_action" id="" name="status">
@@ -61,23 +63,23 @@
         </div>
     </div>
     <div class="view-box">
-        <p class="my-2 form-p">Class Name</p>
-        <input class="form-input class_name onchange" type="text" name="name">
+        <p class="my-2 form-p">Class Name<span style="font-size:20px;color: red;">*</span></p>
+        <input class="form-input class_name onchange" type="text" name="name" maxlength="25" placeholder="Class Name">
         <span class="errors class_name_error hide">Please add class name.</span>
 
     </div>
     <div class="view-box">
-        <p class="my-2 form-p">Class Description</p>
-        <textarea class="form-input class_description onchange" name="description"></textarea>
+        <p class="my-2 form-p">Class Description <span style="font-size:20px;color: red;">*</span></p>
+        <textarea class="form-input class_description onchange" name="description" maxlength="300" placeholder="Class Description"></textarea>
         <span class="errors class_description_error hide">Please add class description</span>
 
     </div>
     <div class="view-box">
-        <p class="my-2 form-p">Location of the Class</p>
+        <p class="my-2 form-p">Location of the Class<span style="font-size:20px;color: red;">*</span></p>
         <input type="hidden" id="address_lat" name="latitude">
         <input type="hidden" id="address_long" name="longitude">
 
-        <input class="form-input on_change_addess map_address" type="text" id="address_1" name="address">
+        <input class="form-input on_change_addess map_address" type="text" id="address_1" name="address" placeholder="Location of the Class">
         <span class="errors address_error hide" id="address_error">
             This address is not valid address. Please enter valid address
         </span>
