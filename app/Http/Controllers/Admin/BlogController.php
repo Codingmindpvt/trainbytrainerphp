@@ -25,8 +25,8 @@ class BlogController extends Controller
         if ($request->isMethod('post')) {
             $postData = $request->all();
             $validator = Validator::make($postData, [
-                'title' => 'required',
-                'description' => 'required'
+                //'title' => 'required',
+                //'description' => 'required'
                 //'status' => 'required',
             ]);
 

@@ -17,8 +17,8 @@
 
 					<aside class="col-lg-4">
 
-						<div class="row">
-							<aside class="col-sm-6">
+						<div class="row user-details">
+							<aside class="col-sm-6 ">
 								<label>Title</label>
 								<h4>{{ isset($category->title) ? $category->title : "-----" }}</h4>
 							</aside>
@@ -27,7 +27,7 @@
 								<h4>{!! isset($category->description) ? $category->description : "-----" !!}</h4>
 							</aside>
 						</div>
-						<div class="row">
+						<div class="row user-details">
 							<aside class="col-sm-4">
 								<label>Status</label>
 								<h4>{!! isset($category->status) ? $category->getStatus() : "-----" !!}</h4>

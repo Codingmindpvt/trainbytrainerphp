@@ -17,13 +17,6 @@ class CreateChatsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('sender_id')->nullable();
             $table->unsignedBigInteger('receiver_id')->nullable();
-            $table->text('message')->nullable();
-            $table->string('media')->nullable();
-            $table->string('thumbnail')->nullable();
-            $table->enum('type', array('I','D','V','T'))->default('T')->comment('I = Image, D = Document, V = Video, T = Text');
-            $table->string('is_read')->default('N')->comment('N = receiver not read yet, Y = receiver read');
-            $table->string('is_deleted')->default('N')->comment('N = not deleted, Y = sender and receiver both deleted, any other number = id of the user who has deleted this chat');
-
             $table->timestamps();
         });
     }

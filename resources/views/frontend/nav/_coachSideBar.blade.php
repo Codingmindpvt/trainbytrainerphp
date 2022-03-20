@@ -1,6 +1,9 @@
 <div class="profile-status-chat">
     <div class="profile-status-box">
-        <h6>PROFILE STATUS <i class="fa fa-question-circle" aria-hidden="true"></i></h6>
+
+        <h6>PROFILE STATUS <i class="fa fa-question-circle" data-toggle="tooltip" title="add message"
+                aria-hidden="true"></i>
+        </h6>
         <label class="switch">
             <input type="hidden" id="user_id" value="<?php echo Auth::user()->id; ?>">
             <input type="hidden" id="checkProfileStatus"
@@ -10,7 +13,7 @@
         </label>
     </div>
     <div class="profile-status-box">
-        <h6>CHAT <i class="fa fa-question-circle" aria-hidden="true"></i></h6>
+        <h6>CHAT <i class="fa fa-question-circle" data-toggle="tooltip" title="add message" aria-hidden="true"></i></h6>
         <label class="switch">
             <input type="hidden" id="user_id" value="<?php echo Auth::user()->id; ?>">
             <input type="hidden" id="checkChatStatus"
@@ -84,6 +87,7 @@ $active = "";
                         || $current_uri == 'add-program-result' || $current_uri == 'edit-program-result'
                         || $current_uri == 'add-program-inside' || $current_uri == 'edit-program-inside'
                         || $current_uri == 'add-program-file' || $current_uri == 'edit-program-file'
+
                          ? 'active' : '' }}"><i class="fa fa-archive mr-3" aria-hidden="true"></i>My Products List</a>
             </li>
             <li>
@@ -96,9 +100,9 @@ $active = "";
                     class="{{ isset($current_uri) && $current_uri == 'add-class' ? 'active' : '' }}"><i
                         class="fa fa-archive mr-3" aria-hidden="true"></i>My Class</a>
             </li>
-            <li>
+            {{--  <li>
                 <a href="#"><i class="fa fa-credit-card mr-3" aria-hidden="true"></i>Billing Methods</a>
-            </li>
+            </li>  --}}
             <li>
                 <a href="{{ route('coach.my-order-list') }}"
                     class="{{ isset($current_uri) && $current_uri == 'my-order-list' ? 'active' : '' }}"><i
@@ -117,7 +121,7 @@ $active = "";
             </li>
             <li>
                 <a href="{{ route('coach.verification') }}"
-                    class="{{ isset($current_uri) && $current_uri == 'coach-verification' ? 'active' : '' }}"><i
+                    class="{{ isset($current_uri) && $current_uri == 'view-coach-verification' || $current_uri == 'edit-coach-verification' ? 'active' : '' }}"><i
                         class="fa fa-check-circle mr-3" aria-hidden="true"></i>Get Certified</a>
             </li>
             <li>

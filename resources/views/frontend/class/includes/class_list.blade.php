@@ -16,11 +16,11 @@
                      <input class="form-input" type="text" name="" value="{{ $class->category->title }}" disabled>
                  </aside>
                  <aside class="col-md-3 view-box-area">
-                     <p class="tag-line">Class name</p>
+                     <p class="tag-line">Class name</span></p>
                      <input class="form-input" type="text" name="" value="{{ $class->name }}" disabled>
                  </aside>
                  <aside class="col-md-2 view-box-area">
-                     <p class="tag-line">Price <i class="fa fa-info-circle" data-toggle="tooltip" title="{{ isset($commission->commission_percent) ? $commission->commission_percent.'%' : ''}} Admin comission will
+                     <p class="tag-line">Price<i class="fa fa-info-circle" data-toggle="tooltip" title="{{ isset($commission->commission_percent) ? $commission->commission_percent.'%' : ''}} Admin comission will
                                                                       be charged on this amount"></i></p>
                      <input class="form-input" type="text" name="text" value="{{ DEFAULT_CURRENCY.$class->price }}" disabled>
                  </aside>

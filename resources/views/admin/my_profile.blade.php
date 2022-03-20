@@ -2,7 +2,9 @@
 @section('content')
 	<!-- start content area here -->
 		<div class="content_area">
+            <a href="{{  route('admin.editprofile',$users->id) }}" class="blue_btn yellow_btn pull-right text-uppercase">Edit Profile</a>
 			<h2>My Profile</h2>
+
 			<div class="white_box my_profile">
 				<div class="row">
 					<aside class="col-lg-4 text-center">

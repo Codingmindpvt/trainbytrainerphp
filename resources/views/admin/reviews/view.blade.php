@@ -60,7 +60,7 @@
 								<span>:</span>
 							</aside>
 							<aside class="col-sm-7">
-								<h4>{!! isset($review->program->program_name) ? $review->program->program_name : "-----" !!}</h4>
+
 							</aside>
 						</div>
 						<br/><hr/><br/>

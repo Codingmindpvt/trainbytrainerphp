@@ -118,7 +118,7 @@ class User extends Authenticatable implements MustVerifyEmail
             [
                 self::BADGE_STATUS_PENDING =>  'Not Submitted',
                 self::BADGE_STATUS_CERTIFIED =>  'Certified',
-                self::BADGE_STATUS_REJECT =>  'Rejected Request',
+                self::BADGE_STATUS_REJECT =>  'Rejected',
             ];
     }
 
@@ -161,8 +161,8 @@ class User extends Authenticatable implements MustVerifyEmail
         return
             [
                 self::COACH_PROFILE_STATUS_PENDING =>  'Not Submitted',
-                self::COACH_PROFILE_STATUS_VERIFY =>  'Verify',
-                self::COACH_PROFILE_STATUS_REJECT =>  'Reject',
+                self::COACH_PROFILE_STATUS_VERIFY =>  'Verified',
+                self::COACH_PROFILE_STATUS_REJECT =>  'Rejected',
             ];
     }
 
@@ -485,7 +485,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function verification_detail(){
         return $this->hasOne('App\Models\VerificationDetail','user_id','id');
     }
-    
+
 
     public function getCategoryName($id)
     {
@@ -594,15 +594,31 @@ class User extends Authenticatable implements MustVerifyEmail
         return (['review_list' => $review_list, 'avg_rating' => $avg_rating]);
      }
 
-     public function reviews(){     
-         
+
+
+     public function reviews(){
+
         return $this->hasMany('App\Models\Review','rate_for_coach_id','id');
      }
+
 
      public function chat()
      {
          return $this->hasMany('App\chat', 'receiver_id', 'sender_id', 'message');
      }
-   
+
+     public function getReviewAndRatingTotal($id = Null){
+        $review = Review::where('rate_for_coach_id', $id)
+        // ->orwhere('rated_by', $id)
+        // ->where('review_type', Review::REVIEW_TYPE_PROGRAM)
+        // ->orwhere('review_type', Review::REVIEW_TYPE_PROGRAM)
+            ;
+
+        $review_list = $review->get();
+        $avg_rating = $review->avg('star');
+        return (['review_list' => $review_list, 'avg_rating' => $avg_rating]);
+     }
+
+
 
 }

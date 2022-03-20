@@ -55,12 +55,6 @@ $("#editProfileForm").validate({
         noSpace: true,
 
       },
-      postal_code : {
-        required: true,
-        minlength : 3,
-        maxlength : 6,
-        noSpace: true
-      }
 
 
     }
@@ -158,9 +152,9 @@ $("#image-holder").click(function(){
         function profileurl(input) {
           var filePath = input.value;
           var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
-        
+
           if (!allowedExtensions.exec(filePath)) {
-        
+
             $('.select_profile_errors').text('Only JPEG and PNG format images are acceptable.');
             input.value = '';
             return false;
@@ -170,7 +164,7 @@ $("#image-holder").click(function(){
               reader.onload = function (e) {
                 $('.profile_picture').attr('src', e.target.result);
               }
-        
+
               reader.readAsDataURL(input.files[0]);
               $('.select_profile_errors').text('');
             }
@@ -227,7 +221,7 @@ $("#reseremailPasswordForm").validate({
      },
      messages : {
       password: "Enter your Password.",
-     
+
       password_confirm: {
          required: "Enter your Confirm Password.",
          equalTo: "Confirm Password does not match with New Password."
@@ -259,25 +253,54 @@ $("#editUserForm").validate({
         required: true,
         noSpace: true,
       },
-      postal_code : {
-        required: true,
-        minlength : 3,
-        maxlength : 6,
-        noSpace: true,
-      },
-      city_id : {
+      city : {
     	required: true,
         noSpace: true,
-    },
-    country : {
-      required: true,
-      noSpace: true,
     },
     state : {
       required: true,
       noSpace: true,
+    },
+    postal_code:{
+        required: true,
+        noSpace: true,
     }
+    }
+  });
+  /****************************************************/
 
+    /* EDIT USER: Form Validation */
+
+/***************************************************/
+
+$("#editUserFormBussiness").validate({
+    rules: {
+      first_name: {
+        required: true,
+        noSpace: true,
+        maxlength:15,
+      },
+      last_name: {
+        required: true,
+        noSpace: true,
+        maxlength:15,
+      },
+      address: {
+        required: true,
+        noSpace: true,
+      },
+      city : {
+    	required: true,
+        noSpace: true,
+    },
+    state : {
+      required: true,
+      noSpace: true,
+    },
+    postal_code:{
+        required: true,
+        noSpace: true,
+    }
     }
   });
 
@@ -352,11 +375,10 @@ $("#blogForm").validate({
       title: {
         required: true,
         noSpace: true,
-        maxlength:20,
       },
       description: {
         required: true,
-        noSpace: true
+        noSpace: true,
       },
       status: {
         required: true,
@@ -365,7 +387,53 @@ $("#blogForm").validate({
       category: {
         required: true,
       }
+    }
+  });
 
+
+/****************************************************/
+
+    /* BLOG FORM: Form Validation */
+
+/***************************************************/
+
+$("#editBlog").validate({
+    rules: {
+      title: {
+        required: true,
+        noSpace: true,
+      },
+      description: {
+        required: true,
+        noSpace: true,
+      },
+      status: {
+        required: true,
+      },
+      category: {
+        required: true,
+      }
+    }
+  });
+  /****************************************************/
+
+    /* BLOG FORM: Form Validation */
+
+/***************************************************/
+
+$("#categoryForm").validate({
+    rules: {
+      title: {
+        required: true,
+        noSpace: true,
+      },
+      description: {
+        required: true,
+        noSpace: true,
+      },
+      status: {
+        required: true,
+      },
     }
   });
 

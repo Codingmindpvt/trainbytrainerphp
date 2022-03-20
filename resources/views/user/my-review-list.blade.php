@@ -38,7 +38,7 @@
 
                     <!-- ////////////////// -->
                     <div class="info-profile-head">
-                        <h6>Program Review List</h6>
+                        <h6>Program Reviews List</h6>
                     </div>
 
 
@@ -61,41 +61,32 @@
                                 </div>
                                 </p>
                                 <h6 class="mb-2">{{@$coachReview['title']}}</h6>
-
+                                <p>hello</p>
                                 <?php
-                                $string = $coachReview['description'] ;
-                               
+                                $class_string = $coachReview['description'] ;
+
                                      // if(strlen($string) >= 50)
                                 // {
-                                    if (strlen($string) >= 240) {
-                                        echo substr($string, 0, 240) . '<span class="read_more_program">Read More</span>' . '<p class="show_read_more_program" style="display:none;">' . substr($string, 50) . '</p>'. "<span class='show_less_program' style='display:none;'>Show Less</span>";
+                                    if (strlen($class_string) >= 1 && strlen($class_string) <= 210) {
+                                        echo substr($class_string, 0, 210);
                                     }
-    
-                                
-                                ?>
-
-
-                                <!-- <p>{{@$coachReview['description']}} -->
-
-                                <!-- <button class="js-dynamic-show-hide button" title="Show more" data-replace-text="Show less">Show more</button> -->
-
-
-
+                                    if (strlen($class_string) >= 210) {
+                                        echo substr($class_string, 0, 210).'<span class="read_more_program">Read More</span>' . '<p class="show_read_more_program" style="display:none;">' . substr($class_string, 50) . '</p>'. "<span class='show_less_program' style='display:none;'>Show Less</span>";
+                                    }
+                                    ?>
+                                  
                                 </p>
 
                             </div>
                         </div>
-                        <!-- <div class="purchase-date">
-                            <p>Purchased on:</p>
-                            <p class="mb-3">Oct 4, 2021  10:01 AM</p>
-                        </div> -->
+                      
                     </div>
 
                     @empty
                     <p class="blank-para"> Buy the exciting program from Coaches and review it now !!</p>
                     @endforelse
-
-
+                   
+       {{$programReviewlist->links()}}
                     <!-- //////////////////////////// -->
                     <hr>
                     <div class="info-profile-head">
@@ -103,83 +94,47 @@
                     </div>
 
 
-                    @forelse($classReviewlist as $coachReview)
+                    @forelse($classReviewlist as $coachReview)              
 
-                    <div class="my-review-main some-list">
+                    <div class="my-review-main">
                         <div class="image-product-tb review-page-box">
-                            @if(!empty(@$coachReview['coach']['profile_image']))
+                        @if(!empty(@$coachReview['coach']['profile_image']))
                             <img src="{{asset('public/'.@$coachReview['coach']['profile_image'])}}" alt="">
                             @else
                             <img src="{{asset('public/images/default-image.png')}}" alt="">
                             @endif
                             <div>
-                                <h3>{{@$coachReview['class']['first_name']}}edddddd</h3>
+                            <h3>{{@$coachReview['class']['first_name']}}First NAME</h3>
                                 <p>{{@$coachReview['class']['address']}}</p>
                                 <p class="review-rate">
-
-                                <div class="rating">
-                                    <div class="rateyo"
+                                <div class="rateyo"
                                         data-rateyo-rating="{{!empty(@$coachReview['star']) ? @$coachReview['star'] : 0}}"
                                         data-rateyo-num-stars="5"></div>
-                                </div>
-                                <!-- @switch(@$coachReview['star'])
-                                @case(1)
-                                <i class="fa fa-star" aria-hidden="true"></i>  <i class="fa fa-star-o" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i>
-                                @break
-
-                                @case(2)
-                                 <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i>
-                                @break
-
-                                @case(3)
-                                <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i>  <i class="fa fa-star-o" aria-hidden="true"></i>  <i class="fa fa-star-o" aria-hidden="true"></i>
-                                @break
-
-                                @case(4)
-                                 <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i>
-                                @break
-
-                                @case(5)
-                                <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i>
-                                @break
-
-                                @default
-                                Default case...
-                                @endswitch -->
+                                
                                 </p>
-                                <h6 class="mb-2">{{@$coachReview['title']}}</h6>
+                               <h6 class="mb-2">{{@$coachReview['title']}}</h6>
+                               <p></p>
+                               <?php
+                                $class_string = $coachReview['description'] ;
 
-
-                                <?php
-                                $string = $coachReview['description'] ;
-
-                                // if(strlen($string) >= 50)
-                                // {
-                                if (strlen($string) >= 240) {
-                                    echo substr($string, 0, 240) . '<span class="read_more">Read More</span>' . '<p class="show_read_more" style="display:none;">' . substr($string, 50) . '</p>' . "<span class='show_less' style='display:none;'>Show Less</span>";
+                                if (strlen($class_string) >= 1 && strlen($class_string) <= 210) {
+                                    echo substr($class_string, 0, 210);
                                 }
-
-
-
-
+                                if (strlen($class_string) >= 210) {
+                                    echo substr($class_string, 0, 210).'<span class="read_more_class">Read More</span>'.'<p  class="show_read_more_class" style=" display:none;">'.substr($class_string, 210).'</p>'. "<span class='show_less_class' style='display:none;'>Show Less</span>";
+                                }
                                 ?>
-
-                                <!-- <p> {{@$coachReview['description']}}</p> -->
-
-
-
+                               
+                               
                             </div>
                         </div>
-                        <!-- <div class="purchase-date">
-                            <p>Purchased on:</p>
-                            <p class="mb-3">Oct 4, 2021  10:01 AM</p>
-                        </div> -->
+                       
                     </div>
 
                     @empty
-                    <p class="blank-para">Book the exciting classes from Coaches and review it now !!</p>
+                       <p class="blank-para">Book the exciting classes from Coaches and review it now !!</p>
                     @endforelse
-
+                    {{$classReviewlist->links()}}
                     <!-- start pagination -->
                     <!-- <nav aria-label="Page navigation example">
                             <ul class="pagination pb-5">
@@ -218,26 +173,26 @@ var th = new showHideText('.my-message', {
 </script>
 <script>
 $(function() {
-    $('.read_more').on('click', function() {
-        $('.read_more').hide();
-        $('.show_less').show();
-        $('.show_read_more').toggle();
+    $('.read_more_class').on('click', function() {
+        $(this).hide();
+        $(this).parent().find('.show_less_class').show();
+        $(this).parent().find('.show_read_more_class').toggle();
     });
-    $('.show_less').on('click', function() {
-        $('.read_more').show();
-        $('.show_less').hide();
-        $('.show_read_more').hide();
+    $('.show_less_class').on('click', function() {
+        $(this).parent().find('.read_more_class').show();
+        $(this).hide();
+        $(this).parent().find('.show_read_more_class').hide();
     });
 
     $('.read_more_program').on('click', function() {
-        $('.read_more_program').hide();
-        $('.show_less_program').show();
-        $('.show_read_more_program').toggle();
+        $(this).hide();
+        $(this).parent().find('.show_less_program').show();
+        $(this).parent().find('.show_read_more_program').toggle();
     });
     $('.show_less_program').on('click', function() {
-        $('.read_more_program').show();
-        $('.show_less_program').hide();
-        $('.show_read_more_program').hide();
+        $(this).parent().find('.read_more_program').show();
+        $(this).hide();
+        $(this).parent().find('.show_read_more_program').hide();
     });
 
     $(".rateyo").rateYo({

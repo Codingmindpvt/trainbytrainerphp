@@ -97,7 +97,7 @@ class ClassController extends Controller
             $coach_class = CoachClass::find($request->id);
             $coach_class->fill($request->all());
             $coach_class->save();
-            notify()->success('message, Class Updated Successfully!!');
+            notify()->success('Class Updated Successfully!!');
             return redirect()->back();
 
         } catch (\Exception $e) {
@@ -110,6 +110,7 @@ class ClassController extends Controller
     //////////////////////review section start
     public function review_submit_class(Request $request)
     {
+
 
         $postData = $request->all();
 
@@ -267,7 +268,7 @@ class ClassController extends Controller
         Booking::create($request->all());
         $class = CoachClass::find($request->class_id);
         if ($class->attendees_limit > 0) {
-            $class->attendees_limit = $class->attendees_limit - 1;
+            $class->attendees_limit = $class->attendees_limit;
             $class->save();
         }
 

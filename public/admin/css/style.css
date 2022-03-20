@@ -20,6 +20,49 @@ h1, h2, h3, h4, h5
 {
     font-weight:400;
 }
+.oswald-font
+{
+    font-family: 'Oswald', sans-serif;
+}
+.transaction-area {
+    font-family: 'Raleway', sans-serif;
+    padding: 22px 0;
+}
+.transation-img img {
+    width: 416px;
+    height: auto;
+    object-fit: cover;
+    border-radius: 22px;
+    margin-top: 15px;
+}
+.transation-content h5 {
+    font-family: 'Raleway', sans-serif;
+    color: #1ACBAA;
+}
+.profile {
+    font-family: 'Raleway', sans-serif;
+    color: #002395;
+    font-size: 14px;
+    background: #dfe2ec;
+    padding: 12px;
+    border-radius: 32px;
+    margin-left: 22px;
+    font-weight: 700;
+}
+.buyer-info {
+    font-family: 'Raleway', sans-serif;
+    background: #e9e9ea;
+    padding: 20px;
+    border-radius: 22px;
+    margin: 12px 0;
+    line-height: 28px;
+}
+.amount-main {
+    font-family: 'Raleway', sans-serif;
+    display: flex;
+    justify-content: space-between;
+    margin: 12px 0;
+}
 .error{
     color: #E94235 !important;
     font-family: 'Raleway' !important;
@@ -38,10 +81,12 @@ h1, h2, h3, h4, h5
     background-color: #737a81 !important;
 }
 .label.label-default {
-  background-color: #E9FAF7;
-  color: #1ACBAA;
-  padding: 2px 17px !important;
-  border-radius: 30px;
+    background-color: #E9FAF7;
+    color: #1ACBAA;
+    padding: 13px 17px !important;
+    border-radius: 30px;
+    margin: 6px 0;
+    display: inline-block;
 }
 .no-record{
     background: #fff;
@@ -361,12 +406,12 @@ h1, h2, h3, h4, h5
     margin-top: 0;
 }
 .main-page h2 {
-    margin: 17px 134px;
+    margin: 17px 135px;
     font-size: 28px;
 }
 .white_box {
     background: #fff;
-    padding: 65px 2px;
+    padding: 20px 32px 19px 0;
     border-radius: 2px;
     font-family: 'Raleway';
     margin: 14px 136px;
@@ -1087,6 +1132,78 @@ h1, h2, h3, h4, h5
     padding: 32px;
     border-radius: 12px;
 }
+.transation-content span {
+    margin: 5px 0;
+    display: inline-block;
+}
+.buyer-box {
+    margin-top: 40px;
+    border-top: 2px solid #e5e5e5;
+}
+.transaction-main {
+    background: #fff;
+    padding: 22px;
+    box-shadow: 0 0 6px rgb(0 0 0 / 20%);
+}
+.order-content {
+    margin: 17px 0 !important;
+}
+.review-rate {
+    display: flex;
+}
+.tables_area {
+    position: relative;
+}
+.searchBox {
+    padding: 9px 22px;
+    border-radius: 3px;
+    position: absolute;
+    right: 120px;
+    top: 18px;
+}
+.price {
+    color: #3acbaa;
+}
+.tag-line {
+    display: flex;
+    color: #f39c12;
+}
+.text-underline {
+    text-align: center;
+    text-decoration: underline;
+}
+.view-box {
+    display: flex;
+    align-items: center;
+    padding-top: 11px;
+}
+.calender-view {
+    position: relative;
+    max-width: 145px;
+    width: 100%;
+    margin: 0 12px;
+}
+.calender-view  .btn {
+    background: #162395;
+    border-color: #162395;
+}
+.calender-view .select-angle-calender {
+    position: absolute;
+    right: 17px;
+    top: 11px;
+    background: #fff;
+}
+.calender-view input {
+    background: #FFFFFF;
+    border: 1px solid #E3E3E3 !important;
+    box-sizing: border-box;
+    border-radius: 55px !important;
+    font-size: 11px;
+    cursor: pointer;
+}
+.view-box p {
+    font-size: 14px;
+}
 /*** responsive css here ***/
 @media screen and (max-width:1200px)
 {
@@ -1124,4 +1241,5 @@ h1, h2, h3, h4, h5
         margin: 20px auto 0;
     }
 }
+
 /*** responsive css here ***/

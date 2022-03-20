@@ -143,21 +143,32 @@
                                 </aside>
                             </div>
                         </div>
-                        <div class="sale-by-location state_form">
-                            <h4 class="oswald-font">Sales Stats</h4>
-                            <div class="view-box">
-                                <p class="pr-2">From</p>
-                                <div class="calender-view">
-                                    <i class="fa fa-calendar  select-angle-calender" aria-hidden="true"></i>
-                                    <input type="date" class="form-control" id="exampleInputEmail1" placeholder="From">
-                                </div>
-                                <p class="pr-2">To</p>
-                                <div class="calender-view">
-                                    <i class="fa fa-calendar  select-angle-calender" aria-hidden="true"></i>
-                                    <input type="date" class="form-control" id="exampleInputEmail1" placeholder="From">
+                        <form action="{{ route('coach-dashboard') }}" method="GET">
+                            <div class="sale-by-location state_form">
+                                <h4 class="oswald-font">Sales Stats</h4>
+                            </div>
+                            <div class="sale-by-location state_form">
+                                <div class="view-box">
+                                    <p class="pr-2">From</p>
+                                    <div class="calender-view">
+                                        <i class="fa fa-calendar  select-angle-calender" aria-hidden="true"></i>
+                                        <input type="date" class="form-control" name="from" placeholder="From" required>
+                                    </div>
+                                    <p class="pr-2">To</p>
+                                    <div class="calender-view">
+                                        <i class="fa fa-calendar  select-angle-calender" aria-hidden="true"></i>
+                                        <input type="date" class="form-control" name="to" placeholder="To" required>
+                                    </div>
+                                    &nbsp
+                                    <div class="calender-view ">
+                                        <button type="submit" class="btn btn-info"><i class="fa fa-search search-icon"
+                                                aria-hidden="true"></i></button>
+                                    </div>
+
                                 </div>
                             </div>
-                        </div>
+                        </form>
+
 
                         <!-- <div class="sale-by-location">
                             <h4 class="oswald-font">Sales Stats</h4>

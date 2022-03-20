@@ -12,7 +12,7 @@ class CoachProgram extends Model
     use HasFactory;
     protected $table = 'user_coach_programs';
 
-    protected $fillable = ['id', 'user_id', 'program_name', 'description', 'short_description', 'price', 'stock', 
+    protected $fillable = ['id', 'user_id', 'program_name', 'description', 'short_description', 'price', 'stock',
        'tax_class', 'categories', 'image_file', 'program_star', 'created_at', 'updated_at'
 ];
 
@@ -43,6 +43,7 @@ class CoachProgram extends Model
 
         $review_list = $review->get();
         $avg_rating = $review->avg('star');
+        //print_r($avg_rating );
         return (['review_list' => $review_list, 'avg_rating' => $avg_rating]);
     }
 
@@ -51,6 +52,10 @@ class CoachProgram extends Model
         return $this->hasOne(CoachDetail::class, 'user_id', 'id');
     }
     public function order_list(){
-        return $this->hasMany('App\Models\OrderList', 'program_id', 'id'); 
+        return $this->hasMany('App\Models\OrderList', 'program_id', 'id');
+    }
+    public function review_list()
+    {
+        return $this->hasMany('App\Models\Review', 'rate_for_program_id', 'id');
     }
 }

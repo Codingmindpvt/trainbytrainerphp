@@ -19,19 +19,20 @@
                             @csrf
                             <div class="form-group upload-profile" id="image-holder">
                             </div>
+                            <div class="text-center">
                             <input type="file" name="profile_image" accept="image/png, image/jpg, image/jpeg, image/webp"
                                  id="fileUpload" style="display:none;">
-                            <!-- <input type="file" name="profile_image22" class=""> -->
+                            </div>
                             <p>Upload profile picture (optional)</p>
                             <div class="form-group row">
                                 <div class="col-sm-6">
                                     <label for="">First Name</label>
-                                    <input type="text" name="first_name" class="form-control form-input"
+                                    <input type="text" name="first_name" class="form-control form-input" value="{{Auth::user()->first_name}}"
                                         placeholder="E.g. Adam" onkeypress="return blockSpecialChar(event)">
                                 </div>
                                 <div class="col-sm-6">
                                     <label for="">Last Name</label>
-                                    <input type="text" name="last_name" class="form-control form-input" id=""
+                                    <input type="text" name="last_name" class="form-control form-input" id="" value="{{Auth::user()->last_name}}"
                                         placeholder="E.g. Smith" onkeypress="return blockSpecialChar(event)">
                                 </div>
                             </div>

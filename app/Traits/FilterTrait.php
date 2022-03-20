@@ -3,6 +3,7 @@ namespace App\Traits;
 
 use App\Models\CoachDetail;
 use App\Models\CoachProgram;
+use App\Models\CoachClass;
 use App\Models\Review;
 use App\Models\User;
 trait FilterTrait
@@ -12,6 +13,37 @@ trait FilterTrait
         $categories = CoachProgram::select('id', 'categories')->get()->toArray();
         $user_ids = $this->modifySearch($categories, $category_ids) ?? [];
         return $user_ids;
+    }
+
+    public function classFilter($category_ids)
+    {
+        $categories = CoachClass::select('id','category_id')->get()->toArray();
+
+        $user_ids = $this->modifyClassSearch($categories, $category_ids) ?? [];
+       return $user_ids;
+    }
+
+    public function modifyClassSearch($categories, $category_ids)
+    {
+        $user_ids = [];
+        foreach ($categories as $category) {
+            if (isset($category['category_id']) && $category['category_id'] != "") {
+                if (is_array($category_ids)) {
+                    $category_ids = implode(',', $category_ids);
+                }
+
+                if (isset($category_ids)) {
+                    $category_ids = explode(",", $category_ids);
+
+                    foreach ($category_ids as $category_id) {
+                        array_push($user_ids, $category_id);
+                    }
+                   
+                }
+
+            }
+        }
+        return (isset($user_ids) && !empty($user_ids)) ? array_unique($user_ids) : [];
     }
 
     public function modifySearch($categories, $category_ids)
@@ -69,13 +101,19 @@ trait FilterTrait
     }
     public function modifyRatingFilter($ratings)
     {
-        $review_user_id = Review::whereIn('star', $ratings)->where('review_type','C')->pluck('rate_for')->toArray();
+        $review_user_id = Review::whereIn('star', $ratings)->pluck('rate_for_coach_id')->toArray();
         return (isset($review_user_id) && !empty($review_user_id)) ? array_unique($review_user_id) : [];
     }
 
     public function modifyProgramRatingFilter($ratings)
     {
-        $review_user_id = Review::whereIn('star', $ratings)->where('review_type','P')->pluck('rate_for')->toArray();
+        $review_user_id = Review::whereIn('star', $ratings)->where('review_type','P')->pluck('rate_for_program_id')->toArray();
+        return (isset($review_user_id) && !empty($review_user_id)) ? array_unique($review_user_id) : [];
+    }
+
+    public function modifyClassRatingFilter($ratings)
+    {
+        $review_user_id = Review::whereIn('star', $ratings)->where('review_type','CL')->pluck('rate_for_class_id')->toArray();
         return (isset($review_user_id) && !empty($review_user_id)) ? array_unique($review_user_id) : [];
     }
 

@@ -12,10 +12,11 @@
     <div class="container">
         <div class="popular-box text-center">
 
-            <h1 class="oswald-font">Hi, {{Auth::user()->first_name." ".Auth::user()->last_name}}!
-                @if(isset($item['coach_badge_status']) && !empty($item['coach_badge_status']) && $item['coach_badge_status'] == 'C')
-                <span><img
-                        src="{{ url('/') }}/public/images/verified2.png" alt="image"
+            <h1 class="oswald-font">Hi, {{Auth::user()->first_name." ".Auth::user()->last_name}}!{!!
+                certifiedUser() !!}
+                @if(isset($item['coach_badge_status']) && !empty($item['coach_badge_status']) &&
+                $item['coach_badge_status'] == 'C')
+                <span><img src="{{ url('/') }}/public/images/verified2.png" alt="image"
                         class="img-fluid">Certified</span>
                 @endif
             </h1>
@@ -50,18 +51,14 @@
             <aside class="col-lg-8 marketplace-main-box varification-box">
                 <div class="marketplace-header">
                     <h3 class="oswald-font">Coach Profile</h3>
-                    @if($coachDetail->status == 'S')
-                    <a href="{{route('coach-profile-send-request', $coachDetail->id)}}">
-                        <div class="save-green-bt"> <i class="fa fa-envelope" aria-hidden="true"></i> Send Request</div>
-                    </a>
-                    @endif
                 </div>
                 <div class="sale-by-location">
                     <h4 class="oswald-font">View Profile Information</h4>
                     <div class="view-separate-box">
                         <div class="view-box">
                             <div class="edit-btn-view">
-                                <p class="my-2 form-p">Hero Image</p>
+                                <p class="my-2 form-p">Hero Image<span><i class="fa fa-asterisk validate-mark"
+                                            aria-hidden="true"></i></span></p>
                                 <a href="{{route('edit-coach-profile', @$coachDetail->id)}}" class="save-green-bt"> <i
                                         class="fa fa-pencil" aria-hidden="true"></i> EDIT PROFILE
                                 </a>
@@ -100,7 +97,8 @@
                         </div>
                         <hr>
                         <div class="view-box">
-                            <p class="my-2 form-p">City</p>
+                            <p class="my-2 form-p">City<span><i class="fa fa-asterisk validate-mark"
+                                        aria-hidden="true"></i></span></p>
                             <p class="tag-line">{{$coachDetail['city']}}</p>
                         </div>
                         <hr>
@@ -112,11 +110,13 @@
                     <div class="view-box">
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label class="my-2 form-p">Price Range</label>
+                                <label class="my-2 form-p">Price Range<span><i class="fa fa-asterisk validate-mark"
+                                            aria-hidden="true"></i></span></label>
                                 <p class="tag-line">{{$coachDetail['price_range']}}</p>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="inputPassword4" class="my-2 form-p">Gender</label>
+                                <label for="inputPassword4" class="my-2 form-p">Gender<span><i
+                                            class="fa fa-asterisk validate-mark" aria-hidden="true"></i></span></label>
                                 {{-- <p class="tag-line">{{$coachDetail->getGender()}}</p> --}}
                                 <p class="tag-line">{{$coachDetail->getGender()}}</p>
 
@@ -125,17 +125,20 @@
                     </div>
                     <hr>
                     <div class="view-box">
-                        <p class="my-2 form-p">My Title</p>
+                        <p class="my-2 form-p">My Title<span><i class="fa fa-asterisk validate-mark"
+                                    aria-hidden="true"></i></span></p>
                         <p class="tag-line">{{$coachDetail['title']}}</p>
                     </div>
                     <hr>
                     <div class="view-box">
-                        <p class="my-2 form-p">My Bio</p>
+                        <p class="my-2 form-p">My Bio<span><i class="fa fa-asterisk validate-mark"
+                                    aria-hidden="true"></i></span></p>
                         <p class="tag-line">{{$coachDetail['bio']}}</p>
                     </div>
                     <hr>
                     <div class="view-box">
-                        <p class="my-2 form-p">Coach Categories</p>
+                        <p class="my-2 form-p">Coach Categories<span><i class="fa fa-asterisk validate-mark"
+                                    aria-hidden="true"></i></span></p>
                         <p class="tag-line">
                             <?php $categories = explode(",",$coachDetail['categories']); ?>
                             @foreach($categories as $category)
@@ -146,7 +149,8 @@
                         </p>
                     </div>
                     <div class="view-box">
-                        <p class="my-2 form-p">Personality & Training Style</p>
+                        <p class="my-2 form-p">Personality & Training Style<span><i class="fa fa-asterisk validate-mark"
+                                    aria-hidden="true"></i></span></p>
                         <p class="tag-line">
                             <?php $trainingStyles = explode(",",$coachDetail['personality_and_training']); ?>
                             @foreach($trainingStyles as $trainingStyle)
@@ -158,7 +162,8 @@
                     </div>
                     <hr>
                     <div class="view-box">
-                        <p class="my-2 form-p">Languages</p>
+                        <p class="my-2 form-p">Languages<span><i class="fa fa-asterisk validate-mark"
+                                    aria-hidden="true"></i></span></p>
                         <?php $languages = explode(",",$coachDetail['languages']); ?>
                         @foreach($languages as $language)
                         <span class="badge badge-secondary">
@@ -192,11 +197,12 @@
                         <div class="main-section">
                             <div class="view-box">
                                 <div class="edit-btn-view">
-                                    <p class="my-2 form-p">Education</p>
-                                    @if(count($coachDetail['coach_education']) < 5 ) <a
-                                        href="{{route('coach.add-coach-education')}}" class="save-green-bt"> <i
-                                            class="fa fa-plus" aria-hidden="true"></i> ADD
-                                        EDUCATION</a>
+                                    <p class="my-2 form-p">Education<span><i class="fa fa-asterisk validate-mark"
+                                                aria-hidden="true"></i></span></p>
+                                    @if(count($coachDetail['coach_education']) < 5 && $coachDetail->status != 'V') <a
+                                            href="{{route('coach.add-coach-education')}}" class="save-green-bt"> <i
+                                                class="fa fa-plus" aria-hidden="true"></i> ADD
+                                            EDUCATION</a>
                                         @endif
                                 </div>
                                 @if(count($coachDetail['coach_education'])>0)
@@ -210,9 +216,11 @@
                                     <div class="form-group col-md-4">
                                         <p class="tag-line"><b>Institute or organisation</b></p>
                                     </div>
+                                    @if($coachDetail->status != 'V')
                                     <div class="form-group col-md-2">
                                         <p class="tag-line"><b>Action</b></p>
                                     </div>
+                                    @endif
                                 </div>
                                 @foreach($coachDetail['coach_education'] as $education)
                                 <div class="form-row">
@@ -225,6 +233,8 @@
                                     <div class="form-group col-md-4">
                                         <p class="tag-line">{{$education['institute']}}</p>
                                     </div>
+
+                                    @if($coachDetail->status != 'V')
                                     <div class="form-group col-md-2 certified-box-right delete-cart">
 
                                         <a href="{{ route('coach.edit-coach-education',$education['id']) }}"><i
@@ -235,6 +245,7 @@
                                             onclick="return confirm('Are you sure you want to delete this record?')"><i
                                                 class="fa fa-trash" aria-hidden="true"></i></a>
                                     </div>
+                                    @endif
 
                                 </div>
                                 @endforeach
@@ -250,11 +261,12 @@
                         <div class="result-main-section">
                             <div class="view-box">
                                 <div class="edit-btn-view">
-                                    <p class="my-2 form-p">Results</p>
-                                    @if(count($coachDetail['coach_result']) < 5) <a class="save-green-bt"
-                                        href="{{route('coach.add-coach-result')}}"> <i class="fa fa-plus"
-                                            aria-hidden="true"></i> ADD
-                                        RESULT
+                                    <p class="my-2 form-p">Results<span><i class="fa fa-asterisk validate-mark"
+                                                aria-hidden="true"></i></span></p>
+                                    @if(count($coachDetail['coach_result']) < 5 && $coachDetail->status != 'V') <a
+                                            class="save-green-bt" href="{{route('coach.add-coach-result')}}"> <i
+                                                class="fa fa-plus" aria-hidden="true"></i> ADD
+                                            RESULT
                                         </a>
                                         @endif
                                 </div>
@@ -272,9 +284,11 @@
                                     <div class="form-group col-md-3">
                                         <p class="tag-line"><b>Description</b></p>
                                     </div>
+                                    @if($coachDetail->status != 'V')
                                     <div class="form-group col-md-2">
                                         <p class="tag-line"><b>Action</b></p>
                                     </div>
+                                    @endif
                                 </div>
                                 @foreach($coachDetail['coach_result'] as $coachResult)
                                 <div class="form-row">
@@ -302,6 +316,7 @@
                                     <div class="form-group col-md-3">
                                         <p class="tag-line">{{$coachResult['description']}}</p>
                                     </div>
+                                    @if($coachDetail->status != 'V')
                                     <div class="form-group col-md-2">
                                         <div class="certified-box-right delete-cart">
                                             <a href="{{route('coach.edit-coach-result',$coachResult['id'])}}"><i
@@ -312,6 +327,7 @@
                                                     class="fa fa-trash" aria-hidden="true"></i></a>
                                         </div>
                                     </div>
+                                    @endif
                                 </div>
                                 <hr />
                                 @endforeach
@@ -323,27 +339,6 @@
                     </div>
                 </div>
                 <p class="tag-line"></p>
-
-                <!--  <div class="view-box">
-                    <p class="my-2 form-p">Link Social Media Account</p>
-                    <p class="tag-line"><b>Twitter ID</b></p>
-                    <span class="tag-line"><i class="fa fa-twitter-square"></i>
-                        {{!empty($coachDetail['twitter_url'])?$coachDetail['twitter_url']:"-----"}}</span>
-
-                    <p class="tag-line"><b>Facebook ID</b></p>
-                    <span class="tag-line"><i class="fa fa-facebook-square"></i>
-                        {{!empty($coachDetail['facebook_url'])?$coachDetail['facebook_url']:"-----"}}</span>
-                    <p class="tag-line"><b>Instagram ID</b></p>
-                    <span class="tag-line"><i class="fa fa-instagram-square"></i>
-                        {{!empty($coachDetail['instagram_url'])?$coachDetail['instagram_url']:"-----"}}</span>
-                    <p class="tag-line"><b>Youtube ID</b></p>
-                    <span class="tag-line"><i class="fa fa-youtube-square"></i>
-                        {{!empty($coachDetail['youtube_url'])?$coachDetail['youtube_url']:"-----"}}
-                    </span>
-                    <p class="tag-line"><b>Pinterest ID</b> </p>
-                    <span class="tag-line"><i class="fa fa-pinterest"></i>
-                        {{!empty($coachDetail['pinterest_url'])?$coachDetail['pinterest_url']:"-----"}}</span>
-                </div> -->
         </div>
         </aside>
 

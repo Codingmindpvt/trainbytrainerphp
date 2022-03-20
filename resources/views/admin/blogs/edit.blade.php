@@ -7,7 +7,7 @@
 			<h2>Edit Blog</h2>
 			<div class="white_box my_profile">
 				<div class="row">
-                    <form  action="{{route('admin.blog.update')}}" method="POST" id="blogForm" enctype="multipart/form-data">
+                    <form  action="{{route('admin.blog.update')}}" method="POST" id="editBlog" enctype="multipart/form-data">
                         @csrf
 					<aside class="col-lg-4 text-center">
 
@@ -29,12 +29,12 @@
 					<aside class="col-lg-8">
 						<div class="row">
 							<aside class="col-sm-6">
-								<label>Title</label>
-								<input name="title" value="{{$blog->title}}" class="form-control" type="text">
+                                <label class="my-2 form-p">Title<span style="font-size:20px;color: red;">*</label>
+								<input name="title" value="{{$blog->title}}" class="form-control"  maxlength="30" type="text" placeholder="Enter Title">
 							</aside>
 							<aside class="col-sm-6">
-								<label>Status</label>
-								<select class="form-control" id="status" name="status">
+                                <label class="my-2 form-p">Status<span style="font-size:20px;color: red;">*</label>
+								<select class="form-control" id="status" name="status" placeholder="Enter Status">
 									  <?php
 									  if(!empty($blog->status)){
 										echo "<option style='display:none' value=".$blog->status.">".$blog->getStatus()."</option>";
@@ -49,7 +49,7 @@
 						</div>
 						<div class="row">
 							<aside class="col-sm-6">
-								<label>Category</label>
+                                <label class="my-2 form-p">Category<span style="font-size:20px;color: red;">*</label>
 								<select class="form-control" id="category" name="category">
 									  <?php
 									   if(!empty($blog->category_id)){
@@ -63,8 +63,8 @@
 							      </select>
 							</aside>
 							<aside class="col-sm-6">
-								<label>Description</label>
-								<textarea name="description" class="form-control">{{$blog->description}}</textarea>
+                                <label class="my-2 form-p">Description<span style="font-size:20px;color: red;">*</label>
+								<textarea name="description" class="form-control" maxlength="500" placeholder="Enter Description">{{$blog->description}}</textarea>
 							</aside>
 						</div>
 						<button type="submit" class="blue_btn yellow_btn text-uppercase">Update</button>

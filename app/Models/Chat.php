@@ -9,9 +9,23 @@ class Chat extends Model
 {
     use HasFactory;
 
-    public function user() 
+    public function sender_user()
     {
-        return $this->belongsTo('App\User');
+        return $this->hasOne('App\Models\User', 'id', 'sender_id')->select(['id', 'first_name','last_name']);
+    }
+    public function receiver_user()
+    {
+        return $this->hasOne('App\Models\User', 'id', 'receiver_id')->select(['id', 'first_name','last_name','profile_image']);
+    }
+
+    public function chat_messages()
+    {
+        return $this->hasMany('App\Models\Chat_message', 'chat_id', 'id');
+    }
+
+    public function last_message()
+    {
+        return $this->hasOne('App\Models\Chat_message', 'chat_id', 'id')->where('chat_status','0')->orderBy('id','desc');
     }
 
     public function getCreatedAtAttribute($created_at){

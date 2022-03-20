@@ -23,29 +23,22 @@ class AdminCommissionController extends Controller
 
     public function commissionAdd(Request $request)
     {
-
-        $admin_commission = AdminCommission::first();
-
-        if (!empty($admin_commission)) {
-             notify()->error('Error', 'Commission already added');
-            return redirect()->route('admin.commission.list');
-        }
-        
-        
         if ($request->isMethod('post')) {
             $validator = Validator::make($request->all(), [
                 'commission_percent' => 'required|numeric',
+                'type' => 'required|unique:admin_commissions',
             ]);
 
             if ($validator->fails()) {
-                return redirect::back()
-                    ->withErrors($validator)
-                    ->withInput();
+                $response['message'] = $validator->errors()->first();
+                $response['error'] = true;
+                notify()->error('Error,' .$response['message']);
+                return redirect()->back()->with($response);
             }
 
             $admin_commission = new AdminCommission;
             $admin_commission->commission_percent = $request->commission_percent;
-            $admin_commission->commission_type = $request->commission_type;
+            $admin_commission->type = $request->type;
 
 
             if ($admin_commission->save()) {
@@ -63,27 +56,24 @@ class AdminCommissionController extends Controller
     public function commissionEdit(Request $request)
     {
 
-        $commission = AdminCommission::first();
-
-        if (empty($commission)) {
-            notify()->error('Error', 'You need to add commission');
-            return redirect()->route('admin.commission.list');
-        }
+        $commission = AdminCommission::find($request->id);
 
         if ($request->isMethod('post')) {
 
             $validator = Validator::make($request->all(), [
                 'commission_percent' => 'required|numeric',
+                //'type' => 'required|unique:admin_commissions,type,' . $request->id,
             ]);
 
             if ($validator->fails()) {
-                return redirect::back()
-                    ->withErrors($validator)
-                    ->withInput();
+                $response['message'] = $validator->errors()->first();
+                $response['error'] = true;
+                notify()->error('Error,' .$response['message']);
+                return redirect()->back()->with($response);
             }
 
             $commission->commission_percent = $request->commission_percent;
-            $commission->commission_type = $request->commission_type;
+            //$commission->type = $request->type;
 
             if ($commission->save()) {
                 return redirect()->route('admin.commission.list')->with('success', 'Commission updated successfully');

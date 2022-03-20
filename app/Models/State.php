@@ -9,4 +9,9 @@ class State extends Model
 {
     use HasFactory;
 
+    public function country()
+    {
+        return $this->hasOne('App\Models\Country', 'id', 'country_id');
+    }
+
 }

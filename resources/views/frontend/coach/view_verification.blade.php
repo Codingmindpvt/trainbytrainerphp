@@ -17,7 +17,8 @@
 <section class="common-light-header">
     <div class="container">
         <div class="popular-box text-center">
-            <h1 class="oswald-font">Hi, {{Auth::user()->first_name." ".Auth::user()->last_name}}!</h1>
+            <h1 class="oswald-font">Hi, {{Auth::user()->first_name." ".Auth::user()->last_name}}!{!!
+                certifiedUser() !!}</h1>
             <span class="divide-line"></span>
             <p class="oswald-font light-text">View and edit COACH Verification details here</p>
         </div>

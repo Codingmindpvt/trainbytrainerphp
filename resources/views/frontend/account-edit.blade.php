@@ -5,7 +5,8 @@
     <section class="user-profile-page">
         <div class="container">
             <div class="user-name-tag text-center m-5">
-                <h1>Hi, {{ucwords(@$user->first_name." ".@$user->last_name)}} !</h1>
+                <h1>Hi, {{ucwords(@$user->first_name." ".@$user->last_name)}} !{!!
+                    certifiedUser() !!}</h1>
                 <p>View and edit personal details here</p>
             </div>
             <div class="row">
@@ -124,11 +125,11 @@
                                             <i class="fa fa-angle-down select-angle" aria-hidden="true"></i>
                                             <select class="form-control" name="state_id">
                                                 @if(!empty(@$user->state_id))
-                                                <option style="display:none" value="{{$user->state->id}}" selected>{{$user->state->name}}</option>
+                                                <option style="display:none" value="{{@$user->state->id}}" selected>{{@$user->state->name}}</option>
                                                 @endif
                                                 <option value="">Select</option>
                                                 @foreach($states as $state)
-                                                  <option value="{{$state->id}}">{{$state->name}}</option>
+                                                  <option value="{{@$state->id}}">{{@$state->name}}</option>
                                                 @endforeach
                                             </select>
                                         </div>

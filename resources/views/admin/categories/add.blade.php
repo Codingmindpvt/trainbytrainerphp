@@ -19,11 +19,11 @@
 					<aside class="col-lg-8">
 						<div class="row">
 							<aside class="col-sm-6">
-								<label>Title</label>
-								<input name="title" class="form-control" type="text">
+                                <label class="my-2 form-p">Title<span style="font-size:20px;color: red;">*</span></label>
+								<input name="title" class="form-control" type="text" maxlength="30" placeholder="Enter Title">
 							</aside>
 							<aside class="col-sm-6">
-								<label>Status</label>
+                                <label class="my-2 form-p">Status<span style="font-size:20px;color: red;">*</span></label>
 								<select class="form-control" id="status" name="status">
 									  <?php
 									  echo "<option value=''>Select Status</option>";
@@ -37,8 +37,8 @@
 						</div>
 						<div class="row">
 							<aside class="col-sm-12">
-								<label>Description</label>
-								<textarea name="description" class="form-control" autocomplete="off" ></textarea>
+                                <label class="my-2 form-p">Description<span style="font-size:20px;color: red;">*</span></label>
+								<textarea name="description" class="form-control" maxlength="300" autocomplete="off" placeholder="Enter desciption"></textarea>
 							</aside>
 						</div>
 						<button type="submit" class="blue_btn yellow_btn text-uppercase">Add</button>

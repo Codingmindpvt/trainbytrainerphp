@@ -95,14 +95,14 @@
                     <div class="view-box form-group mt-3">
                         <p>Class Name<span><i
                             class="fa fa-asterisk validate-mark" aria-hidden="true"></i></span></p>
-                        <input class="form-input update_class_name  form-control edit_class_name" type="text" name="name">
+                        <input class="form-input update_class_name  form-control edit_class_name" maxlength="25" type="text" name="name">
                         <span class="update_errors update_class_name_error hide">Please add class name.</span>
 
                     </div>
                     <div class="view-box ">
                         <p class="my-2 form-p">Class Description<span><i
                             class="fa fa-asterisk validate-mark" aria-hidden="true"></i></span></p>
-                        <textarea class="form-input update_class_description  edit_class_des" name="description"></textarea>
+                        <textarea class="form-input update_class_description  edit_class_des" maxlenght="300" name="description"></textarea>
                         <span class="update_errors update_class_description_error hide">Please add class description</span>
 
                     </div>

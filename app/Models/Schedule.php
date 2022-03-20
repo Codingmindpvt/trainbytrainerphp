@@ -28,4 +28,7 @@ class Schedule extends Model
     {
         return $this->hasOne(Booking::class, 'schedule_id', 'id');
     }
+    // public function coachClass(){
+    //     return $this->hasMany(CoachClass::class, 'created_by', 'id');
+    // }
 }

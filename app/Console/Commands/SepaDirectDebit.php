@@ -88,8 +88,9 @@ class SepaDirectDebit extends Command
     }
     public function getDateAfterthirtyDay($date)
     {
-        $date = new DateTime($date); // Y-m-d
-        $date->add(new DateInterval('P31D'));
+        $date = new DateTime($date); // Y-m-d 
+        $date->add(new DateInterval('PT75M')); //after 5 minute
+       // $date->add(new DateInterval('P31D')); //after one month
         return $date->format('Y-m-d');
 
     }

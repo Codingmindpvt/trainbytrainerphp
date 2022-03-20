@@ -1,4 +1,3 @@
-
 <div class=" " id="collapseExample_show" style="display:none">
     <div class="card card-body">
         <section class="filerts box-area">
@@ -12,7 +11,7 @@
                     </div>
 
                     <div class="col-lg-3 col-md-6">
-                        @include('frontend.coach_filter_tab.cards.country_filter_card')
+                        {{--   @include('frontend.coach_filter_tab.cards.state_filter_card') --}}
                         @include('frontend.coach_filter_tab.cards.city_filter_card')
                     </div>
 

@@ -24,12 +24,12 @@
 						{{-- <input value="{{ $type}}" name="type" class="form-control" type="hidden"> --}}
 						<div class="row">
 							<aside class="col-sm-6">
-								<label>First Name</label>
-								<input value="{{ $user->first_name}}" name="first_name" class="form-control" type="text">
+                                <label class="my-2 form-p">First Name<span style="font-size:20px;color: red;">*</label>
+								<input value="{{ $user->first_name}}" name="first_name" class="form-control" maxlength="15" type="text" placeholder="Enter First Name">
 							</aside>
 							<aside class="col-sm-6">
-								<label>Last Name</label>
-								<input  value="{{ $user->last_name}}"name="last_name" class="form-control" type="text">
+                                <label class="my-2 form-p">Last Name<span style="font-size:20px;color: red;">*</label>
+								<input  value="{{ $user->last_name}}"name="last_name" class="form-control" maxlength="15"  type="text" placeholder="Enter Last Name">
 							</aside>
 						</div>
 						<div class="row">
@@ -39,34 +39,27 @@
 							</aside>
 							<aside class="col-sm-6">
 								<label>Phone Number</label>
-								<input value="{{ $user->contact_no}}" name="contact_no" class="form-control" type="text" readonly>
+								<input value="+31{{ $user->contact_no}}" name="contact_no" class="form-control" type="text" readonly>
 							</aside>
 						</div>
 						<div class="row">
 							<aside class="col-sm-6">
-								<label>Address</label>
-								<input value="{{ $user->address}}" name="address" class="form-control" type="text">
+                                <label class="my-2 form-p">Address<span style="font-size:20px;color: red;">*</label>
+								<input value="{{ $user->address}}" name="address" class="form-control" type="text" placeholder="Enter Address">
 							</aside>
                              <aside class="col-sm-6">
                                  <label for="">Country</label>
                                  <div class="form-select">
-                                     <select class="form-input form-control" name="country" id="country-dd">
-                                     	@if(!empty($user->country->id))
-										<option style='display:none' value="{{$user->country->id}}">{{$user->country->name}}</option>
-									  	@endif
-                                         <option value="">Select</option>
-                                         @foreach ($countries as $country)
-                                             <option value="{{ $country->id }}">{{ $country->name }}</option>
-                                         @endforeach
-                                     </select>
+                                    <input type="hidden" name="country" value="{{ $countries->id }}">
+                                    <input type="text" class="form-control form-input"  value="{{@$countries->name}}" disabled>
                                  </div>
                              </aside>
                              </div>
                              <div class="row">
                              <aside class="col-sm-6">
-                                 <label for="">State</label>
+                                 <label class="my-2 form-p">State<span style="font-size:20px;color: red;">*</label>
                                  <div class="form-select">
-                                     <select class="form-input form-control" name="state" id="state-dd">
+                                     <select class="form-input form-control" name="state" id="state-dd" placeholder="Enter State">
                                      	@if(!empty($user->state->id))
 										<option style='display:none' value="{{$user->state->id}}">{{$user->state->name}}</option>
 									  	@endif
@@ -79,15 +72,14 @@
                              </aside>
 
                              <aside class="col-sm-6">
-                                <label>City</label>
-
-                              <input type="text" name="city"  value="{{$user->city }}"class="form-control" id="" >
+                                <label class="my-2 form-p">City<span style="font-size:20px;color: red;">*</label>
+                              <input type="text" name="city"  value="{{$user->city }}"class="form-control" id=""placeholder="Enter City" >
                             </aside>
                          </div>
 						<div class="row">
                              <aside class="col-sm-6">
-								<label>Postal code</label>
-								<input value="{{ $user->postal_code}}"  class="form-control" name="postal_code" type="text">
+                                <label class="my-2 form-p">Postal code<span style="font-size:20px;color: red;">*</label>
+								<input value="{{ $user->postal_code}}"  class="form-control" maxlength="8" name="postal_code" type="text" placeholder="Enter Postal Code">
 							</aside>
 							<?php
 							// if($user->role_type==$user->isRoleUser()){

@@ -5,8 +5,7 @@ $coachVerificationDetail = \App\Models\CoachDetail::coachVerificationDetail();
 @if($coachDetail == '' && empty($coachDetail))
 <section class="profesional-common-box">
     <div class="container">
-        <p><img src="{{asset('public/images/notify.png')}}" class="mr-2" alt="notify">You have currently not complete it
-            should be completed
+        <p><img src="{{asset('public/images/notify.png')}}" class="mr-2" alt="notify">You have currently not complete it should be completed
             your coach profile. &nbsp<a href="{{route('coach-profile-detail')}}"><span>Click here</span></a> &nbsp or on
             the "Coach Profile" tab to create your profile as a fitness coach.
     </div>

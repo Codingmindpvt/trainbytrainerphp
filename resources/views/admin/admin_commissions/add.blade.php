@@ -15,16 +15,11 @@
                     </aside>
                     <aside class="row">
                         <label>Commission Type</label>
-                        <select name="commission_type" class="form-control" id="cars">
+                        <select name="type" class="form-control" id="cars">
                             <option value="P">Program</option>
                             <option value="C">Class</option>
-
                         </select>
                     </aside>
-
-
-
-
                     <aside class="row">
                         <button type="submit" class="blue_btn yellow_btn text-uppercase">Add</button>
                     </aside>

@@ -33,7 +33,7 @@
 							</aside>
 							<aside class="col-sm-6">
 								<label>Phone Number</label>
-								<h4>{{ isset($user->contact_no) ? $user->contact_no : "-----" }}</h4>
+								<h4>+31{{ isset($user->contact_no) ? $user->contact_no : "-----" }}</h4>
 							</aside>
 						</div>
 						<div class="row user-details">
@@ -47,7 +47,7 @@
 							</aside>
 
 						</div>
-                        <div class="row">
+                        <div class="row user-details">
                             <aside class="col-sm-6">
 								<label>State</label>
 								<h4>{{ isset($user->state->name) ? $user->state->name : "-----" }}</h4>
@@ -58,7 +58,7 @@
 							</aside>
 
 						</div>
-						<div class="row">
+						<div class="row user-details">
 							<aside class="col-sm-6">
 								<label>Postal code</label>
 								<h4>{{ isset($user->postal_code) ? $user->postal_code : "-----" }}</h4>
@@ -74,10 +74,11 @@
 			</div>
 
 			<!-- coach detail -->
+            @if(isset($user['coach_detail']) && !empty($user['coach_detail']))
 			<h2>Coach Detail</h2>
 			<div class="white_box my_profile">
-				@if(isset($user['coach_detail']) && !empty($user['coach_detail']))
-				<div class="row">
+
+				<div class="row user-details">
 					<aside class="col-lg-4 text-center">
 						@if(!empty(@$user['coach_detail']['image_file']))
 			                <img src="{{asset('public/'.@$user['coach_detail']['image_file']) }}" class="img-circle profile_image"/>
@@ -120,7 +121,7 @@
 							</aside>
 
 						</div>
-                        <div class="row">
+                        <div class="row user-details">
                             <aside class="col-sm-6">
 								<label>Category</label>
 								<h4>@php
@@ -144,7 +145,7 @@
 							</aside>
 
 						</div>
-						<div class="row">
+						<div class="row user-details">
 							<aside class="col-sm-6">
 								<label>Personality & Training</label>
 								<h4><?php
@@ -163,19 +164,20 @@
 					</aside>
                 </div>
                 @else
-				<p>No Data Found!!</p>
+				{{--  <p>No Data Found!!</p>  --}}
 				@endif
 				</div>
-			
+
 
 			<!-- Certificated / Diplomas detail -->
-			<h2>Certificates / Diplomas</h2>
-			<div class="white_box my_profile">
-				<div class="row">
-					@php 
+            @php
 					@$educationDetails = $user['coach_detail']['coach_education'];
 					@endphp
 					@if(@$educationDetails)
+			<h2>Certificates / Diplomas</h2>
+			<div class="white_box my_profile">
+				<div class="row ">
+
 					@foreach(@$educationDetails as $educationDetail)
 					<aside class="col-lg-6">
 
@@ -200,20 +202,21 @@
 					</aside>
 					@endforeach
 					@else
-					<p>Not Data Found!!</p>
+					{{--  <p>Not Data Found!!</p>  --}}
 					@endif
                 </div>
 				</div>
 
 				<!-- verification detail -->
-			<h2>Certification Detail</h2>
-			<div class="white_box my_profile row">
-				<div class="col-md-12">
-					@php 
+                @php
 					@$verificationDetail = $user['verification_detail'];
 					//print_r($verificationDetail);die;
 					@endphp
 					@if(!empty(@$verificationDetail))
+			<h2>Certification Detail</h2>
+			<div class="white_box my_profile row">
+				<div class="col-md-12">
+
 
 						<div class="row user-details">
 
@@ -247,7 +250,7 @@
 							</aside>
 
 						</div>
-                        <div class="row">
+                        <div class="row user-details">
                             <aside class="col-sm-6">
 								<label>insurance expire date</label>
 								<h4>{{ !empty(@$verificationDetail['insurance_expire_date']) ? @$verificationDetail['insurance_expire_date'] : "-----" }}
@@ -260,14 +263,16 @@
 
 						</div>
 					@else
-					<p>Not Data Found!!</p>
+					{{--  <p>Not Data Found!!</p>  --}}
 					@endif
                 </div>
                 <div class="col-md-12">
-                	<h4 class="insurance-text">Insurance</h4>
-                	@if(!empty(@$verificationDetail['verification_document']) && count(@$verificationDetail['verification_document'])>0)
+                    @if(!empty(@$verificationDetail['verification_document']) && count(@$verificationDetail['verification_document'])>0)
                     @foreach($verificationDetail['verification_document'] as $certificate)
-                        @if($certificate['type'] == 'I')
+                    @if($certificate['type'] == 'I')
+                	<h4 class="insurance-text">Insurance</h4>
+
+
                         <div class="upload-certificate-box" data-toggle="modal" data-target="{{'#'.$certificate['id']}}">
 							<div class="eye-icon">
 								<i class="fa fa-eye" aria-hidden="true"></i>
@@ -304,16 +309,18 @@
                     @endforeach
 
                     @else
-                    <div class="upload-certificate-box">
+                    {{--  <div class="upload-certificate-box">
                         <img src="{{asset('public/images/default-image-file.png')}}" class="profile_picture" alt="upload">
-                    </div>
+                    </div>  --}}
                     @endif
                 </div>
                    <div class="col-md-12">
-                	<h4 class="insurance-text">Certificate</h4>
-                	 @if(!empty(@$verificationDetail['verification_document']) && count(@$verificationDetail['verification_document'])>0)
+                    @if(!empty(@$verificationDetail['verification_document']) && count(@$verificationDetail['verification_document'])>0)
                     @foreach(@$verificationDetail['verification_document'] as $certificate)
-                        @if($certificate['type'] == 'C')
+                    @if($certificate['type'] == 'C')
+                	<h4 class="insurance-text">Certificate</h4>
+
+
                         <div class="upload-certificate-box" data-toggle="modal" data-target="{{'#'.$certificate['id']}}">
 							<div class="eye-icon">
 								<i class="fa fa-eye" aria-hidden="true"></i>
@@ -350,9 +357,9 @@
                     @endforeach
 
                     @else
-                    <div class="upload-certificate-box">
+                    {{--  <div class="upload-certificate-box">
                         <img src="{{asset('public/images/default-image-file.png')}}" class="profile_picture" alt="upload">
-                    </div>
+                    </div>  --}}
                     @endif
                 </div>
 				</div>

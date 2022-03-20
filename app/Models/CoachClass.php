@@ -36,6 +36,32 @@ class CoachClass extends Model
     {
         return $this->hasOne('App\Models\User', 'id', 'created_by');
     }
-    
-  
+    public function class_get_name()
+    {
+        return $this->belongsTo('App\Models\User', 'id', 'created_by');
+    }
+    public function reviewClass_list()
+    {
+        return $this->hasMany('App\Models\Review', 'rate_for_coach_id', 'id');
+    }
+    public function review_list()
+    {
+        return $this->hasMany('App\Models\Review', 'rate_for_class_id', 'id');
+    }
+    public function booking()
+    {
+        return $this->hasMany('App\Models\Booking', 'class_id', 'id');
+    }
+    public function checkAttendeesCount($booking_date = null, $class_id = null)
+    {
+        $data = Booking::where('class_id', $class_id)
+        ->whereIn('status', [Booking::STATUS_REQUEST_SEND, Booking::STATUS_ACCEPT])
+        ->whereDate('booking_date', '=', $booking_date)->count();
+       return $data ?? 0 ;
+    }
+    // public function schedules(){
+    //     return $this->belongsTo(Schedule::class);
+    // }
+
+
 }

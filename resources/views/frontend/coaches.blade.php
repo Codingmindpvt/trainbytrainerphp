@@ -50,9 +50,23 @@ $country_ids = explode(',', $_GET['filter_country'] ?? []);
 $show_filter = 'show';
 }
 
+if (isset($_GET['filter_state'])) {
+$state_ids = explode(',', $_GET['filter_state'] ?? []);
+$show_filter = 'show';
+}
+
+if (isset($_GET['filter_city'])) {
+$city_ids = explode(',', $_GET['filter_city'] ?? []);
+$show_filter = 'show';
+}
+
 if (isset($_GET['filter_personality'])) {
 $personality_ids = explode(',', $_GET['filter_personality'] ?? []);
 $show_filter = 'show';
+}
+if (isset($_GET['sort_by'])) {
+$filter_sort_by = $_GET['sort_by'] ?? "";
+//$show_filter = 'show';
 }
 @endphp
 
@@ -72,11 +86,15 @@ $show_filter = 'show';
             <h6>{{ @$coach_count }} Coaches</h6>
             {{-- <p><i class="fa fa-heart" aria-hidden="true"></i> SAVED</p> --}}
             <div class="select-box" data-aos="fade-down">
-                {{-- <i class="fa fa-angle-down select-down" aria-hidden="true"></i> --}}
-                {{-- <select class="custom-select-box custom-select-md filter-select">
-                        <option selected>SORT BY</option>
-                        <option value="1">SORT BY</option>
-                    </select> --}}
+                <form action="{{ route('coaches') }}" method="GET" id="sortingForm">
+                    <i class="fa fa-angle-down select-down" aria-hidden="true"></i>
+                    <select class="custom-select-box custom-select-md filter-select sort_by" name="sort_by">
+                        <option value="">SORT BY</option>
+                        <option value="HL">Range - High to Low</option>
+                        <option value="LH">Range - Low to High</option>
+                        <option value="MR">Most Reviewed</option>
+                    </select>
+                </form>
             </div>
         </div>
         <div>
@@ -111,7 +129,8 @@ $show_filter = 'show';
                                 <li>{{ !empty(@$item['coach_detail']['title']) ? @$item['coach_detail']['title'] : '' }}
                                 </li>
                                 <li>-</li>
-                                <li><i class="fa fa-map-marker" aria-hidden="true"></i> {{ @$item->state->name }}.
+                                <li><i class="fa fa-map-marker" aria-hidden="true"></i> {{ @$item->city."," }}
+                                    {{ @$item->state->name }} -
                                     {{ @$item->country->name }}</li>
                             </ul>
                             <input type="hidden" name="rate_for_coach_id"
@@ -153,7 +172,7 @@ $show_filter = 'show';
                                         ?>
                             </ul>
                             <p class="mt-2">
-                                {{ !empty(@$item['coach_detail']['bio']) ? substr(@$item['coach_detail']['bio'], 0, 250) . ' ...' : '-----' }}
+                                {{ !empty(@$item['coach_detail']['bio']) ? substr(@$item['coach_detail']['bio'], 0, 250)  : '-----' }}
                             </p>
                         </div>
                     </div>
@@ -285,7 +304,11 @@ $show_filter = 'show';
     </div>  --}}
 <script>
 $(document).ready(function() {
-
+    $(document).on('change', '.sort_by', function() {
+        var thisData = $(this).val();
+        $("#filter_sort_by").val(thisData);
+        $("#sortingForm").submit();
+    });
 
 
     var show_filter = '{{ $show_filter }}';
@@ -367,6 +390,7 @@ $(document).ready(function() {
             }
         });
     });
+
 
 });
 </script>
@@ -477,6 +501,30 @@ $(document).ready(function() {
         $('#filter_rating').val(countryArray1);
     });
 
+    $(".state_filter_checkbox").change(function() {
+        var stateArray1 = [];
+        $('input:checkbox.state_filter_checkbox').each(function() {
+            var sThisVal = (this.checked ? $(this).val() : "");
+            if (sThisVal != '') {
+                stateArray1.push(sThisVal);
+
+            }
+        });
+        $('#filter_rating').val(stateArray1);
+    });
+
+    $(".city_filter_checkbox").change(function() {
+        var cityArray1 = [];
+        $('input:checkbox.city_filter_checkbox').each(function() {
+            var sThisVal = (this.checked ? $(this).val() : "");
+            if (sThisVal != '') {
+                cityArray1.push(sThisVal);
+
+            }
+        });
+        $('#filter_rating').val(cityArray1);
+    });
+
     $(".per_filter_checkbox").change(function() {
         var perArray1 = [];
         $('input:checkbox.per_filter_checkbox').each(function() {
@@ -510,6 +558,24 @@ $(document).ready(function() {
         $('#filter_country').val(countryArray);
     });
 
+
+
+    $("#searchStateName").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $(".all-filter.state-filter label").filter(function() {
+            $(this).parent().toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+
+    //get array of state Ids
+    $(".state").change(function() {
+        var stateArray = [];
+        $("input:checkbox[name=state]:checked").each(function() {
+            stateArray.push($(this).val());
+        });
+        $('#filter_state').val(stateArray);
+    });
+
     $("#searchCityName").on("keyup", function() {
         var value = $(this).val().toLowerCase();
         $(".all-filter.city-filter label").filter(function() {
@@ -517,7 +583,7 @@ $(document).ready(function() {
         });
     });
 
-    //get array of country Ids
+    //get array of city Ids
     $(".city").change(function() {
         var cityArray = [];
         $("input:checkbox[name=city]:checked").each(function() {

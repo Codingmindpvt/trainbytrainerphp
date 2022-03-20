@@ -33,7 +33,7 @@
 							</aside>
 							<aside class="col-sm-6">
 								<label>Phone Number</label>
-								<h4>{{ isset($user->contact_no) ? $user->contact_no : "-----" }}</h4>
+								<h4>+31{{ isset($user->contact_no) ? $user->contact_no : "-----" }}</h4>
 							</aside>
 						</div>
 						<div class="row user-details">
@@ -47,7 +47,7 @@
 							</aside>
 
 						</div>
-                        <div class="row">
+                        <div class="row user-details">
                             <aside class="col-sm-6">
 								<label>State</label>
 								<h4>{{ isset($user->state->name) ? $user->state->name : "-----" }}</h4>
@@ -58,7 +58,7 @@
 							</aside>
 
 						</div>
-						<div class="row">
+						<div class="row user-details">
 							<aside class="col-sm-6">
 								<label>Postal code</label>
 								<h4>{{ isset($user->postal_code) ? $user->postal_code : "-----" }}</h4>

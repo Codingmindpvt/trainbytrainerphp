@@ -7,6 +7,7 @@ use App\Models\Blog;
 use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Chat;
+use App\Models\Chat_message;
 use App\Models\City;
 use App\Models\CoachClass;
 use App\Models\CoachDetail;
@@ -23,6 +24,7 @@ use App\Models\TrainingStyle;
 use App\Models\User;
 use App\Models\WishList;
 use App\Traits\FilterTrait;
+use App\Models\ContactUs;
 use Carbon\Carbon;
 use DateInterval;
 use DatePeriod;
@@ -33,6 +35,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Redirect;
 use Validator;
+use Session;
 
 class HomeController extends Controller
 {
@@ -233,7 +236,7 @@ class HomeController extends Controller
                 $mail_data['email'] = $createUser['email'];
                 $mail_data['full_name'] = $createUser['first_name'] . " " . $createUser['last_name'];
                 $mail_data['link'] = $base_url . "/coach-email-verification/" . $uniqueid . "/" . $token;
-                $mail_data['content'] = 'Thank you for signing up to TrainbyTrainer as a Coach! We look forward to having you use our platform, and know that we will be able to assist you with any of your queries.';
+                $mail_data['content'] = 'Thank you for signing up to TrainbyTrainer as a Coach.';
                 $mail_data['layout'] = 'email_templates.system_generated';
                 emailSend($mail_data);
 
@@ -287,6 +290,7 @@ class HomeController extends Controller
     public function logout()
     {
         Auth::logout();
+        Session::flush();
         return redirect()->route('login');
     }
 
@@ -454,7 +458,7 @@ class HomeController extends Controller
                 $mail_data['email'] = Auth::user()->email;
                 $mail_data['full_name'] = Auth::user()->first_name . " " . Auth::user()->last_name;
                 $mail_data['link'] = $base_url . "/coach-email-verification/" . $uniqueid . "/" . $token;
-                $mail_data['content'] = 'Thank you for signing up to TrainbyTrainer as a Coach! We look forward to having you use our platform, and know that we will be able to assist you with any of your queries.';
+                $mail_data['content'] = 'Admin has accepted your account certification request.';
                 $mail_data['layout'] = 'email_templates.system_generated';
                 emailSend($mail_data);
 
@@ -511,8 +515,9 @@ class HomeController extends Controller
     {
         $coach = User::where('role_type', User::ROLE_COACH)
             ->where('id', "!=", Auth::id())
+            ->where('coach_profile_verification_status', 'V')
             ->whereHas('coach_detail', function($qry){
-                $qry->where('profile_status', 'E');
+                $qry->where('profile_status', 'E')->where('status', 'V');
             })
             ->with('verification_detail');
 
@@ -556,6 +561,9 @@ class HomeController extends Controller
                 ->has('coach_detail')
                 ->with('verification_detail');
         }
+
+
+
         if ($request->has('filter_category') || $request->has('filter_training_style') && $request->filter_category != '') {
             $category_ids = @$request->filter_category;
 
@@ -637,18 +645,89 @@ class HomeController extends Controller
             }
         }
 
-        // @vikas filter
+        if ($request->has('filter_state') && $request->filter_state != '') {
+            //dd($request->filter_state);
+            $filter_state = $request->filter_state;
+            if (isset($filter_state)) {
+                $filter_state = explode(',', $filter_state);
+            }
+            if (isset($filter_state) && !empty($filter_state)) {
+                 $coach->whereIn('state_id', $filter_state);
+            }
+        }
+
+        if ($request->has('filter_city') && $request->filter_city != '') {
+            //dd($request->filter_state);
+            $filter_city = $request->filter_city;
+            if (isset($filter_city)) {
+                $filter_city = explode(',', $filter_city);
+            }
+            if (isset($filter_city) && !empty($filter_city)) {
+                $coach->whereIn('city', $filter_city);
+            }
+        }
+
+        $coach_count = $coach->count();
+
+       if (isset($request->sort_by) && !empty($request->sort_by) && $request->sort_by == 'HL') {
+
+            $sort_coach = $coach->withCount(['coach_detail as coach' => function($query) {
+                $query->select('price_range')->groupBy('user_id');
+            }]);
+
+            $coach_count = $sort_coach->count();
+
+            $users = $sort_coach->orderByDesc('coach')->paginate(20);
+
+       }
+      else if (isset($request->sort_by) && !empty($request->sort_by) && $request->sort_by == 'LH') {
+
+            $sort_coach = $coach->withCount(['coach_detail as coach' => function($query) {
+                $query->select('price_range')->groupBy('user_id');
+            }]);
+
+            $coach_count = $sort_coach->count();
+
+            $users = $sort_coach->orderBy('coach')->paginate(20);
+
+       }else if (isset($request->sort_by) && !empty($request->sort_by) && $request->sort_by == 'MR') {
+
+            $sort_coach = $coach->has('reviews')->withCount(['reviews as average_rating' => function($query) {
+                $query->select(DB::raw('coalesce(avg(star),0)'));
+            }]);
+
+            $coach_count = $sort_coach->count();
+
+            $users = $sort_coach->orderByDesc('average_rating')->paginate(20);
+
+       }
+       else{
+            $users = $coach->orderBy("id", "DESC")->paginate(6);
+            $coach_count = $coach->count();
+       }
+
+
+
+   // print_r($users); die;
+    // @vikas filter
         $wishList = new WishList();
         $categoryList = Category::Where('status', Category::STATUS_ACTIVE)->get();
         $trainingStyleList = TrainingStyle::Where('status', TrainingStyle::STATUS_ACTIVE)->get();
 
-        $coach_count = $coach->count();
-
-        $users = $coach
-            ->orderBy("id", "DESC")->paginate(6);
-
         $countryList = Country::select('id', 'name', 'code')->get();
-        $stateList = State::select('id', 'name', 'country_id')->get();
+        $stateList = State::select('id', 'name', 'country_id')
+        ->whereHas('country', function ($query){
+            $query->where('code', 'NL');
+        })
+        ->get();
+
+        $cityList = City::select('id', 'name', 'state_id')
+        ->whereHas('state', function ($query){
+            $query->whereHas('country', function ($qry){
+                $qry->where('code', 'NL');
+            });
+        })
+        ->get();
 
         return view("frontend.coaches", [
             "coach_count" => $coach_count,
@@ -657,6 +736,7 @@ class HomeController extends Controller
             "categoryList" => $categoryList,
             "countryList" => $countryList,
             "stateList" => $stateList,
+            "cityList" => $cityList,
             "trainingStyleList" => $trainingStyleList,
 
         ]);
@@ -919,10 +999,27 @@ class HomeController extends Controller
         $wishList = new WishList();
         $coach = new User();
         $program = $programs->count();
-        // $coach_count = count(CoachProgram::select('user_id')->where('user_id', '!=', Auth::id())
-        //         ->distinct()
-        //         ->get());
-        $programs = $programs->orderBy("id", "DESC")->paginate(6);
+        if (isset($request->sort_by) && !empty($request->sort_by) && $request->sort_by == 'HL') {
+
+            $programs = $programs->orderBy("price", "DESC")->paginate(15);
+
+       }
+      else if (isset($request->sort_by) && !empty($request->sort_by) && $request->sort_by == 'LH') {
+
+            $programs = $programs->orderBy("price", "ASC")->paginate(15);
+
+       }else if (isset($request->sort_by) && !empty($request->sort_by) && $request->sort_by == 'MR') {
+
+            $sort_programs = $programs->has('review_list')->withCount(['review_list as average_rating' => function($query) {
+                $query->select(DB::raw('coalesce(avg(star),0)'));
+            }]);
+            $program = $sort_programs->count();
+            $programs = $sort_programs->orderByDesc('average_rating')->paginate(15);
+
+       }
+       else{
+        $programs = $programs->orderBy("id", "DESC")->paginate(9);
+       }
 
         $reviewList = Review::where('rate_for')->with('users')->get();
         return view('frontend.programs', compact('review', 'avg_rating', 'review_list', 'programs', 'coach', 'wishList', 'categoryList', 'reviewList', 'program'));
@@ -936,6 +1033,7 @@ class HomeController extends Controller
         $myReviewDetail = Review::where('rated_by', Auth::id())
             ->where('rate_for_program_id', @$id)
             ->first();
+
         $wishList = new WishList();
         $cartItem = Cart::where('user_id', Auth::id())->where('program_id', $id)->first();
         $reviewList = Review::where('rate_for_program_id', $id)->orderBy("id", "DESC")->with('users')->get();
@@ -1102,56 +1200,44 @@ class HomeController extends Controller
 
     /****************************************/
 
-    public function chat()
+    public function chat($id = null)
     {
 
-        $users = User::where('id', '!=', auth()->user()->id)
-        ->where('role_type', '!=', 'A')
-        ->with(['coach_detail' => function ($query) {
-            $query->where('chat_status', '!=', 'D');
-        }])
-        ->get()->toArray();
+        $checkChatRoom = Chat::where('sender_id',$id)->orWhere('receiver_id',$id)->first();
 
-        $has_one_message = false;
-        foreach ($users as $iii => $user) {
 
-            $get_last_message = Chat::where('sender_id', '=', auth()->user()->id)
-                ->where('receiver_id', '=', $user["id"])
-                ->orWhere('sender_id', '=', $user["id"])
-                ->where('receiver_id', '=', auth()->user()->id)
-                ->orderBy('created_at', 'DESC')->first();
-            $users[$iii]["last_message"] = $get_last_message->message ?? '';
-            $users[$iii]["type"] = $get_last_message->type ?? '';
-            if(!empty($get_last_message->message)){
-                $has_one_message = true;
-            }
+        if(empty($checkChatRoom) && (!empty($id))){
+            $addNewChat = new Chat();
+            $addNewChat->sender_id = Auth::id();
+            $addNewChat->receiver_id = $id;
+            $addNewChat->save();
 
-            $users[$iii]["time"] = $get_last_message->created_at ?? '';
+        }else{
+            $addNewChat = Chat::where('sender_id', Auth::id())->orWhere('receiver_id', Auth::id())->first();
         }
 
-        usort($users, function ($a1, $a2) {
-            return $a2["time"] > $a1["time"];
-        });
+        $chat_id = $addNewChat['id'] ?? '';
+        $chats = Chat::with('receiver_user','sender_user')->has('last_message')->where('sender_id',Auth::id())->orWhere('receiver_id',Auth::id())
+        ->orderBy('id', 'DESC')->get();
 
-        $rrr = (object) json_decode(json_encode($users), false);
-
-        // dd($rrr);
-        return view('frontend.chat')->with('users', $rrr)->with('has_one_message', $has_one_message);
+        return view('frontend.chat', compact('chats','chat_id'));
     }
     public function getchat_data(Request $request)
     {
-        $messages = Chat::where('receiver_id', $request->sidebar_user_id)
-            ->where('sender_id', auth()->user()->id)
-            ->orwhere('sender_id', $request->sidebar_user_id)
-            ->where('receiver_id', auth()->user()->id)
-            ->get();
-        //    print_r($messages); die;
-        $user = User::where('id', $request->sidebar_user_id)->first();
+        $chat_id = Chat_message::select('chat_id')->where('sender_id', Auth::id())->where('receiver_id', $request->sidebar_chat_id)->orWhere('receiver_id', Auth::id())->where('sender_id', $request->sidebar_chat_id)->first();
+        $user = Chat_message::where('chat_id', $chat_id->chat_id ?? '0')->get();
+        // where('sender_id', Auth::id())
+        // ->whereHas('chat', function($query){
+        //     $query->where('sender_id', Auth::id());
+        // })
+        // ->orWhere('receiver_id', $request->sidebar_chat_id)
+        // ->where('sender_id', $request->sidebar_chat_id)
+        // ->orWhere('receiver_id', Auth::id())
+        // ->get();
+        $receiver = User::select('id','first_name','last_name','profile_image')->where('id', $request->sidebar_chat_id)->first();
 
-        $response['data'] = $messages;
-
-        $response['data1'] = $user;
-        //    $$response['get_last_message'] = $get_last_message;
+        $response['data'] = ['chat_messages'=>$user, 'receiver'=>$receiver];
+        // $response['get_last_message'] = $get_last_message;
         $response['status'] = "Success";
         $response['message'] = "chat get successfully";
         return response()->json($response);
@@ -1167,36 +1253,71 @@ class HomeController extends Controller
         return response()->json(['url' => '', 'status' => false], 404);
 
     }
-    public function chat_user_list()
+    public function chatUserList(Request $request)
     {
+        $id = $request->id ?? 0;
+        $checkChatRoom = Chat::where('sender_id',$id)->orWhere('receiver_id',$id)->first();
 
-        $users = User::where('id', '!=', auth()->user()->id)->where('role_type', '!=', 'A')->get()->toArray();
 
-        foreach ($users as $iii => $user) {
+        if(empty($checkChatRoom) && (!empty($id))){
+            $addNewChat = new Chat();
+            $addNewChat->sender_id = Auth::id();
+            $addNewChat->receiver_id = $id;
+            $addNewChat->save();
 
-            $get_last_message = Chat::where('sender_id', '=', auth()->user()->id)
-                ->where('receiver_id', '=', $user["id"])
-                ->orWhere('sender_id', '=', $user["id"])
-                ->where('receiver_id', '=', auth()->user()->id)
-                ->orderBy('created_at', 'DESC')->first();
-            $users[$iii]["last_message"] = $get_last_message->message ?? '';
-            $users[$iii]["type"] = $get_last_message->type ?? '';
-            $users[$iii]["time"] = $get_last_message->created_at ?? '';
+        }else{
+            $addNewChat = Chat::where('sender_id', Auth::id())->orWhere('receiver_id', Auth::id())->first();
         }
 
-        usort($users, function ($a1, $a2) {
-            return $a2["time"] > $a1["time"];
-        });
+        $chat_id = $addNewChat['id'] ?? '';
+        $chats = Chat::with('receiver_user','sender_user')->has('last_message')->where('sender_id',Auth::id())->orWhere('receiver_id',Auth::id())
+        ->orderBy('id', 'DESC')->first();
 
-        $rrr = (object) json_decode(json_encode($users), false);
-
-        $response['data'] = $rrr;
+        $response['data'] = ['chats'=>$chats, 'chat_id'=>$chat_id];
         $response['status'] = "Success";
-        $response['message'] = "successfull";
+        $response['message'] = "Sidebar list get Successful";
         return response()->json($response);
 
         // dd($rrr);
         // return view('frontend.chat')->with('users', $rrr);
+    }
+    public function clearChat(Request $request){
+        $chat_id = $request->chat_id;
+        $sender_id = $request->sender_id;
+
+        if(!empty($chat_id) && !empty($sender_id)){
+
+            $checkChat = Chat_message::where("chat_id", $chat_id)->orderBy('id', 'DESC')->first();
+
+
+            if(empty($checkChat['clear_by_sender']) && ($checkChat['sender_id'] == $sender_id) && empty($checkChat['clear_by_receiver'])){
+
+                $chatMessage = Chat_message::where("chat_id", $chat_id)->update(["chat_status" => '1', "clear_by_sender" => $sender_id]);
+                $response['status'] = "Success";
+                $response['message'] = "chat cleared by sender successfully";
+                $response['data'] = $chatMessage;
+                return response()->json($response);
+
+            }
+            else if(empty($checkChat['clear_by_receiver']) && ($checkChat['receiver_id'] == $sender_id)){
+
+                $chatMessage = Chat_message::where("chat_id", $chat_id)->update(["chat_status" => '1', "clear_by_receiver" => $sender_id]);
+                $response['status'] = "Success";
+                $response['message'] = "chat cleared by receiver successfully";
+                $response['data'] = $chatMessage;
+                return response()->json($response);
+
+            }else{
+
+                $response['status'] = "Success";
+                $response['message'] = "already cleared your chat";
+                $response['data'] = [];
+                return response()->json($response);
+            }
+
+
+        }
+
     }
 
     /*****************************************/
@@ -1278,16 +1399,21 @@ class HomeController extends Controller
     {
         $coachReviewlist = Review::where('rated_by', Auth::id())
             ->where('review_type', Review::REVIEW_TYPE_COACH)
+            ->orderBy('id', 'DESC')
             ->with('coach')
             ->get();
         $programReviewlist = Review::where('rated_by', Auth::id())
-            ->where('review_type', Review::REVIEW_TYPE_PROGRAM)
+             ->where('review_type', Review::REVIEW_TYPE_PROGRAM)
+             ->orderBy('id', 'DESC')
+             //order by
             ->with('program')
-            ->get();
+
+            ->paginate(6);
         $classReviewlist = Review::where('rated_by', Auth::id())
             ->where('review_type', Review::REVIEW_TYPE_CLASS)
+            ->orderBy('id', 'DESC')
             ->with('class')
-            ->get();
+            ->paginate(6);
         $user = User::where('id', Auth::user()->id)->first();
 
 
@@ -1309,10 +1435,56 @@ class HomeController extends Controller
     public function classes(Request $request, $id = null)
     {
         $categories = Category::all();
-        @$classes = CoachClass::with('category', 'program_user')->where('created_by', '!=', auth()->user()->id)->latest()->get();
-        // $checkCoachDetail = CoachDetail::where('user_id', Auth::user()->id)->first();
+        $categoryList = Category::Where('status', Category::STATUS_ACTIVE)->get();
+        @$classesData = CoachClass::with('category', 'program_user')->where('created_by', '!=', auth()->user()->id);
+        if ($request->has('filter_category') && $request->filter_category != '') {
+            $category_ids = $request->filter_category;
 
-        return view('frontend.classes', compact('classes', 'categories'));
+            //$category_ids = explode(',', $category_ids);
+            $class_ids = $this->classFilter($category_ids);
+            $classesData->whereIn('category_id', $class_ids);
+        }
+
+        if ($request->has('filter_rating') && $request->filter_rating != '') {
+            $filter_rating = $request->filter_rating;
+            if (isset($filter_rating)) {
+                $filter_rating = explode(',', $filter_rating);
+            }
+
+            $class_id_review = $this->modifyClassRatingFilter($filter_rating);
+
+            $classesData->whereIn('id', $class_id_review);
+        }
+
+        if ($request->has('filter_price') && $request->filter_price != '') {
+            if ($request->filter_price == '0-100') {
+                $classesData->whereBetween('price', [0, 100]);
+            } else if ($request->filter_price == '100+') {
+                $classesData = @$classesData->where('price', '>', 100);
+            }
+        }
+        if (isset($request->sort_by) && !empty($request->sort_by) && $request->sort_by == 'HL') {
+            @$classes = $classesData->orderBy("price", "DESC")->paginate(6);
+
+       }
+      else if (isset($request->sort_by) && !empty($request->sort_by) && $request->sort_by == 'LH') {
+        @$classes = $classesData->orderBy("price", "ASC")->paginate(6);
+
+       }else if (isset($request->sort_by) && !empty($request->sort_by) && $request->sort_by == 'MR') {
+
+            $sort_classes = $classesData->has('review_list')->withCount(['review_list as average_rating' => function($query) {
+                $query->select(DB::raw('coalesce(avg(star),0)'));
+            }]);
+            $classes = $sort_classes->orderByDesc('average_rating')->paginate(15);
+
+       }
+       else{
+        @$classes = $classesData->paginate(6);
+       }
+
+
+
+        return view('frontend.classes', compact('classes', 'categories','categoryList'));
     }
     /*****************************************/
     // classes section
@@ -1336,7 +1508,8 @@ class HomeController extends Controller
         $dateByDay = self::getDateByDay($id);
 
 
-        $class_detail = CoachClass::with('program_user', 'category')->where(["id" => $id])->orderBy("id", "DESC")->first();
+        $class_detail = CoachClass::with('program_user', 'category','booking')->where(["id" => $id])->orderBy("id", "DESC")->first();
+
         // print_r($class_detail); die;
         $categories = Category::all();
         $reviewList = Review::where('rate_for_class_id', $id)->orderBy("id", "DESC")->with('users')->get();
@@ -1344,7 +1517,7 @@ class HomeController extends Controller
         $myReviewDetail = Review::where('rated_by', Auth::id())
             ->where('rate_for_class_id', @$id)
             ->first();
-        $classDetailAll = CoachClass::with('program_user')
+        $classDetailAll = CoachClass::with('program_user','booking')
             ->where("id", "!=", $id)
             ->where("created_by",  $class_detail['created_by'])
             ->where("created_by", "!=", Auth::id());
@@ -1418,7 +1591,7 @@ class HomeController extends Controller
     {
         $program = OrderList::where('id',$id)->with('class')
         ->whereHas('payment', function($qry){
-            $qry->where('user_id','!=',Auth::id());
+            $qry->where('user_id', Auth::id());
         })
         ->whereHas('program', function($query){
             $query->with('program_user');
@@ -1432,11 +1605,46 @@ class HomeController extends Controller
             $query->with('program_user');
         })
         ->first();
-        $otherBookings = Booking::where('id','!=',$id)->where('user_id',Auth::id())->with('user','schedule')
+        $otherBookings = Booking::where('id',$id)->where('user_id',Auth::id())->with('user','schedule')
         ->whereHas('coach_class', function($query){
             $query->with('program_user');
         })
         ->paginate(3);
         return view('frontend.my-session-detail',['session'=>$session, 'otherBookings' => $otherBookings]);
     }
-}
+    public function contactus_send(Request $request)
+    {
+        $postData = $request->all();
+        $rules = [
+
+            // 'first_name' => 'required',
+            // 'last_name' => 'required',
+            // 'phone_number' => 'required',
+            // 'email' => 'required',
+            // 'message' => 'required',
+        ];
+
+        $validator = Validator::make($postData, $rules);
+
+        if ($validator->fails()) {
+            $response['errors'] = $validator->errors();
+            $response['error'] = true;
+            return $response;
+            // return redirect()->back()->with($response)->withInput();
+        }
+            $model = new ContactUs();
+            $model->first_name = $request->post('first_name');
+            $model->last_name = $request->post('last_name');
+            $model->phone_number = $request->post('phone_number');
+            $model->email = $request->post('email');
+            $model->message = $request->post('message');
+             //return ["msg"=>"Data Inserted"];
+            if ($model->save()) {
+                  notify()->success('Data added Successfully.');
+                    return redirect()->route('contactus');
+            } else {
+                notify()->error('Somthing went wrong.');
+            }
+        }
+
+    }

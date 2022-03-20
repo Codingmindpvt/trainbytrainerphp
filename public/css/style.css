@@ -182,6 +182,17 @@ body {
     color: #474646;
     -webkit-font-smoothing: antialiased;
 }
+.btn-info {
+    color: #fff;
+    background-color: #1acbaa;
+    border-color: #09b595;
+    border-radius: 50%;
+}
+.btn-info:hover {
+    color: #fff;
+    background-color: #29e4c2;
+    border-color: #0dceaa;
+}
 
 .badge-success {
     color: #4cb124;
@@ -357,7 +368,7 @@ body {
     border-radius: 50%;
     width: 153px;
     height: 153px;
-    object-fit: contain;
+    object-fit: cover;
 }
 
 .category-default {
@@ -1693,6 +1704,8 @@ input:focus {
 
 .all-filter {
     padding: 0 14px 13px;
+    overflow: auto;
+    height: 409px
 }
 
 .all-filter-height-box {
@@ -1733,7 +1746,7 @@ input:focus {
     border: 1px solid #002395;
     border-radius: 30px;
     padding: 0 38px;
-    height: 28px;
+    height: 43px;
     color: #002cbb;
     background-color: #fff;
     cursor: pointer;
@@ -1868,7 +1881,7 @@ select::-ms-expand {
     color: #1ACBAA;
     font-size: 14px;
     border: 2px solid #1ACBAA;
-    padding: 3px 48px;
+    padding: 3px 47px;
     border-radius: 30px;
     display: inline-block;
     cursor: pointer;
@@ -2006,14 +2019,13 @@ select::-ms-expand {
     z-index: 998;
     top: 83px;
 }
-
 .coaches-name {
     background: #002CBB;
     height: 44px;
 }
 
 .insta-save a.view-save-bt {
-    padding: 7px 10px;
+    padding: 13px 10px;
 }
 
 .insta-save a.view-insta-bt {
@@ -2787,7 +2799,7 @@ input:checked+.slider:before {
     font-weight: 600;
     border: 1px solid #1ACBAA;
     border-radius: 30px;
-    padding: 3px 2px;
+    padding: 3px 14px;
 }
 
 .info-profile-head {
@@ -4250,7 +4262,7 @@ span.time-meta.pull-right {
     margin: 0 !important;
     margin-right: 5px !important;
     font-size: 13px;
-    text-align: right;
+    /* text-align: right; */
     font-weight: 300;
     color: #577484;
 }
@@ -4276,7 +4288,7 @@ span.time-meta.pull-right {
 }
 
 .message_header1 p {
-    font-size: 14px;
+    /* font-size: 14px; */
 }
 
 .message-name {
@@ -4348,6 +4360,8 @@ span.time-meta.pull-right {
     font-weight: 500;
     display: block;
     line-height: 22px;
+    overflow-wrap: break-word;
+
 }
 .chat-area-box-for-doc span {
     padding: 4px 13px;
@@ -4364,12 +4378,18 @@ span.time-meta.pull-right {
     margin-top: 8px;
     max-width: 350px;
 }
+/* show message when chat user not found */
+.list_empty {
+    padding-top: 251px;
+    padding-left: 71px;
+}
 
 .sender .mesage_text {
     background-color: #1acbaa30;
     border-radius: 30px;
     color: #1ACBAA;
     font-weight: 500;
+    text-align: left;
 }
 
 .receiver {
@@ -6166,7 +6186,7 @@ span.time-meta.pull-right {
     border: 1px solid #E3E3E3 !important;
     box-sizing: border-box;
     border-radius: 55px !important;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .name-date-box-area select {
@@ -6446,9 +6466,9 @@ span.time-meta.pull-right {
     width: 100%;
 }
 
-.coach-information .insta-save .view-save-bt {
+/* .coach-information .insta-save .view-save-bt {
     padding: 14px 18px;
-}
+} */
 
 .add-filter .view-profile-bt {
     float: inherit !important;
@@ -6750,10 +6770,10 @@ span.time-meta.pull-right {
     padding: 5px;
 }
 
-.coach-profile-banner .swiper-wrapper {
+/*.coach-profile-banner .swiper-wrapper {
     justify-content: center;
 }
-
+*/
 .marketplace-header .oswald-font {
     margin-left: 28px;
 }
@@ -6830,12 +6850,13 @@ span.time-meta.pull-right {
 
 .calender-view {
     position: relative;
-    max-width: 115px;
+    max-width: 145px;
     width: 100%;
 }
 
 .calender-view .select-angle-calender {
     right: 17px;
+    top: 5px;
 }
 
 .calender-view input {
@@ -6843,7 +6864,7 @@ span.time-meta.pull-right {
     border: 1px solid #E3E3E3 !important;
     box-sizing: border-box;
     border-radius: 55px !important;
-    font-size: 14px;
+    font-size: 11px;
     cursor: pointer;
 }
 
@@ -6928,16 +6949,22 @@ span.time-meta.pull-right {
 }
 .product-search .search-icon {
     position: absolute;
-    top: 10px;
-    right: 12px;
+    top: 8px;
+    right: 10px;
     pointer-events: none;
     cursor: pointer;
     z-index: 999;
+    color: #fff;
 }
 .product-search .search-btn-icn {
     position: absolute;
-    top: 5px;
+    top: 0;
     right: 0;
+    width: 30px;
+    height: 33px;
+    background: #1acbaa;
+    border-top-right-radius: 17px;
+    border-bottom-right-radius: 17px;
 }
 .upload-add img {
     width: 100px;
@@ -6960,6 +6987,42 @@ span.time-meta.pull-right {
 	display: flex;
 	align-items: center;
     text-transform :capitalize;
+}
+.barberll-content .address-txt{
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.coach-information p {
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+.profile-banner .swiper-wrapper {
+    justify-content: center;
+}
+.view-box p {
+    font-size: 12px;
+}
+.buy_now {
+    padding: 7px 30px;
+}
+.review-view span {
+    cursor: pointer;
+}
+.number1 {
+    position: absolute;
+    left: 16px;
+    width: 29px;
+    height: 51px;
+    padding: 12px 0;
+    border-right: 1px solid #bfbfbf;
 }
 /**css end- Vishal kumar**/
 

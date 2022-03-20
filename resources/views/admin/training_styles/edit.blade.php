@@ -11,11 +11,11 @@
 					<aside class="col-lg-8">
 						<div class="row">
 							<aside class="col-sm-6">
-								<label>Title</label>
-								<input name="title" value="{{$training->title}}" class="form-control" type="text">
+                                <label class="my-2 form-p">Title<span style="font-size:20px;color: red;">*</label>
+								<input name="title" value="{{$training->title}}" class="form-control" type="text" placeholder="Enter title">
 							</aside>
 							<aside class="col-sm-6">
-								<label>Status</label>
+                                <label class="my-2 form-p">Status<span style="font-size:20px;color: red;">*</label>
 								<select class="form-control" id="status" name="status">
                                     <?php
                                     if(!empty($training->status)){
@@ -31,8 +31,8 @@
 						</div>
 						<div class="row">
 							<aside class="col-sm-12">
-								<label>Description</label>
-								<textarea name="description" class="form-control"  >{{$training->description}}</textarea>
+                                <label class="my-2 form-p">Description<span style="font-size:20px;color: red;">*</label>
+								<textarea name="description" class="form-control" placeholder="Enter Description"  >{{$training->description}}</textarea>
 							</aside>
 						</div>
 						<button type="submit" class="blue_btn yellow_btn text-uppercase">Update</button>

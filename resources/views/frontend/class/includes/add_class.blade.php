@@ -1,9 +1,8 @@
 <form action="{{ route('save.class') }}" method="post" id="saveClassForm" enctype="multipart/form-data">
     <style>
-        .hide {
-            display: none;
-        }
-
+    .hide {
+        display: none;
+    }
     </style>
     @csrf
     <div class="view-box">
@@ -12,11 +11,12 @@
         </p>
         <div class="upload-certificate-box-main">
             <div class="upload-certificate-box">
-                <img src="public/images/default-image.png" class="imgPreview imgPreview_add" id="imgPreview" alt="upload">
+                <img src="public/images/default-image.png" class="imgPreview imgPreview_add" id="imgPreview"
+                    alt="upload">
                 <input id="imgUpload_add" name="class_image" type="file" accept="image/jpeg, image/jpg, image/png"
                     class="file imgUpload" data-show-upload="false" data-show-caption="true"
                     data-msg-placeholder="Select {files} for upload...">
-             <span class="errors class_image_error hide">Please select a class Image</span>
+                <span class="errors class_image_error hide">Please select a class Image</span>
 
             </div>
         </div>
@@ -29,24 +29,28 @@
                     <select class="form-input class_category onchange" id="class_category" name="category_id">
                         <option value="">Select</option>
                         @isset($categories)
-                            @foreach ($categories as $key => $value)
-                                <option value="{{ $value->id }}">{{ $value->title }}</option>
-                            @endforeach
+                        @foreach ($categories as $key => $value)
+                        <option value="{{ $value->id }}">{{ $value->title }}</option>
+                        @endforeach
                         @endisset
                     </select>
                     <span class="errors class_category_error hide">Please select a class category</span>
                 </div>
             </aside>
             <aside class="col-md-6">
-                <p class="my-2 form-p">Price Per Session<span style="font-size:20px;color: red;">*</span><i class="fa fa-info-circle" data-toggle="tooltip" title="Prices are currently listed in {{'('.DEFAULT_CURRENCY.') '.DEFAULT_CURRENCY_FULL_NAME}}. Please also
+                <p class="my-2 form-p">Price Per Session<span style="font-size:20px;color: red;">*</span><i
+                        class="fa fa-info-circle" data-toggle="tooltip"
+                        title="Prices are currently listed in {{'('.DEFAULT_CURRENCY.') '.DEFAULT_CURRENCY_FULL_NAME}}. Please also
                     consider taxes and our standard commission ({{isset($commission->commission_percent) ? $commission->commission_percent.'%' : ''}}) when creating this price."></i>
                 </p>
-                <input class="form-input class_price onchange"  name="price" id="prize" type="number" step="0.01" min="0" max="999" placeholder="Price Per Session">
+                <input class="form-input class_price onchange" name="price" id="prize" type="number" step="0.01" min="0"
+                    max="999" placeholder="Price Per Session">
                 <span class="errors class_price_error hide number_only"> Please add Price.</span>
             </aside>
             <aside class="col-md-6">
                 <p class="my-2 form-p">Attendees Limit<span style="font-size:20px;color: red;">*</span></p>
-                <input class="form-input class_attendees_limit onchange " type="text" name="attendees_limit" id="attendees_limit" placeholder="Attendees Limit">
+                <input class="form-input class_attendees_limit onchange " type="text" name="attendees_limit"
+                    id="attendees_limit" placeholder="Attendees Limit">
                 <span class="errors class_attendees_limit_error hide number_only">Please add attendees limit</span>
             </aside>
             <aside class="col-md-6">
@@ -70,7 +74,8 @@
     </div>
     <div class="view-box">
         <p class="my-2 form-p">Class Description <span style="font-size:20px;color: red;">*</span></p>
-        <textarea class="form-input class_description onchange" name="description" maxlength="300" placeholder="Class Description"></textarea>
+        <textarea class="form-input class_description onchange" name="description" maxlength="300"
+            placeholder="Class Description"></textarea>
         <span class="errors class_description_error hide">Please add class description</span>
 
     </div>
@@ -79,7 +84,8 @@
         <input type="hidden" id="address_lat" name="latitude">
         <input type="hidden" id="address_long" name="longitude">
 
-        <input class="form-input on_change_addess map_address" type="text" id="address_1" name="address" placeholder="Location of the Class">
+        <input class="form-input on_change_addess map_address" type="text" id="address_1" name="address"
+            placeholder="Location of the Class">
         <span class="errors address_error hide" id="address_error">
             This address is not valid address. Please enter valid address
         </span>

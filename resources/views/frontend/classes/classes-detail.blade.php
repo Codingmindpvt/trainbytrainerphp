@@ -183,7 +183,16 @@
                                 <aside class="col-md-3">
                                     <p style="font-weight: bold;">Seats Available</p>
                                     <p class="attendee_limit_{{ $detail['id'] }}">@php
-                                        print_r($detail['class']['attendees_limit']) ; @endphp</p>
+
+                                        $afterBookingAttendeesCount =
+                                        $class_detail->checkAttendeesCount(@$item['actual_date'],@$class_detail['id']);
+                                        if(isset($afterBookingAttendeesCount) && !empty($afterBookingAttendeesCount)){
+                                        print_r($detail['class']['attendees_limit'] - $afterBookingAttendeesCount);
+                                        }else{
+                                        print_r($detail['class']['attendees_limit']);
+                                        }
+                                        @endphp</p>
+
                                 </aside>
                                 <aside class="col-md-3">
                                     <p style="font-weight: bold;">Location</p>
@@ -261,6 +270,7 @@
             CLASSES</h2>
         <p class="mt-2 mb-4" style="font-family: 'Oswald';">Discover programs from this coach, download them straight
             away and follow them in your own time.</p>
+
         <div class="row">
             @if (count($otherClass) > 0)
 
@@ -279,56 +289,58 @@
                         SAVE</a>
 
                     @endif
+                    <a href="{{ route('classes-detail',$item->id) }}">
+                        <div class="barbell-image button-section">
+                            <input type="hidden" id="class_id" value="{{ @$item['id'] }}">
+                            <input type="hidden" id="coach_id" value="{{ @$item['program_user']['id'] }}">
+                            <input type="hidden" id="user_id"
+                                value="{{ Auth::check() && !empty(Auth::user()->id) ? Auth::user()->id : '' }}">
+                            <input type="hidden" id="type" value="CL">
+                            @if (Auth::check() && Auth::user()->id)
+                            @if (@$item['program_user']->getClassWishList(@$item['id']))
+                            <div class="button-wrapper">
+                                <span class="view-save-bt-red remove_from_wishlist">
+                                    <i class="fa fa-heart" aria-hidden="true"></i> SAVED
+                                </span>
+                            </div>
+                            @else
+                            <div class="button-wrapper">
+                                <span id="wishList" class="view-save-bt add_to_wishlist">
+                                    <i class="fa fa-heart-o" aria-hidden="true"></i> SAVE
+                                </span>
+                            </div>
+                            @endif
+                            @else
+                            <span class="view-save-bt">
+                                @if(!empty(Auth::id()))
+                                <i class="fa fa-heart-o" aria-hidden="true"></i> SAVE</span>
 
-                    <div class="barbell-image button-section">
-                        <input type="hidden" id="class_id" value="{{ @$item['id'] }}">
-                        <input type="hidden" id="coach_id" value="{{ @$item['program_user']['id'] }}">
-                        <input type="hidden" id="user_id"
-                            value="{{ Auth::check() && !empty(Auth::user()->id) ? Auth::user()->id : '' }}">
-                        <input type="hidden" id="type" value="CL">
-                        @if (Auth::check() && Auth::user()->id)
-                        @if (@$item['program_user']->getClassWishList(@$item['id']))
-                        <div class="button-wrapper">
-                            <span class="view-save-bt-red remove_from_wishlist">
-                                <i class="fa fa-heart" aria-hidden="true"></i> SAVED
-                            </span>
+                            @else
+                            <a href="{{route('login')}}"><i class="fa fa-heart-o" aria-hidden="true"></i>
+                                SAVE</span></a>
+
+                            @endif
+                            @endif
+                            <input type="hidden" name="" value="$item->image">
+                            @if (!empty(@$item->image))
+                            <img src="{{ asset('public/class/' . @$item->image) }}"
+                                class="img-circle profile_image_small" />
+                            @else
+                            <img src="{{ asset('public/images/default-image-file-o.png') }}"
+                                class="img-circle profile_image_small" />
+                            @endif
+
                         </div>
-                        @else
-                        <div class="button-wrapper">
-                            <span id="wishList" class="view-save-bt add_to_wishlist">
-                                <i class="fa fa-heart-o" aria-hidden="true"></i> SAVE
-                            </span>
+                        <div class="barberll-content">
+                            <div class="doller-review">
+                                <h4>{{ DEFAULT_CURRENCY . @$item['price'] }}</h4>
+                            </div>
+                            <h3>{{ @$item['name'] }}</h3>
+                            <p>{{ @$item['description'] }}</p>
                         </div>
-                        @endif
-                        @else
-                        <span class="view-save-bt">
-                            @if(!empty(Auth::id()))
-                            <i class="fa fa-heart-o" aria-hidden="true"></i> SAVE</span>
-
-                        @else
-                        <a href="{{route('login')}}"><i class="fa fa-heart-o" aria-hidden="true"></i> SAVE</span></a>
-
-                        @endif
-                        @endif
-                        <input type="hidden" name="" value="$item->image">
-                        @if (!empty(@$item->image))
-                        <img src="{{ asset('public/class/' . @$item->image) }}"
-                            class="img-circle profile_image_small" />
-                        @else
-                        <img src="{{ asset('public/images/default-image-file-o.png') }}"
-                            class="img-circle profile_image_small" />
-                        @endif
-
-                    </div>
-                    <div class="barberll-content">
-                        <div class="doller-review">
-                            <h4>{{ DEFAULT_CURRENCY . @$item['price'] }}</h4>
-                        </div>
-                        <h3>{{ @$item['name'] }}</h3>
-                        <p>{{ @$item['description'] }}</p>
-                    </div>
                 </div>
             </div>
+            </a>
             @endforeach
             @else
             <p class="blank-para">No record Found!</p>
@@ -363,10 +375,17 @@
             </div>
             <div class="col-md-4">
                 <div class="write-review text-center">
-                    <h6 class="mb-4">Have you been coached by Adam?</h6>
+                    <!-- <h6 class="mb-4">Have you been coached by {{ strtoupper(@$class_detail['name']) }}?</h6> -->
                     @if (!empty(Auth::id()))
-                    <button type="button" class="open-chat" data-toggle="modal" data-target="#review">WRITE A
-                        REVIEW</button>
+                    <button type="button" class="open-chat" data-toggle="modal" data-target="#review">
+                        @if(!empty(@$myReviewDetail['description']) && !empty(Auth::id()))
+                        UPDATE A REVIEW
+
+                        @else
+                        WRITE A REVIEW
+
+                        @endif
+                    </button>
 
                     @else
                     <a href="{{ route('login') }}"><button type="button" class="open-chat">WRITE A
@@ -396,8 +415,11 @@
 
                 // if(strlen($string) >= 50)
                 // {
-                if (strlen($string) >= 50) {
-                    echo substr($string, 0, 50) . '<span class="read_more_class" style="color:blue;">Read More</span>' . '<span class="show_read_more_class" style="display:none;">' . substr($string, 50) . '</span>' . '<span class="show_less_class" style="color:blue; display:none;" style="color:blue;">Show Less</span>';
+                    if (strlen($string) >= 1 && strlen($string) <=399) {
+                        echo substr($string, 0, 399)   ;
+                    }
+                if (strlen($string) >= 399) {
+                    echo substr($string, 0, 399) . '<span class="read_more_class" style="color:blue;">Read More</span>' . '<span class="show_read_more_class" style="display:none;">' . substr($string, 399) . '</span>' . '<span class="show_less_class" style="color:blue; display:none;" style="color:blue;">Show Less</span>';
                 }
                 ?>
             <div class="review-man-image">
@@ -443,14 +465,22 @@
 
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title">WRITE A REVIEW</h4>
+                <h4 class="modal-title">
+                    @if(!empty($myReviewDetail['description']))
+                    UPDATE A REVIEW
+
+                    @else
+                    WRITE A REVIEW
+
+                    @endif
+                </h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
 
             <!-- Modal body -->
             <div class="modal-body write-review-modal">
                 <p>You're reviewing:</p>
-                <h2>{{ strtoupper(@$classDetailAll['program_name']) }}</h2>
+                <h2>{{ strtoupper(@$class_detail['name']) }}</h2>
                 <p class="mt-4">Select Stars</p>
                 <!--end star -->
                 <!-- <span class="give-star"><i class="fa fa-star-o" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i> <i class="fa fa-star-o" aria-hidden="true"></i></span>
@@ -467,14 +497,17 @@
                     <!-- {{ @$programs['id'] }} -->
                     <!-- stars section start -->
 
-                    <div id="rateYo" data-rateyo-rating="0" data-rateyo-num-stars="5"></div>
-                    <input type="hidden" id="inpt_rating" name="star">
+                    <div id="rateYo"
+                        data-rateyo-rating="{{ !empty(@$myReviewDetail['star']) ? @$myReviewDetail['star'] : '' }}"
+                        data-rateyo-num-stars="5"></div>
+                    <input type="hidden" id="inpt_rating" value="2" name="star">
                     <!-- value="{{ @$myReviewDetail['star'] }}" -->
                     <!-- star section end -->
                     <div class="form-group">
                         <label for="formGroupExampleInput">Title</label>
                         <input type="text" class="form-control form-input" id="formGroupExampleInput" name="title"
-                            value="" placeholder="Enter Title Line">
+                            value="{{ !empty(@$myReviewDetail['title']) ? @$myReviewDetail['title'] : '' }}"
+                            placeholder="Enter Title Line">
 
                         @if ($errors->has('title'))
                         <span class="text-danger">{{ $errors->first('title') }}</span>
@@ -486,11 +519,24 @@
                             rows="4"
                             placeholder="Enter Description">{{ !empty(@$myReviewDetail['description']) ? @$myReviewDetail['description'] : '' }}</textarea>
                     </div>
+                    <!-- @if (!empty(Auth::id()))
+                    <button type="button" class="open-chat" data-toggle="modal" data-target="#review">WRITE A
+                        REVIEW</button>
 
+                    @else
+                    <a href="{{ route('login') }}"><button type="button" class="open-chat">WRITE A
+                            REVIEW</button></a>
 
+                    @endif -->
 
-
-                    <input type="submit" class="sign-bt" value="SUBMIT" name="submit" id='frmSubmit'>
+                    <button type="submit" class="sign-bt" name="submit" id='frmSubmit'>
+                        @if(!empty(@$myReviewDetail['description']) && !empty(Auth::id()))
+                        UPDATE
+                        @else
+                        SUBMIT
+                        @endif
+                    </button>
+                    <!-- <input type="submit" class="sign-bt" value="SUBMIT" name="submit" id='frmSubmit'> -->
 
                 </form>
 
@@ -506,15 +552,15 @@
 $(function() {
 
     $('.read_more_class').on('click', function() {
-            $('.read_more_class').hide();
-            $('.show_less_class').show();
-            $('.show_read_more_class').toggle();
-        });
-        $('.show_less_class').on('click', function() {
-            $('.read_more_class').show();
-            $('.show_less_class').hide();
-            $('.show_read_more_class').hide();
-        });
+        $(this).hide();
+        $(this).parent().find('.show_less_class').show();
+        $(this).parent().find('.show_read_more_class').toggle();
+    });
+    $('.show_less_class').on('click', function() {
+        $(this).parent().find('.read_more_class').show();
+        $(this).hide();
+        $(this).parent().find('.show_read_more_class').hide();
+    });
     $(".rateyo").rateYo({
         readOnly: true,
         starWidth: "18px",
@@ -585,7 +631,8 @@ $(document).ready(function() {
                 $('#btn').attr('disabled', true);
                 $('#btn').attr('value', "Submitted wait....");
 
-                window.location.href ="{{ route('classes-detail',@$class_detail->id) }}#review";
+                window.location.href =
+                    "{{ route('classes-detail',@$class_detail->id) }}#review";
                 location.reload();
             }
         });
@@ -653,7 +700,8 @@ $('.book_my_session').on('click', function(e) {
                 $('.book_value_' + sch_id).prop('disabled', true);
                 $('.book_value_' + sch_id).html('Request Sent')
                 $('#bookingModal').modal('hide')
-                var attendee = parseInt($('.attendee_limit_' + sch_id).html()) - 1;
+                //var attendee = parseInt($('.attendee_limit_' + sch_id).html()) - 1;
+                var attendee = parseInt($('.attendee_limit_' + sch_id).html());
                 $('.attendee_limit_' + sch_id).html(attendee)
                 setTimeout(function() {
                     location.reload();

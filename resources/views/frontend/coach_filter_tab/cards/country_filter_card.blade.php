@@ -1,4 +1,4 @@
-<div class="category-filter">
+{{--  <div class="category-filter">
     <div class="cat-head">
         <h5>Country</h5>
         <input type="search" id="searchCountryName" class="form-control" placeholder="search" aria-label="Search" />
@@ -22,4 +22,4 @@
             </div>
         @endforeach
     </div>
-</div>
+</div>  --}}

@@ -41,7 +41,7 @@
 									<td>{{ @$user->city }}</td>
 									<td>{{ @$user->state->name }}</td>
                                     <td>{{ @$user->country->name }}</td>
-                                    <td>{{ @$user->getType() }}</td>
+                                    <td><button type="button" data-toggle="tooltip" data-placement="top" title="Tooltip on top">{{ @$user->getType() }}</button></td>
                                     <td>{!! $user->getStatus() !!}</td>
 									<td>
 										<a href="{{ route('admin.user.detail',$user->id) }}" data-toggle="tooltip" data-placement="top" title="user.detail" class="action_btn" alt="detail"><i class="fa fa-eye" aria-hidden="true"></i></a>

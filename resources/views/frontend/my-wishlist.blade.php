@@ -11,7 +11,7 @@
 <section class="whishlist-tab-section">
     <div class="coach-tab">
         <div class="container">
-            <ul class="nav nav-tabs" role="tablist">
+            <ul class="nav nav-tabs" role="tablist" id="wishlistTabs">
                 <li class="nav-item">
                     <a class="nav-link active" href="#programs" role="tab" data-toggle="tab">
                         @if (count($getWishList) == 1)
@@ -85,7 +85,7 @@
                                 <?php $reviewDetail = $item->getReviewAndRatingCoach($item['users']['id']); ?>
                                         <div class="rating">
                                         <div class="rateyo" data-rateyo-rating="{{!empty(@$reviewDetail['avg_rating']) ? @$reviewDetail['avg_rating'] :0}}" data-rateyo-num-stars="5"></div>
-                                    </div>({{ count(@$reviewDetail['review_list']) }} Reviews)</p> 
+                                    </div>({{ count(@$reviewDetail['review_list']) }} Reviews)</p>
                                 <ul class="gain-category">
                                     <?php $categories = (explode(",",@$item['users']['coach_detail']['categories']));
                                           $someCategories = array_slice($categories, 0, 4);
@@ -237,13 +237,13 @@
                                     <div class="doller-review" >
                                         <h4>{{ DEFAULT_CURRENCY . @$item['coach_program']['price'] }}</h4>
                                         <p class="review-rate">
-                                          
+
                                         <?php $reviewDetail = $item->getReviewAndRatingProgram($item['coach_program']['id']); ?>
                                         <div class="rating">
                                         <div class="rateyo" data-rateyo-rating="{{!empty(@$reviewDetail['avg_rating']) ? @$reviewDetail['avg_rating'] :0}}" data-rateyo-num-stars="5"></div>
                                     </div>
 
-                                                 ({{ count(@$reviewDetail['review_list']) }} Reviews)</p> 
+                                                 ({{ count(@$reviewDetail['review_list']) }} Reviews)</p>
                                     </div>show
                                     <h3> {{ ucfirst(@$item['coach_program']['program_name']) }}</h3>
                                     <p> {{ ucfirst(@$item['coach_program']['description']) }}</p>
@@ -307,7 +307,7 @@
                                         <div class="rateyo" data-rateyo-rating="{{!empty(@$reviewDetail['avg_rating']) ? @$reviewDetail['avg_rating'] :0}}" data-rateyo-num-stars="5"></div>
                                     </div>
 
-                                                 ({{ count(@$reviewDetail['review_list']) }} Reviews)</p> 
+                                                 ({{ count(@$reviewDetail['review_list']) }} Reviews)</p>
                                     </div>show
                                     <h3> {{ ucfirst(@$item['coach_class']['name']) }}</h3>
                                     <p> {{ ucfirst(@$item['coach_class']['description']) }}</p>
@@ -397,18 +397,30 @@ $(document).ready(function() {
 </script>
 
 <script>
-     $(function() {
-                $(".rateyo").rateYo({
-                    readOnly: true,
-                    starWidth: "18px",
-                    spacing: "2px",
-                });
-            });
-$(document).ready(function() {
-    var url = document.location.toString();
-    if (url.match('#')) {
-        $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
-    }
-})
+    $(function() {
+        $(".rateyo").rateYo({
+            readOnly: true,
+            starWidth: "18px",
+            spacing: "2px",
+        });
+    });
+    $(document).ready(function() {
+
+        var url = document.location.toString();
+        if (url.match('#')) {
+            $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+            // localStorage.removeItem('activeTab');
+        }
+
+        $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+            localStorage.setItem('activeTab', $(e.target).attr('href'));
+        });
+
+        var activeTab = localStorage.getItem('activeTab');
+
+        if(activeTab){
+            $('#wishlistTabs a[href="' + activeTab + '"]').tab('show');
+        }
+    })
 </script>
 @endsection

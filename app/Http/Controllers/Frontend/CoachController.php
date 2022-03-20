@@ -180,7 +180,7 @@ class CoachController extends Controller
 
         return $dates;
     }
-    public function coachDashboard()
+    public function coachDashboard(Request $request)
     {
         $id =1;
        // $class_detail = CoachClass::with('program_user', 'category')->where(["id" => $id])->orderBy("id", "DESC")->first();
@@ -234,8 +234,11 @@ class CoachController extends Controller
             $getCategoryList = [];
         }
 
-
-        $paymentData =  SepaPayment::select(DB::raw('SUM(amount) as total_amount'))
+        if(isset($request->to) && isset($request->from) && !empty($request->from) && !empty($request->to)){
+            $from = date('Y-m-d', strtotime($request->from));
+            $to = date('Y-m-d', strtotime($request->to));
+            $paymentData =  SepaPayment::select(DB::raw('SUM(amount) as total_amount'))
+        ->whereBetween('created_at', [$from, $to])
         ->whereHas('order_list', function($query){
             $query->whereHas('program', function($qry){
                 $qry->where('user_id', Auth::id());
@@ -246,6 +249,21 @@ class CoachController extends Controller
        ->groupBy(function ($date) {
            return Carbon::parse($date->created_at)->format('m');
        });
+
+        }else{
+            $paymentData =  SepaPayment::select(DB::raw('SUM(amount) as total_amount'))
+        ->whereHas('order_list', function($query){
+            $query->whereHas('program', function($qry){
+                $qry->where('user_id', Auth::id());
+            });
+        })
+        ->whereYear('created_at', date('Y'))
+       ->get()
+       ->groupBy(function ($date) {
+           return Carbon::parse($date->created_at)->format('m');
+       });
+        }
+        
 
        $payMonthlyCount = [];
         $paymentArr = [];
@@ -578,14 +596,25 @@ class CoachController extends Controller
     public function myProductList(Request $request)
     {
         $coachDetail = new CoachDetail();
-        $coachPrograms = CoachProgram::where('user_id', Auth::user()->id)->with('program_image', 'program_inside', 'program_result')->orderBy('id', 'desc')->paginate(10);
-
-        // if($request->keyword != ''){      
-        //     $coachPrograms = CoachProgram::where('name','LIKE','%'.$request->keyword.'%')->get();      
-        // }      
-        // return response()->json([         
-        //     'coachPrograms' => $coachPrograms      
-        // ]);    
+        if(isset($request->search) && !empty($request->search)){
+            $coachPrograms = CoachProgram::where('program_name','LIKE','%'.$request->search.'%')->where('user_id', Auth::user()->id)
+            ->with('program_image', 'program_inside', 'program_result')
+            ->with('order_list', function ($query) {
+                $query->whereHas('payment', function($qry){
+                    $qry->select('id','amount');
+                });
+            })
+            ->orderBy('id', 'desc')->paginate(10);
+        }else{
+            $coachPrograms = CoachProgram::where('user_id', Auth::user()->id)
+            ->with('program_image', 'program_inside', 'program_result')
+            ->with('order_list', function ($query) {
+                $query->whereHas('payment', function($qry){
+                    $qry->select('id','amount');
+                });
+            })
+            ->orderBy('id', 'desc')->paginate(10);
+        }   
     
         return view("frontend.coach.my-product-list", compact('coachDetail', 'coachPrograms'));
     }
@@ -595,13 +624,32 @@ class CoachController extends Controller
     public function myTransactionList()
     {
         $coachDetail = new CoachDetail();
-        $transactions = PaymentDetail::where('user_id', Auth::user()->id)->orderBy('id', 'desc')->paginate(10);
+        $transactions = OrderList::has('payment')
+        ->whereHas('program', function($query){
+            $query->where('user_id', Auth::id())
+                ->with('program_user');
+        })->orderBy('id', 'desc')->paginate(10);
+        $commission = AdminCommission::where('type','P')->first();
         // dd($transactions);
-        return view("frontend.coach.my-transactions", compact('coachDetail', 'transactions'));
+        return view("frontend.coach.my-transactions", compact('coachDetail', 'transactions','commission'));
     }
     //
-    public function myOrderList()
+    public function myOrderList(Request $request)
     {
+        if(isset($request->search) && !empty($request->search)){
+            $orders = OrderList::with('class','payment')
+        ->whereHas('program', function($query) use($request){
+            $query->where('user_id', Auth::id())->where('program_name','LIKE','%'.$request->search.'%')
+                ->with('program_user');
+        })->paginate(5);
+
+        $classBookings = Booking::with('user','schedule')
+        ->whereHas('coach_class', function($query) use($request){
+            $query->where('created_by', Auth::id())->where('name','LIKE','%'.$request->search.'%')
+            ->with('program_user');
+        })
+        ->orderby('id', 'Desc')->paginate(5);
+        }else{
         $orders = OrderList::with('class','payment')
         ->whereHas('program', function($query){
             $query->where('user_id', Auth::id())
@@ -614,6 +662,8 @@ class CoachController extends Controller
             ->with('program_user');
         })
         ->orderby('id', 'Desc')->paginate(5);
+        }
+        
        // print_r($classBookings); die;
 
         return view("frontend.coach.order-history",['orders' => $orders, 'classBookings' => $classBookings]);
@@ -662,19 +712,46 @@ class CoachController extends Controller
 
     public function rejectBookingRequest(Request $request){
         $details = Booking::find($request->id);
+        $class = CoachClass::find($details->class_id);
         $details->status = Booking::STATUS_REJECT;
-        if ($details->save()) {
+        if ($details->save() && $class->save()) {
             return response()->json(['message' => 'Booking status update successfully!']);
         }
         return response()->json(['error' => 'Booking status not updated successfully!!!']);
     }
 
-    public function myCustomers()
+    public function myCustomers(Request $request)
     {
-        $customers = PaymentDetail::select('user_id')
-            ->with('users')
+       
+        if(isset($request->search) && !empty($request->search)){
+            $searchArr = explode(" ",$request->search);
+            if(isset($searchArr) && !empty($searchArr[0]) && !empty($searchArr[1])){
+                $customers = PaymentDetail::select('user_id')
+            ->whereHas('users', function($query) use($searchArr){
+                $query->where('first_name','LIKE','%'.$searchArr[0].'%')
+                ->where('last_name','LIKE','%'.$searchArr[1].'%');
+            })
             ->groupBy('user_id')
             ->paginate(7);
+            }
+            else if(isset($searchArr) && !empty($searchArr[0])){
+                $customers = PaymentDetail::select('user_id')
+            ->whereHas('users', function($query) use($searchArr){
+                $query->where('first_name','LIKE','%'.$searchArr[0].'%');
+            })
+            ->groupBy('user_id')
+            ->paginate(7);
+            }else{
+                notify()->error('something went wrong!!.');
+            }
+            
+        }else{
+            $customers = PaymentDetail::select('user_id')
+            ->has('users')
+            ->groupBy('user_id')
+            ->paginate(7);
+        }
+        
         // dd($customes);
         return view("frontend.coach.customer", compact('customers'));
     }
@@ -1160,17 +1237,23 @@ class CoachController extends Controller
     public function Reviews()
     {
         $coachDetail = new CoachDetail();
-        $coachReview = Review::where('rate_for_coach_id', Auth::id())
-        ->orderBy('id', 'DESC')
+
+        $TotalReview = Review::where('rate_for_coach_id', Auth::id())       
             ->where('review_type', Review::REVIEW_TYPE_CLASS)
             ->with('users')
             ->get();
 
-        $programReview = Review::where('rate_for_coach_id', Auth::id())
+        $coachReview = Review::where('rate_for_class_id', Auth::id())
+        ->orderBy('id', 'DESC')
+            ->where('review_type', Review::REVIEW_TYPE_CLASS)
+            ->with('users')
+            ->paginate(6);
+
+        $programReview = Review::where('rate_for_program_id', Auth::id())
         ->orderBy('id', 'DESC')
             ->where('review_type', Review::REVIEW_TYPE_PROGRAM)
             ->with('users', 'program')
-            ->get();
+            ->paginate(6);
         $ratingReview = Review::where('rate_for_coach_id', Auth::id())
         ->orderBy('id', 'DESC')
             ->where('review_type', Review::REVIEW_TYPE_CLASS)
@@ -1180,7 +1263,10 @@ class CoachController extends Controller
                         $query->where('review_type', Review::REVIEW_TYPE_PROGRAM);
                     });
             }]);
-        $avgRating = $ratingReview->avg('star');
+        
+        $ratingReviewaa = Review::where('rate_for_coach_id', Auth::id());
+        $avgRating = $ratingReviewaa->avg('star');
+
         return view("frontend.coach.reviews", [
             'coachDetail' => $coachDetail,
             'coachReview' => $coachReview,

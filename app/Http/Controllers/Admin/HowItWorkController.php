@@ -29,6 +29,7 @@ class HowItWorkController extends Controller
     {
 
         $heading = HowItWorkHeading::get();
+       // dd($heading);
         return view('admin.how_it_works.headings.list', compact('heading'));
     }
 
@@ -137,6 +138,9 @@ class HowItWorkController extends Controller
             $getType->save();
         }
         return redirect()->route('admin.how-it-work.types.list')->with('message','Add Type Successfully ');
+        return view('admin.how_it_works.types.add');
+        return view('admin.how_it_works.types.add');
+        return view('admin.how_it_works.types.add');
     }
 
     public function typeDelete($id)
@@ -163,6 +167,8 @@ class HowItWorkController extends Controller
 
         $getData->save();
         return redirect()->route('admin.how-it-work.types.list')->with('message','Update Type Successfully ');
+        return redirect()->route('admin.how-it-work.types.list');
+        return redirect()->route('admin.how-it-work.types.list');
     }
 
 
@@ -174,7 +180,6 @@ class HowItWorkController extends Controller
     public function contentList()
     {
         $content = HowItWorkContent::with('how_it_work_type')->paginate(15);
-        //dd( $content);
         return view('admin.how_it_works.contents.list', compact('content'));
     }
 
@@ -199,6 +204,8 @@ class HowItWorkController extends Controller
         }
         $content->save();
         return redirect()->route('admin.how-it-work.contents.list')->with('message','Add Content Successfully ');
+        return redirect()->route('admin.how-it-work.contents.list');
+        return redirect()->route('admin.how-it-work.contents.list');
     }
 
     public function contentDelete($id)
@@ -210,14 +217,17 @@ class HowItWorkController extends Controller
 
     public function contentEdit($id)
     {
-
         $content = HowItWorkContent::where('id',$id)->first();
         $typeList = HowItWorkType::all();
         return view('admin.how_it_works.contents.edit', compact('content','typeList'));
+        $contents = HowItWorkContent::all();
+        $content = HowItWorkType::all();
+        return view('admin.how_it_works.contents.edit', compact('contents','content'));
     }
 
     public function contentEditSave(Request $request)
     {
+       dd($request->id);
         $contents = HowItWorkContent::find($request->id);
 
         $contents->title = $request->title;
@@ -229,9 +239,8 @@ class HowItWorkController extends Controller
         }
        
         $contents->save();
-       
         return redirect()->route('admin.how-it-work.contents.list')->with('message','Update Content Successfully ');
-
+        return redirect()->route('admin.how-it-work.contents.list');
     }
     
 }

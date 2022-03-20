@@ -1,76 +1,122 @@
 var app = require('express')();
 var http = require('http').createServer(app);
-var io = require('socket.io')(http, { origins: '*:*'});
+var io = require('socket.io')(http, { origins: '*:*' });
 var request = require('request');
 const dotenv = require('dotenv');
 dotenv.config();
 var api_url = '';
-var port = process.env.API_PORT;
+var port =  process.env.API_PORT;
 const date = require('date-and-time');
 
-var mysql      = require('mysql');
+var mysql = require('mysql');
 var db = mysql.createConnection({
-  host     : process.env.DB_HOST,
-  user     : process.env.DB_USERNAME,
-  password : process.env.DB_PASSWORD,
-  database : process.env.DB_DATABASE
+    host: process.env.DB_HOST,
+    user: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE
 });
 
-app.use( (req, res, next) => {
-   res.header("Access-Control-Allow-Origin", "*");
-   res.header("Access-Control-Allow-Credentials", "true");
-   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-   next();
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
 });
 
 db.connect();
 
-app.get('/', function(req, res){
+app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-io.on('connection', function(socket){
+io.on('connection', function (socket) {
     console.log('a user connected');
 
     //Join room
     socket.on('joinroom', function (room_id) {
-        // console.log('room_id = ' + room_id);
+        console.log('room_id = ' + room_id);
         socket.join(room_id);
+        console.log("room is connected");
     });
 
 
     //send message event
-    
-    socket.on('message', function(data){
+
+    socket.on('message', function (data) {
         data.user_status = 1;
         // console.log('data = ', data);
-        checkUserStatus(data,function(res) {
+        checkUserStatus(data, function (res) {
             const now = new Date(new Date().toLocaleString('en', { timeZone: 'Asia/Calcutta' }));
             data.message_time = date.format(now, 'YYYY-MM-DD HH:mm');
             data.id = "0";
-
-            if(res.user_status == 1) {
+            console.log(data.receiver_id);
+            if (res.user_status == 1) {
                 var created_at = data.message_time;
-                var chatInsertQuery =  "INSERT INTO `chats` (`sender_id`, `receiver_id`, `message`, `media`, `thumbnail`, `type`, `is_read`, `is_deleted`, `created_at`, `updated_at`) VALUES ('"+data.sender_id+"', '"+data.receiver_id+"', "+db.escape(data.message)+", 'Null', 'Null', '"+data.message_type+"', 'N', 'N', '"+created_at+"', NULL)";
-                //  var chatInsertQuery = "INSERT INTO `messages` (`sender_id`, `receiver_id`, `message_type`, `message`, `message_time`, `read_status`, `sender_status`, `receiver_status`, `thumbnail`) VALUES ('"+data.sender_id+"', '"+data.receiver_id+"', '"+data.message_type+"', "+db.escape(data.message)+", '"+created_at+"', '1', 'Y', 'Y', '"+data.thumbnail+"');";
-                // console.log('query ==  ', chatInsertQuery);
-               // var chatInsertQuery = "INSERT INTO `chats` (`sender_id`, 'receiver_id', `room_id`, `message`, `thumbnail`, `chat_type`, `created_at`) VALUES ('"+data.sender_id+"', '"+data.room_id+"', "+db.escape(data.message)+", '"+data.thumbnail+"', '"+data.chat_type+"', '"+created_at+"')";
-                db.query(chatInsertQuery, function(err, result, fields) {
-                if (err) throw err;
-                    var messageId = result.insertId;
-                    data.id = messageId.toString();
-                    data.message_time = date.format(now, 'DD-MM-YYYY HH:mm');
-                    io.sockets.emit('message',data);
-                    // console.log("message sent", data);
-                    var url = api_url + '/webservices/sendOneToOneNotification?sender_id='+data.sender_id+'&receiver_id='+data.receiver_id+'&message='+data.message;
-                    request.get(url, function (error, response, body) {
-                        //console.log('response=' + JSON.stringify(response));
+                chat_id = 0;
+                // get chat_id from chat table
+                var chat_id_query = "SELECT `id` FROM `chats` WHERE (`sender_id` = '" + data.sender_id + "' AND `receiver_id` = '" + data.receiver_id + "') OR (`receiver_id` = '" + data.sender_id + "' AND `sender_id` ='" + data.receiver_id + "') ";
+                db.query(chat_id_query, async function (err, result, fields) {
+                    if (err) throw err;
+
+                    if (result.length) {
+                        chat_id = result[0].id;
+                    } else {
+                        var chatQuery = "INSERT INTO `chats` (`sender_id`, `receiver_id`, `created_at`) VALUES ('" + data.sender_id + "', '" + data.receiver_id + "','" + created_at + "')";
+                        await db.query(chatQuery, function (err, result, fields) {
+                            if (err) throw err;
+                            chat_id = result.insertId
+
+                        });
+                    }
+
+
+                    // if(chat_id == ""){
+
+
+
+                    var chat_id_query2 = "SELECT `id` FROM `chats` WHERE (`sender_id` = '" + data.sender_id + "' AND `receiver_id` = '" + data.receiver_id + "') OR (`receiver_id` = '" + data.sender_id + "' AND `sender_id` = '" + data.receiver_id + "') ";
+                    db.query(chat_id_query2, function (err, result, fields) {
+                        if (err) throw err;
+                        chat_id = result[0].id;
+
+                        var chatInsertQuery = "INSERT INTO `chat_messages` (`chat_id`, `message`,`type`, `sender_id`, `receiver_id`, `read_by`, `deleted_by`, `created_at`, `updated_at`) VALUES ('" + chat_id + "', " + db.escape(data.message) + ",'" + data.message_type + "', '" + data.sender_id + "', '" + data.receiver_id + "', 'NULL', 'NULL', '" + created_at + "', NULL)";
+                        //  var chatInsertQuery = "INSERT INTO `messages` (`sender_id`, `receiver_id`, `message_type`, `message`, `message_time`, `read_status`, `sender_status`, `receiver_status`, `thumbnail`) VALUES ('"+data.sender_id+"', '"+data.receiver_id+"', '"+data.message_type+"', "+db.escape(data.message)+", '"+created_at+"', '1', 'Y', 'Y', '"+data.thumbnail+"');";
+                        // console.log('query ==  ', chatInsertQuery);
+                        // var chatInsertQuery = "INSERT INTO `chats` (`sender_id`, 'receiver_id', `room_id`, `message`, `thumbnail`, `chat_type`, `created_at`) VALUES ('"+data.sender_id+"', '"+data.room_id+"', "+db.escape(data.message)+", '"+data.thumbnail+"', '"+data.chat_type+"', '"+created_at+"')";
+                       
+                        db.query(chatInsertQuery, function (err, result, fields) {
+                            //if (err) throw err;
+                            var messageId = result.insertId;
+                            data.id = messageId.toString();
+                            data.chat_id = chat_id;
+                            data.message_time = date.format(now, 'DD-MM-YYYY HH:mm');
+                          
+                            console.log("vvvvv");
+                            // io.sockets.emit('message', data);
+                            // io.sockets.emit('message',data);
+                            // console.log("message sent", data);
+                            var url = api_url + '/webservices/sendOneToOneNotification?sender_id=' + data.sender_id + '&receiver_id=' + data.receiver_id + '&message=' + data.message;
+                            console.log(url);
+                              io.sockets.in(data.room_id).emit('message',data);
+                            request.get(url, function (error, response, body) {
+                                console.log('response=' + JSON.stringify(response));
+                            });
+                        });
+
+
                     });
+
+
+
                 });
+
+
             } else {
                 data.message_time = date.format(now, 'DD-MM-YYYY HH:mm');
-
-                io.sockets.emit('message',data);
+                io.sockets.in(data.room_id).emit('message',data);
+                console.log("ojj");
+                // io.sockets.emit('message', data);
+                // io.sockets.emit('message',data);
             }
         });
     });
@@ -118,14 +164,14 @@ io.on('connection', function(socket){
     // });
 
 
-    socket.on('deleteMessages', function(data){
+    socket.on('deleteMessages', function (data) {
         var messageIds = data.messsage_ids;
         console.log('Single messageIds ==  ', messageIds);
-        var deleteGroupMessageQuery = "DELETE FROM chats WHERE id IN ("+messageIds+")";
+        var deleteGroupMessageQuery = "DELETE FROM chats WHERE id IN (" + messageIds + ")";
 
-        db.query(deleteGroupMessageQuery, function(err, result, fields) {
+        db.query(deleteGroupMessageQuery, function (err, result, fields) {
             if (err) throw err;
-            io.sockets.in(data.room_id).emit('deleteMessages',data);
+            io.sockets.in(data.room_id).emit('deleteMessages', data);
         });
     });
 
@@ -353,8 +399,8 @@ io.on('connection', function(socket){
     //     }
     // });
 
-    socket.on('disconnect', function(){
-      console.log('user disconnected');
+    socket.on('disconnect', function () {
+        console.log('user disconnected');
     });
 
 });
@@ -466,40 +512,40 @@ io.on('connection', function(socket){
 //         }
 //     }
 
-    //check user status or exist or not
-    var checkUserStatus = function (data,callback) {
-            data.error_msg = "";
-            var active_query = "SELECT * FROM users where id='"+data.receiver_id+"'";
+//check user status or exist or not
+var checkUserStatus = function (data, callback) {
+    data.error_msg = "";
+    var active_query = "SELECT * FROM users where id='" + data.receiver_id + "'";
 
-            db.query(active_query, function (error, results, fields) {
-                if (error) throw error;
-                if(typeof results[0] == 'undefined' && !results[0]) {
-                    data.user_status = 0;
-                    data.error_msg = "This user is no longer available";
-                    callback(data);
-                    return false;
-                } else {
-                    callback(data);
-                }
-            });
-    }
+    db.query(active_query, function (error, results, fields) {
+        if (error) throw error;
+        if (typeof results[0] == 'undefined' && !results[0]) {
+            data.user_status = 0;
+            data.error_msg = "This user is no longer available";
+            callback(data);
+            return false;
+        } else {
+            callback(data);
+        }
+    });
+}
 
-    // var checkGroupStatus = function (data,callback) {
-    //         data.error_msg = "";
-    //         var active_query = "SELECT * FROM groups where id='"+data.group_id+"'";
+// var checkGroupStatus = function (data,callback) {
+//         data.error_msg = "";
+//         var active_query = "SELECT * FROM groups where id='"+data.group_id+"'";
 
-    //         db.query(active_query, function (error, results, fields) {
-    //             if (error) throw error;
-    //             if(typeof results[0] == 'undefined' && !results[0]) {
-    //                 data.user_status = 0;
-    //                 data.error_msg = "This group is no longer available";
-    //                 callback(data);
-    //                 return false;
-    //             } else {
-    //                 callback(data);
-    //             }
-    //         });
-    // }
-http.listen(port, function(){
-  console.log('listening on *:'+ port);
+//         db.query(active_query, function (error, results, fields) {
+//             if (error) throw error;
+//             if(typeof results[0] == 'undefined' && !results[0]) {
+//                 data.user_status = 0;
+//                 data.error_msg = "This group is no longer available";
+//                 callback(data);
+//                 return false;
+//             } else {
+//                 callback(data);
+//             }
+//         });
+// }
+http.listen(port, function () {
+    console.log('listening on *:' + port);
 });

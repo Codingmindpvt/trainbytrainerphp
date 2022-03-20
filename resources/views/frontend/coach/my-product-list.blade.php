@@ -10,7 +10,8 @@
 <section class="common-light-header">
     <div class="container">
         <div class="popular-box text-center">
-            <h1 class="oswald-font">Hi, {{ Auth::user()->first_name . ' ' . Auth::user()->last_name }}!</h1>
+            <h1 class="oswald-font">Hi, {{ Auth::user()->first_name . ' ' . Auth::user()->last_name }}!{!!
+                certifiedUser() !!}</h1>
             <span class="divide-line"></span>
             {{-- <p class="oswald-font light-text">View and Manage Product List details here</p> --}}
         </div>
@@ -42,12 +43,12 @@
                 <div class="marketplace-header">
                     <h3 class="oswald-font">My Products List</h3>
                 </div>
-                @if (count($coachPrograms) > 0)
                 <div class=" name-date-box-area">
                     <div class="row">
                         <div class="col-md-3">
-                            <form id  ="searchProductList" class="product-search" action="{{ route('searchProductList') }}" method="GET">
-                                <input type="text" class="form-control" placeholder="Search By Name" name="search" required />
+                            <form id="searchProductList" class="product-search"
+                                action="{{ route('coach.my-product-list') }}" method="GET">
+                                <input type="search" class="form-control" placeholder="Search By Name" name="search" />
                                 <button type="submit" class="search-btn-icn"></button>
                                 <i class="fa fa-search search-icon" aria-hidden="true"></i>
                             </form>
@@ -69,6 +70,7 @@
                                 </div>  --}}
                     </div>
                 </div>
+                @if (count($coachPrograms) > 0)
                 <div class="coach-product-list-table">
                     <div class="table-responsive cart-table-box">
                         <table class="table">
@@ -82,16 +84,18 @@
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
-                            <tbody> 
+                            <tbody>
                                 @forelse($coachPrograms as $program)
                                 <tr>
                                     <td>
                                         <div class="image-product-tb">
 
                                             @if (!empty(@$program['image_file']))
-                                            <img src="{{ asset('public/' . @$program->image_file) }}" class="img-circle profile_image_small" />
+                                            <img src="{{ asset('public/' . @$program->image_file) }}"
+                                                class="img-circle profile_image_small" />
                                             @else
-                                            <img src="{{ asset('public/images/default-image-file-o.png') }}" class="img-circle profile_image_small" />
+                                            <img src="{{ asset('public/images/default-image-file-o.png') }}"
+                                                class="img-circle profile_image_small" />
                                             @endif
 
                                             <div>
@@ -102,12 +106,20 @@
                                     </td>
                                     <td>Program</td>
                                     {{-- <td>Enable</td>  --}}
-                                    <td>-----</td>
-                                    <td>-----</td>
-                                    <td class="delete-cart"><a href="{{ route('program-view', $program['id']) }}"><i class="fa fa-eye edit-pencil-new" aria-hidden="true"></i></a>
+                                    <td>{{(!empty($program['order_list']) && count($program['order_list'])) ? count($program['order_list']) : "-----"}}
+                                    </td>
+                                    <td>
+                                        {{(!empty($program['order_list']) && count($program['order_list'])) ? DEFAULT_CURRENCY.($program['price'] * count($program['order_list'])) : "-----"}}
+                                    </td>
+                                    <td class="delete-cart"><a href="{{ route('program-view', $program['id']) }}"><i
+                                                class="fa fa-eye edit-pencil-new" aria-hidden="true"></i></a>
                                         &nbsp
-                                        <a href="{{ route('my-product-delete', $program['id']) }}"><i class="fa fa-trash" onclick="return confirm('Are you sure you want to delete this record?')" aria-hidden="true"></i></a>
-                                        {{-- <a href="{{ route('edit-program', $program['id']) }}"><i class="fa fa-pencil edit-pencil-new" aria-hidden="true"></i></a> --}}
+                                        <a href="{{ route('my-product-delete', $program['id']) }}"><i
+                                                class="fa fa-trash"
+                                                onclick="return confirm('Are you sure you want to delete this record?')"
+                                                aria-hidden="true"></i></a>
+                                        {{-- <a href="{{ route('edit-program', $program['id']) }}"><i
+                                            class="fa fa-pencil edit-pencil-new" aria-hidden="true"></i></a> --}}
                                     </td>
                                 </tr>
                                 @empty
@@ -145,29 +157,29 @@
 </section>
 @section('scripts')
 <script>
-    $( "#search_product_list" ).keyup(function() {
-   $.ajax({
+$("#search_product_list").keyup(function() {
+    $.ajax({
         url: "{{ route('searchProductList') }}",
-        data: {keyword: search},
+        data: {
+            keyword: search
+        },
         type: 'GET',
-        success: function(data){
-			// $('#result').html(data);
+        success: function(data) {
+            // $('#result').html(data);
             console.log(search);
-		}
+        }
         // success: function(data) {
         //     SwalOverlayColor();
-          
+
         //     thisData.parent().html(
         //         '<span class="view-save-bt add_to_wishlist"><i class="fa fa-heart-o" aria-hidden="true"></i>SAVE</span>'
         //     );
 
         // }
     });
-  
-    
+
+
 });
-
-
 </script>
 
 

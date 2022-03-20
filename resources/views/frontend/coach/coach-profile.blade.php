@@ -113,7 +113,7 @@
                             <div class="form-group col-md-6">
                                 <label class="my-2 form-p">Price Range<span><i class="fa fa-asterisk validate-mark"
                                             aria-hidden="true"></i></span></label>
-                                <div class="form-select">
+                                <div class="form-select btn-group">
                                     <select class="form-input" name="price_range">
                                         <option value="">Select</option>
                                         <option>€</option>
@@ -127,7 +127,7 @@
                             <div class="form-group col-md-6">
                                 <label for="inputPassword4" class="my-2 form-p">Gender<span><i
                                             class="fa fa-asterisk validate-mark" aria-hidden="true"></i></span></label>
-                                <div class="form-select">
+                                <div class="form-select btn-group">
                                     <select class="form-input" name="gender">
                                         <?php
                                                 echo "<option value=''>Select Type</option>";
@@ -211,13 +211,13 @@
                                         <input class="form-input _education_title" type="text" name="education_title_1"
                                             placeholder="Enter Certificate Name">
                                     </div>
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-md-6 ">
                                         <p class="tag-line ">Completion Year</p>
                                         @php
                                         $years = array_combine(range(date('Y', strtotime('+5 year')), 1980),
                                         range(date('Y', strtotime('+5 year')), 1980));
                                         @endphp
-                                        <div class="form-select">
+                                        <div class="form-select btn-group">
                                             <select class="form-input _completion_year" name="completion_year_1">
                                                 <option value="">Select</option>
                                                 @foreach ($years as $key => $year)
@@ -257,8 +257,8 @@
                                     </div>
                                     <div class="form-group col-md-6">
                                         <p class="tag-line">Stars</p>
-                                        <div class="form-select ">
-                                            <select class="form-input _star" id="exampleFormControlSelect1"
+                                        <div class="form-select btn-group">
+                                            <select class="form-input _star btn-group" id="exampleFormControlSelect1"
                                                 name="star_1">
                                                 <option value="">Select</option>
                                                 <option value="1">1 Star</option>
@@ -361,11 +361,11 @@ $(document).ready(function() {
             $(wrapper).append(
                 `<div class="main-section"><div class="view-box"><div class="form-row"><div class="form-group col-md-6"><p class="tag-line">Accreditation or Certificate</p><input class="form-input _education_title" type="text" placeholder="Enter Certificate Name" id="education_title_` +
                 count + `" name="education_title_` + count + `"></div>
-            <div class="form-group col-md-6"><p class="tag-line">Completion Year</p>
+            <div class="form-group col-md-6 "><p class="tag-line">Completion Year</p>
             @php
             $years = array_combine(range(date('Y', strtotime('+5 year')), 1980), range(date('Y', strtotime('+5 year')), 1980));
             @endphp
-                    <div class="form-select">
+                    <div class="form-select btn-group">
                     <select class="form-input _completion_year" id="completion_year_` + count +
                 `"   name="completion_year_` + count +
                 `">
@@ -478,7 +478,7 @@ $(document).ready(function() {
                                 </div>
                                 <div class="form-group col-md-6">
                                     <p class="tag-line">Stars</p>
-                                    <div class="form-select">
+                                    <div class="form-select btn-group">
                                         <select class="form-input _star" id="result_star_` + result_count +
                 `" name="star_` +
                 result_count +

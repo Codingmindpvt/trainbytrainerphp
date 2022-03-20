@@ -25,8 +25,8 @@ class CategoryController extends Controller
         if ($request->isMethod('post')) {
             $postData = $request->all();
             $validator = Validator::make($postData, [
-                'title' => 'required',
-                'description' => 'required'
+                // 'title' => 'required',
+                // 'description' => 'required'
                 //'status' => 'required',
             ]);
 
@@ -44,15 +44,14 @@ class CategoryController extends Controller
                 $postData['image_file'] = UploadImage($postData['image_file'], 'category');
                 $category->image_file = $postData['image_file'];
             }
-            $category->save();
-             notify()->success('Category added successfully.');
-            return redirect("/admin/category");
+            if($category->save()){
+                notify()->success('Category added successfully.');
+                return redirect()->route('admin.category.list');
+            }
 
         }
-
         return view("admin.categories.add", ["category" => $category]);
     }
-
 
     /*****************************************/
 
@@ -90,7 +89,7 @@ class CategoryController extends Controller
             'title' => 'required',
             'description' => 'required',
             'status' => 'required',
-            'image_file' => 'extension'
+            // 'image_file' => 'extension'
         ]);
 
         if ($validator->fails()) {
@@ -119,7 +118,6 @@ class CategoryController extends Controller
           ]);
           notify()->success('Category updated successfully.');
         return Redirect::to('admin/category');
-
     }
 
     /*****************************************/

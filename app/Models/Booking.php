@@ -60,5 +60,9 @@ class Booking extends Model
     {
          return $this->hasOne(CoachClass::class,'id','class_id');
     }
+    public function coachlist_class(){
+
+        return $this->hasOne(CoachClass::class,'created_by','id');
+    }
 
 }

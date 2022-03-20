@@ -10,26 +10,33 @@ use Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class SocialLoginController extends Controller
 {
     public function googleRedirect()
     {
+        // dd('okk');
         return Socialite::driver('google')->redirect();
     }
 
     public function loginWithGoogle()
     {
         try {
-           
+
             $googleUser = Socialite::driver('google')->stateless()->user();
             // print_r($googleUser);die;
             $user = User::where('google_id', $googleUser->id)->first();
 
             if ($user) {
                 Auth::login($user);
-
-                return redirect()->route('frontend.index');
+                if ($user->account_complete == 1) {
+                    return redirect()->route('frontend.index');
+                } elseif ($user->account_complete == 0) {
+                    return redirect()->route('select-user-type');
+                } else {
+                    return redirect()->route('create_profile');
+                }
             }
             $existingUser = User::where('email', $googleUser->getEmail())->first();
             // dd($existingUser);
@@ -37,12 +44,16 @@ class SocialLoginController extends Controller
 
                 $existingUser->google_id = $googleUser->id;
                 $existingUser->save();
-
                 Auth::login($existingUser);
-                return redirect()->route('frontend.index'); 
-            } 
-            
-             else {
+
+                if ($existingUser->account_complete == 1) {
+                    return redirect()->route('frontend.index');
+                } elseif ($existingUser->account_complete == 0) {
+                    return redirect()->route('select-user-type');
+                } else {
+                    return redirect()->route('create_profile');
+                }
+            } else {
                 $createUser = User::create([
                     'first_name' => explode(' ', $googleUser->name)[0],
                     'last_name' => @explode(' ', $googleUser->name)[1],
@@ -52,7 +63,7 @@ class SocialLoginController extends Controller
                 ]);
                 Auth::login($createUser);
 
-                return redirect()->route('frontend.index');
+                return redirect()->route('select-user-type');
             }
         } catch (Exception $exception) {
 
@@ -69,8 +80,8 @@ class SocialLoginController extends Controller
     {
         try {
             $user = Socialite::driver('facebook')->stateless()->user();
-          //dd($user);
-          $existingUser = User::where('email', $user->getEmail())->first();
+            //dd($user);
+            $existingUser = User::where('email', $user->getEmail())->first();
             // dd($existingUser);
             if ($existingUser) {
 
@@ -78,22 +89,58 @@ class SocialLoginController extends Controller
                 $existingUser->save();
 
                 Auth::login($existingUser);
-                return redirect()->route('frontend.index'); 
-            } 
+                if ($existingUser->account_complete == 1) {
+                    return redirect()->route('frontend.index');
+                } elseif ($existingUser->account_complete == 0) {
+                    return redirect()->route('select-user-type');
+                } else {
+                    return redirect()->route('create_profile');
+                }
+            }
             $saveUser = User::updateOrCreate([
                 'facebook_id' => $user->getId(),
             ], [
                 'first_name' => explode(' ', $user->getName())[0],
-                'last_name' => @explode(' ', $user->getName())[1],  
+                'last_name' => @explode(' ', $user->getName())[1],
                 'email' => $user->getEmail(),
                 'password' => Hash::make($user->getName() . '@' . $user->getId())
             ]);
 
             Auth::loginUsingId($saveUser->id);
 
-            return redirect()->route('frontend.index');
+            return redirect()->route('select-user-type');
         } catch (\Throwable $th) {
             throw $th;
+        }
+    }
+
+    public function selectUserType()
+    {
+
+        return view('frontend.select-user-type');
+    }
+
+    public function saveSelectUserType(Request $request)
+    {
+        $user = $request->validate([
+            'user_type' => 'required',
+        ]);
+
+        $userId = Auth::user()->id;
+        $usergetId  = User::where('id', $userId)->first();
+        if ($usergetId->account_complete == 0) {
+
+            $user = Auth::user();
+            $user->user_type = $request->user_type;
+            $user->account_complete = $request->account_complete;
+            $user->update();
+
+            if ($user) {
+                return redirect()->route('create_profile');
+            }
+            return back();
+        } else {
+            return redirect()->route('frontend.index');
         }
     }
 }

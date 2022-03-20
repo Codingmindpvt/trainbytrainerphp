@@ -12,7 +12,8 @@
 <section class="common-light-header">
     <div class="container">
         <div class="popular-box text-center">
-            <h1 class="oswald-font">{{Auth::user()->first_name." ".Auth::user()->last_name}}</h1>
+            <h1 class="oswald-font">Hi,{{Auth::user()->first_name." ".Auth::user()->last_name}}!{!!
+                certifiedUser() !!}</h1>
             <span class="divide-line"></span>
             {{-- <p class="oswald-font light-text">View and edit COACH Program details here</p> --}}
         </div>
@@ -46,18 +47,12 @@
                 </div>
                 <div class="name-date-box-area">
                     <div class="row">
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" id="exampleInputEmail1"
-                                placeholder="Search By Order Id">
-                        </div>
-                        <div class="col-md-3">
-                            <i class="fa fa-calendar  select-angle-calender" aria-hidden="true"></i>
-                            <input type="text" class="form-control" id="exampleInputEmail1" placeholder="From">
-                        </div>
-                        <div class="col-md-3">
-                            <i class="fa fa-calendar  select-angle-calender" aria-hidden="true"></i>
-                            <input type="text" class="form-control" id="exampleInputEmail1" placeholder="To">
-                        </div>
+                        <form id="searchProductList" class="product-search" action="{{ route('coach.my-order-list') }}"
+                            method="GET">
+                            <input type="search" class="form-control" placeholder="Search By Name" name="search" />
+                            <button type="submit" class="search-btn-icn"></button>
+                            <i class="fa fa-search search-icon" aria-hidden="true"></i>
+                        </form>
                     </div>
                 </div>
                 <div class="user-profle-right-side">

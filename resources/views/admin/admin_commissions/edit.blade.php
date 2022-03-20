@@ -5,7 +5,7 @@
     <h2>Edit Admin Commission</h2>
     <div class="white_box my_profile">
         <div class="row">
-            <form action="{{route('admin.commission.edit')}}" method="POST" id="commissionForm" enctype="multipart/form-data">
+            <form action="{{route('admin.commission.edit','$commission->id')}}" method="POST" id="commissionForm" enctype="multipart/form-data">
                 @csrf
                 <input name="id" value="{{$commission->id}}" class="form-control" type="hidden">
                 <div class="row">
@@ -14,11 +14,12 @@
                     <aside class="col-sm-8">
                         <label>Commission Percent</label>
                         <input name="commission_percent" id="price" value="{{$commission->commission_percent}}" class="form-control" type="text">
-                        <select name="commission_type" value="{{$commission->commission_type}}" class="form-control" id="cars">
-                            <option value="P">Program</option>
-                            <option value="C">Class</option>
-
-                        </select>
+                        {{--  <select name="type" class="form-control" id="cars">
+                            <option {{ ($commission->type) == 'P' ? 'selected' : ''}} value="P" >Program</option>
+                            <option {{ ($commission->type) == 'C' ? 'selected' : '' }} value="C">Class</option>
+                           <option value="P" <?php ($commission->type == 'P') ? 'selected':'' ?> >Program</option>
+                            <option value="C" <?php ($commission->type == 'C') ? 'selected':'' ?> >Class</option>
+                        </select>  --}}
                         <button type="submit" class="blue_btn yellow_btn text-uppercase">Update</button>
                     </aside>
                 </div>

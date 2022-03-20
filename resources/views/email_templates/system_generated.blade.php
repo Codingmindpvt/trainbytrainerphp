@@ -77,7 +77,7 @@
 											<td align="center" valign="middle" style="padding-bottom: ;" class="emailRegards">
 												<!-- email Link // -->
 												<p style="color:#666;font-family:'Open Sans',Helvetica,Arial,sans-serif;font-size:14px;font-weight:400;font-style:normal;letter-spacing:normal;line-height:22px;text-transform:none;text-align:center;padding:0;margin:0">If you have any questions, do contact us at <a href="mailto:{{ env('INFO_MAIL', FROM_EMAIL_ADDRESS)}}"  target="_blank" style="color:#1acbaa; text-decoration:none;">{{ env('INFO_MAIL', 'phpteam366@gmail.com')}}</a>. </p>
-												<p align="left" style="color: #909090; padding: 10px;  font-size: 12px;">Kind Regards,<br>TrainByTrainer Team</p>
+												<p align="left" style="color: #909090; padding: 10px;  font-size: 12px;">Thanks & Regards,<br>TrainByTrainer Team</p>
 
 												<p style="color: #909090; padding: 10px; background-color: #d2f2eb; font-size: 12px;">This is an auto-generated email, please do not reply to this mail.</p>
 											</td>

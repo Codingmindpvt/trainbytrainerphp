@@ -5,7 +5,7 @@
 			<h2>Page Detail</h2>
 			<div class="white_box my_profile">
 				<div class="row">
-				
+
 					<aside class="col-lg-4 text-center">
 						@if(!empty(@$page->image_file))
 			                <img src="{{asset('public/'.@$page->image_file) }}" class="img-circle profile_image"/>

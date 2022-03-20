@@ -18,10 +18,10 @@
 					<aside class="col-lg-5">
 						<div class="row">
 							<aside class="col-sm-3">
-								<label>Title</label>
+								<label>Title :</label>
 							</aside>
 							<aside class="col-sm-2">
-								<span>:</span>
+								<span></span>
 							</aside>
 							<aside class="col-sm-7">
 								<h4>{{ isset($blog->title) ? $blog->title : "-----" }}</h4>
@@ -30,10 +30,10 @@
 						<br/><hr/><br/>
 						<div class="row">
 							<aside class="col-sm-3">
-								<label>Category</label>
+								<label>Category :</label>
 							</aside>
 							<aside class="col-sm-2">
-								<span>:</span>
+								<span></span>
 							</aside>
 							<aside class="col-sm-7">
 								<h4>{{ isset($blog['category']['title']) ? $blog['category']['title'] : "-----" }}</h4>
@@ -42,10 +42,10 @@
 						<br/><hr/><br/>
 						<div class="row">
 							<aside class="col-sm-3">
-								<label>Status</label>
+								<label>Status :</label>
 							</aside>
 							<aside class="col-sm-2">
-								<span>:</span>
+								<span></span>
 							</aside>
 							<aside class="col-sm-7">
 								<h4>{!! isset($blog->status) ? $blog->getStatus() : "-----" !!}</h4>
@@ -54,10 +54,10 @@
 						<br/><br/><hr/><br/>
 						<div class="row">
 							<aside class="col-sm-3">
-								<label>Description</label>
+								<label>Description :</label>
 							</aside>
 							<aside class="col-sm-2">
-								<span>:</span>
+								<span></span>
 							</aside>
 							<aside class="col-sm-7">
 								<h4>{!! isset($blog->description) ? $blog->description : "-----" !!}</h4>

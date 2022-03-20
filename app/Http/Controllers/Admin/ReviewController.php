@@ -19,12 +19,19 @@ class ReviewController extends Controller
 
     /* Review List */
 
-    /****************************************/ 
+    /****************************************/
 
-    public function reviewList()
+    public function reviewList($id = null)
     {
 
-        $reviews = Review::get();
+
+        if($id){
+            $reviews = Review::where('rate_for_coach_id',$id)->orderby('id', 'Desc')->paginate(10);
+
+        }else{
+            $reviews = Review::orderby('id', 'Desc')->paginate(10);
+        }
+
         return view('admin.reviews.list', compact('reviews'));
     }
 

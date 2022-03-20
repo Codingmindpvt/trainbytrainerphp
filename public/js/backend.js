@@ -117,11 +117,11 @@ $("#signupForm").validate({
     /* CREATE PROFILE: preview image before upload */
 
 /***************************************************/
+
 $("#image-holder").click(function(){
   $("#fileUpload").trigger('click');
 });
 	$("#fileUpload").on('change', function () {
-
         if (typeof (FileReader) != "undefined") {
 
             var image_holder = $("#image-holder");
@@ -208,6 +208,7 @@ $("#image-holder").click(function(){
 
 /***************************************************/
 $("#createProfileForm").validate({
+    ignore: ':hidden:not("#fileUpload")',
   rules: {
     first_name: {
       required: true,
@@ -217,6 +218,7 @@ $("#createProfileForm").validate({
     },
     profile_image:{
         required: true,
+        extension:'png,jpg,jpeg'
     },
     last_name: {
       required: true,
@@ -253,8 +255,12 @@ $("#createProfileForm").validate({
       required: true,
       noSpace: true,
     }
-
-  }
+},
+messages: {
+    profile_image: {
+      accept: "Please select a valid image file",
+    },
+}
 });
 
 
@@ -307,6 +313,24 @@ function profileurl(input) {
       $('.select_profile_errors').text('');
     }
   }
+}
+
+function chatfileurl(input) {
+  var filePath = input.value;
+      var extension = filePath.split('.').pop();
+      if(extension == "pdf"){
+        $('.profile_picture').attr('src', app_url+'/trainbytrainerphp/public/images/pdf.jpg');
+      }
+      if (extension != "pdf" && input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        $('.profile_picture').attr('src', e.target.result);
+      }
+
+      reader.readAsDataURL(input.files[0]);
+      $('.select_profile_errors').text('');
+    }
+
 }
 
 
@@ -537,27 +561,27 @@ $("#coachDetailForm").validate({
       twitter_url:{
         noSpace: true,
         url: true,
-        maxlength:60,
+        maxlength:120,
       },
       facebook_url:{
         noSpace: true,
         url: true,
-        maxlength:60,
+        maxlength:120,
       },
       instagram_url:{
         noSpace: true,
         url: true,
-        maxlength:60,
+        maxlength:120,
       },
       youtube_url:{
         noSpace: true,
         url: true,
-        maxlength:60,
+        maxlength:120,
       },
       pinterest_url:{
         noSpace: true,
         url: true,
-        maxlength:60,
+        maxlength:120,
       }
   },
   errorPlacement: function(error, element) {
@@ -642,22 +666,27 @@ $("#coachDetailForm").validate({
           twitter_url:{
             noSpace: true,
             url: true,
+            maxlength:120,
           },
           facebook_url:{
             noSpace: true,
             url: true,
+            maxlength:120,
           },
           instagram_url:{
             noSpace: true,
             url: true,
+            maxlength:120,
           },
           youtube_url:{
             noSpace: true,
-            url: true
+            url: true,
+            maxlength:120,
           },
           pinterest_url:{
             noSpace: true,
             url: true,
+            maxlength:120,
           },
       },
   });
@@ -1173,6 +1202,49 @@ $("#updatebilling").validate({
       }
      }
   });
+  $("#editcontact").validate({
+    rules: {
+        first_name: {
+        required: true,
+        noSpace: true,
+      },
+      last_name: {
+        required: true,
+        noSpace: true,
+      },
+      phone_number: {
+        required: true,
+        noSpace: true,
+        number:true,
+      },
+      email: {
+        required: true,
+        noSpace: true,
+        email: true,
+        regex: /^\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i
+      },
+      message: {
+        required: true,
+        noSpace: true,
+      },
+     }
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

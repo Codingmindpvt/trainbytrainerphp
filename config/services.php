@@ -31,14 +31,14 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
     'google' => [
-        'client_id' => '724548363685-kfuh2b6ng6fureq0a2jcsaoeepbv70cf.apps.googleusercontent.com',//USE FROM GOOGLE DEVELOPER ACCOUNT
-        'client_secret' => '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',//USE FROM GOOGLE DEVELOPER ACCOUNT
+        'client_id' => '724548363685-qusvccpqb193cij1q1qt6i7d71ev01s4.apps.googleusercontent.com',//USE FROM GOOGLE DEVELOPER ACCOUNT
+        'client_secret' => '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',//USE FROM GOOGLE DEVELOPER ACCOUNT
         'redirect' => '/auth/google/callback',
     ],
     'facebook' => [
-        'client_id' => '1002067133727044', //USE FROM FACEBOOK DEVELOPER ACCOUNT
-        'client_secret' => 'e15735f9e1a9c758a6129225d6ff71ac', //USE FROM FACEBOOK DEVELOPER ACCOUNT
-        'redirect' => '/facebook/callback'
+        'client_id' => '511197193689646', //USE FROM FACEBOOK DEVELOPER ACCOUNT
+        'client_secret' => 'c95256927c548b64190cea4f6c40c264', //USE FROM FACEBOOK DEVELOPER ACCOUNT
+        'redirect' => '/auth/facebook/callback'
     ],
    
 

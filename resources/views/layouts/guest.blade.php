@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{{asset('public/css/owl.theme.default.css') }}">
     <link rel="stylesheet" href="{{asset('public/vendor/mckenziearts/laravel-notify/css/notify.css') }}">
     <link rel="stylesheet" href="{{asset('public/css/style.css') }}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="{{asset('public/css/image-uploader.min.css')}}">
     <link rel="stylesheet" href="{{asset('public/css/countrySelect.css') }}">
     <link rel="stylesheet" href="{{asset('public/css/aos.css') }}">
@@ -109,13 +110,30 @@
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/eonasdan-bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js">
     </script>
-
+    <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
 
 
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.js"></script> -->
 
     @yield('scripts')
     <script>
+    $(document).ready(function() {
+        oTable = $('.myDataTable').DataTable({
+            "paging": false,
+            "order": [
+                [0, "desc"]
+            ],
+            "info": false,
+            bFilter: false,
+            searching: true,
+            dom: 't'
+        });
+        $('.searchBox').keyup(function() {
+            oTable.search($(this).val()).draw();
+        })
+    });
+
+
     /********************************/
 
     /* Swal Popup */
@@ -327,6 +345,13 @@
             $("#p").show();
             $("#social-login").show();
         });
+        if ($('#hide').is(':checked')) {
+            $("#p").hide();
+            $("#social-login").hide();
+        } else {
+            $("#p").show();
+            $("#social-login").show();
+        }
     });
     </script>
 

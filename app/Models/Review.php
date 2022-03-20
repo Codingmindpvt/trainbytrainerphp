@@ -104,6 +104,15 @@ class Review extends Model
     {
          return $this->hasOne(CoachClass::class,'id','rate_for_coach_id');
     }
-  
+
+    // public function programReview()
+    // {
+    //      return $this->hasOne(CoachProgram ::class,'review_type','id');
+    // }
+    // public function classReview()
+    // {
+    //      return $this->hasMany(CoachClass ::class,'id','review_type');
+    // }
+
 
 }

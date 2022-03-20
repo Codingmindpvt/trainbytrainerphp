@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User;    
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Redirect;
 use Session;
@@ -22,7 +22,7 @@ class SepaController extends Controller
     }
     public function verifySepaDebit(Request $request)
     {
-       
+
        $intent = Session::get('intent');
         $payment = $this->stripe->setupIntents->retrieve(
             $intent,
@@ -31,7 +31,7 @@ class SepaController extends Controller
         $user  = User::find(auth()->user()->id);
         $user->payment_method = $payment->payment_method;
         if($user->save()){
-            notify()->success('success, Setup Your Payment Account Succesfully.');
+            notify()->success('Account detail added successfully.');
             return redirect()->route('cart');
         }else {
             Session::flash('error', 'Payment failed!');

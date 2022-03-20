@@ -8,7 +8,7 @@
 			<div class="row justify-content-center">
 				<aside class="col-lg-6">
 					<div class="form-box">
-						<h3 class="oswald-font text-center">Get started with us</h3>
+						<h3 class="oswald-font text-center">Get started with us </h3>
 							<div class="form-group">
     							<label for="">Account Type</label>
     							<div class="coach-choice" id="coach">

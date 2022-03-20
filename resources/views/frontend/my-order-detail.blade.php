@@ -122,7 +122,8 @@
 
                             <div>
                                 <p>{{ucwords($document['title'])}}</p>
-                                <a href="">Download</a>
+                                <a href="{{asset('public/'.$document['image_file'])}}"
+                                    download="{{ str_replace(' ','_',$document['title'])}}">Download</a>
                             </div>
                         </div>
                         @empty
@@ -133,9 +134,9 @@
                             <div class="col-md-6">
                                 <h4>Billing Address</h4>
                                 <div class="Billing Address-box">
-                                    <h6>{{ ucwords($program['payment']['user']['first_name']."".$program['payment']['user']['last_name']) }}
+                                    <h6>{{isset($program['payment']['user']['first_name']) ? ucwords($program['payment']['user']['first_name']."".$program['payment']['user']['last_name']) : "-----" }}
                                     </h6>
-                                    <p>{{ ucwords($program['payment']['user']['address']) }}
+                                    <p>{{ isset($program['payment']['user']['address']) ? ucwords($program['payment']['user']['address']) : "-----" }}
                                     </p>
                                 </div>
                             </div>
@@ -143,7 +144,7 @@
                                 <h4>Payment Method</h4>
                                 <div class="Billing Address-box">
                                     <h6>Payment ID</h6>
-                                    <p>{{ $program['payment']['payment_id'] }}
+                                    <p>{{ @$program['payment']['payment_id'] }}
                                     </p>
                                 </div>
                             </div>
@@ -153,7 +154,7 @@
 
                                     <div class="cart-total">
                                         <p>Cart Total</p>
-                                        <p>{{isset($program['program']['price']) ? DEFAULT_CURRENCY.($program['payment']->getSubTotal($program['program']['price']) - $program['payment']->getTaxAmount()) : "-----"}}
+                                        <p>{{isset($program['program']['price']) ? DEFAULT_CURRENCY.($program['payment']->getSubTotal($program['program']['price'])) : "-----"}}
                                         </p>
                                     </div>
                                     <div class="cart-total">
@@ -164,7 +165,7 @@
                                     <hr>
                                     <div class="cart-total">
                                         <h5>Order Total</h5>
-                                        <p>{{isset($program['program']['price']) ? DEFAULT_CURRENCY.$program['program']['price'] : "-----"}}
+                                        <p>{{isset($program['program']['price']) ? DEFAULT_CURRENCY.$program['payment']->getGrandTotal() : "-----"}}
                                         </p>
                                     </div>
                                 </div>

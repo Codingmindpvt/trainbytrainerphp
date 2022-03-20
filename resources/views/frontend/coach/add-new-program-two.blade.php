@@ -102,7 +102,7 @@
                                             aria-hidden="true"></i></p>
                                 <input class="form-input" type="text" name="price" placeholder="Enter Price "
                                     id="price">
-                                <p class="tag-line">Prices are currently listed in EUR Dollars. Please also consider
+                                <p class="tag-line">Prices are currently listed in EUR. Please also consider
                                     taxes and our standard commission {{ @$commission['commission_percent'] }}% when
                                     creating this price.</p>
                             </div>

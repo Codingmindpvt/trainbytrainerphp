@@ -17,7 +17,7 @@
 
 					<aside class="col-lg-4">
 
-						<div class="row">
+						<div class="row user-details">
 							<aside class="col-sm-6">
 								<label>Title</label>
 								<h4>{{ isset($training->title) ? $training->title : "-----" }}</h4>
@@ -27,7 +27,7 @@
 								<h4>{!! isset($training->description) ? $training->description : "-----" !!}</h4>
 							</aside>
 						</div>
-						<div class="row">
+						<div class="row user-details">
 							<aside class="col-sm-4">
 								<label>Status</label>
 								<h4>{!! isset($training->status) ? $training->getStatus() : "-----" !!}</h4>

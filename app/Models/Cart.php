@@ -23,16 +23,16 @@ class Cart extends Model
      [
           self::TYPE_PROGRAM =>  'Program',
           self::TYPE_CLASS =>  'Class',
-    ];
+     ];
     }
 
     public static function getTypebadges()
     {
     return
-     [
+     [  
           self::TYPE_PROGRAM =>  'success',
           self::TYPE_CLASS =>  'info'
-    ];
+     ]; 
     }
 
      public function getType()

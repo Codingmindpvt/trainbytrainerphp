@@ -13,7 +13,7 @@
         <a href="{{route('admin.how-it-work.contents.add')}}" class="blue_btn yellow_btn pull-right text-uppercase">Add New</a>
         <!-- @endif -->
         <div class="clear"></div>
-        @if($heading->count()>0)
+        @if($content->count()>0)
         <div class="white_box">
             <div class="table-responsive">
                 <table width="100%" cellspacing="0" cellpadding="0">
@@ -44,14 +44,14 @@
 
                             <td>
                                 <a href="{{route('admin.how-it-work.contents.edit',$row['id'])}}" class="action_btn"><i class="fa fa-edit" aria-hidden="true"></i></a>
-                                <a href="{{route('admin.how-it-work.contents.delete',$row['id'])}}" class="action_btn"><i class="fa fa-remove" aria-hidden="true"></i></a>
+                                <a href="{{route('admin.how-it-work.contents.delete',$row['id'])}}" class="action_btn" onclick="return confirm('Are you sure you want to delete this record?')"><i class="fa fa-trash" aria-hidden="true"></i></a>
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-
+           
         </div>
         @else
         <div class="main-img">

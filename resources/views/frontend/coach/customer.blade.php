@@ -13,7 +13,7 @@
 <section class="common-light-header">
     <div class="container">
         <div class="popular-box text-center">
-            <h1 class="oswald-font">{{Auth::user()->first_name." ".Auth::user()->last_name}} {!!
+            <h1 class="oswald-font">Hi,{{Auth::user()->first_name." ".Auth::user()->last_name}} {!!
                 certifiedUser() !!}</h1>
             <span class="divide-line"></span>
             {{-- <p class="oswald-font light-text">View and edit COACH Program details here</p> --}}
@@ -45,9 +45,13 @@
             <aside class="col-lg-8">
                 <div class="user-profle-right-side marketplace-main-box">
                     <div class="info-profile-head">
-                        <h3>Customers</h3>
-                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
-                            placeholder="Search By Name">
+                        <form id="searchProductList" class="product-search" action="{{ route('coach.my-customers') }}"
+                            method="GET">
+                            <h3>Customers</h3>
+                            <input type="search" name="search" class="form-control" placeholder="Search By Name">
+                            <button type="submit" class="search-btn-icn"></button>
+                            <i class="fa fa-search search-icon" aria-hidden="true"></i>
+                        </form>
                     </div>
                     <hr>
                     <div class="customer-page-box">
